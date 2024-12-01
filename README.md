@@ -3,7 +3,7 @@ My solutions to the Advent of Code puzzles for the 2024 edition, written in C#.
 
 | AoC Puzzle | Part one | Part two | P1 metrics | P2 metrics |
 | :-- | --: | --: | :--: | :--: |
-| [Day 1: ..](https://github.com/robhabraken/advent-of-code-2024/tree/main/solutions/01) |  |  |  |  |
+| [Day 1: Historian Hysteria](https://github.com/robhabraken/advent-of-code-2024/tree/main/solutions/01) |  1.1 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | 1.2 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> |  <sub>20 LoC / 2 ms</sub> |  <sub>24 LoC / 11 ms</sub> |
 | [Day 2: ..](https://github.com/robhabraken/advent-of-code-2024/tree/main/solutions/02) |  |  |  |  |
 | [Day 3: ..](https://github.com/robhabraken/advent-of-code-2024/tree/main/solutions/03) |  |  |  |  |
 | [Day 4: ..](https://github.com/robhabraken/advent-of-code-2024/tree/main/solutions/04) |  |  |  |  |
