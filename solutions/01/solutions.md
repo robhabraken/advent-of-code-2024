@@ -15,3 +15,5 @@ Nice warm-up for this year's AoC!
 Apart from adding the absolute value of subtracting the two numbers, we can use all of our part 1 code. We might skip the sorting of the array, as it isn't needed functionally, but it makes for a nice optimization.
 
 To find the answer to part two, we need to go over each number in the left list, and count it's occurences in the right list. That's actually quite easy and literally what I do in code. But since our lists are sorted, once the number in the right list is higher than the number we're looking for, we can stop counting. Here it really helps that are lists are sorted. Then, when we've found the number of occurences, we multiply that with the current number and add the outcome to the answer.
+
+*Edit: I did some measurements, and on average, the profit from being able to break out of the loop after the number on the right was higher than on the left was equal to the penalty of sorting both arrays. So I removed the sorting and breaking out of the loop in favor of less and cleaner code.*
