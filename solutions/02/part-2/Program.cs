@@ -14,7 +14,6 @@ static bool isSafe(int[] report, bool problemDampener)
 {
     var ups = 0;
     var downs = 0;
-    var zeros = 0;
     var nboWrongSteps = 0;
 
     for (var i = 1; i < report.Length; i++)
@@ -23,15 +22,13 @@ static bool isSafe(int[] report, bool problemDampener)
             ups++;
         else if (report[i] < report[i - 1])
             downs++;
-        else
-            zeros++;
 
         var diff = Math.Abs(report[i] - report[i - 1]);
         if (diff == 0 || diff > 3)
             nboWrongSteps++;
     }
 
-    if ((ups == 0 || downs == 0) && zeros == 0 && nboWrongSteps == 0)
+    if ((ups == 0 || downs == 0) && nboWrongSteps == 0)
         return true;
 
     if (problemDampener)
