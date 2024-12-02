@@ -4,7 +4,7 @@ My solutions to the Advent of Code puzzles for the 2024 edition, written in C#.
 | AoC Puzzle | Part one | Part two | P1 metrics | P2 metrics |
 | :-- | --: | --: | :--: | :--: |
 | [Day 1: Historian Hysteria](https://github.com/robhabraken/advent-of-code-2024/tree/main/solutions/01) |  1.1 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | 1.2 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> |  <sub>20 LoC / 2 ms</sub> |  <sub>24 LoC / 11 ms</sub> |
-| [Day 2: Red-Nosed Reports](https://github.com/robhabraken/advent-of-code-2024/tree/main/solutions/02) | 2.1 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | 2.2 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> |  <sub>34 LoC / 3 ms</sub> |  <sub>48 LoC / 15 ms</sub> |
+| [Day 2: Red-Nosed Reports](https://github.com/robhabraken/advent-of-code-2024/tree/main/solutions/02) | 2.1 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | 2.2 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> |  <sub>31 LoC / 3 ms</sub> |  <sub>43 LoC / 15 ms</sub> |
 | [Day 3: ..](https://github.com/robhabraken/advent-of-code-2024/tree/main/solutions/03) |  |  |  |  |
 | [Day 4: ..](https://github.com/robhabraken/advent-of-code-2024/tree/main/solutions/04) |  |  |  |  |
 | [Day 5: ..](https://github.com/robhabraken/advent-of-code-2024/tree/main/solutions/05) |  |  |  |  |
