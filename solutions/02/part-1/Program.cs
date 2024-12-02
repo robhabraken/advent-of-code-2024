@@ -17,7 +17,7 @@ static bool isSafe(int[] report)
 
     for (int i = 1; i < report.Length; i++)
     {
-        var delta = report[i] - currentLevel;
+        var delta = report[i] - report[i - 1];
 
         if (delta == 0 || delta > 3 || delta < -3)
             return false;
@@ -27,8 +27,6 @@ static bool isSafe(int[] report)
         else
             if ((direction > 0 && delta < 0) || (direction < 0 && delta > 0))
                 return false;
-
-        currentLevel = report[i];
     }
 
     return true;
