@@ -12,9 +12,7 @@ Console.WriteLine(answer);
 
 static bool isSafe(int[] report, bool problemDampener)
 {
-    var ups = 0;
-    var downs = 0;
-    var nboWrongSteps = 0;
+    int ups = 0, downs = 0, nboWrongSteps = 0;
 
     for (var i = 1; i < report.Length; i++)
     {
@@ -31,18 +29,15 @@ static bool isSafe(int[] report, bool problemDampener)
     if ((ups == 0 || downs == 0) && nboWrongSteps == 0)
         return true;
 
-    if (problemDampener)
-    {
-        for (var indexToRemove = 0; indexToRemove < report.Length; indexToRemove++)
-        { 
-            var newReport = new List<int>();
-            for (var i = 0; i < report.Length; i++)
-                if (i != indexToRemove)
-                    newReport.Add(report[i]);
+    for (var indexToRemove = 0; problemDampener && indexToRemove < report.Length; indexToRemove++)
+    { 
+        var newReport = new List<int>();
+        for (var i = 0; i < report.Length; i++)
+            if (i != indexToRemove)
+                newReport.Add(report[i]);
 
-            if (isSafe([.. newReport], false))
-                return true;
-        }
+        if (isSafe([.. newReport], false))
+            return true;
     }
     
     return false;

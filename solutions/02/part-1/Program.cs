@@ -12,7 +12,6 @@ Console.WriteLine(answer);
 
 static bool isSafe(int[] report)
 {
-    var currentLevel = report[0];
     var direction = 0;
 
     for (int i = 1; i < report.Length; i++)
