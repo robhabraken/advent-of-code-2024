@@ -7,28 +7,18 @@ var enabled = true;
 
 var answer = 0;
 foreach (var line in lines)
-{
-    var memoryLine = line;
-    while (true)
+    foreach (var match in regex.Matches(line))
     {
-        var match = regex.Match(memoryLine);
-
-        if (!match.Success)
-            break;
-
-        if (enabled && match.Value.StartsWith("mul"))
+        var instruction = $"{match}";
+        if (enabled && instruction.StartsWith("mul"))
         {
-            var numbers = $"{match.Value}"[4..^1].Split(',').Select(int.Parse).ToArray();
+            var numbers = instruction[4..^1].Split(',').Select(int.Parse).ToArray();
             answer += numbers[0] * numbers[1];
         }
-        else if (match.Value.Equals("do()"))
+        else if (instruction.Equals("do()"))
             enabled = true;
-        else if (match.Value.Equals("don't()"))
+        else if (instruction.Equals("don't()"))
             enabled = false;
-
-        memoryLine = memoryLine[(match.Index + match.Length)..];
     }
-
-}
 
 Console.WriteLine(answer);
