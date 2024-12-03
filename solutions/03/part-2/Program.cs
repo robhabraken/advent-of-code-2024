@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 
 string[] lines = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-io\\03\\input.txt");
 
-var regex = new Regex(@"mul\([0-9]{1,3},[0-9]{1,3}\)|do\(\)|don't\(\)");
+var regex = new Regex(@"mul\(\d{1,3},\d{1,3}\)|do\(\)|don't\(\)");
 var enabled = true;
 
 var answer = 0;
