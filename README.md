@@ -6,7 +6,7 @@ My solutions to the Advent of Code puzzles for the 2024 edition, written in C#.
 | [Day 1: Historian Hysteria](./solutions/01/) |  1.1 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | 1.2 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> |  <sub>20 LoC / 2 ms</sub> |  <sub>24 LoC / 11 ms</sub> |
 | [Day 2: Red-Nosed Reports](./solutions/02/) | 2.1 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | 2.2 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> |  <sub>31 LoC / 3 ms</sub> |  <sub>43 LoC / 15 ms</sub> |
 | [Day 3: Mull It Over](./solutions/03/) | 3.1 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | 3.2 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> |  <sub>14 LoC / 34 ms</sub> |  <sub>23 LoC / 36 ms</sub> |
-| [Day 4: ..](./solutions/04/) |  |  |  |  |
+| [Day 4: Ceres Search](./solutions/04/) | 4.1 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | 4.2 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> |  <sub>21 LoC / 6 ms</sub> |  <sub>17 LoC / 2 ms</sub> |
 | [Day 5: ..](./solutions/05/) |  |  |  |  |
 | [Day 6: ..](./solutions/06/) |  |  |  |  |
 | [Day 7: ..](./solutions/07/) |  |  |  |  |
