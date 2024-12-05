@@ -6,9 +6,7 @@ var answer = 0;
 foreach (var line in lines)
     if (line.Contains('|'))
         rules.Add(line.Split('|').Select(int.Parse).ToArray());
-    else if (string.IsNullOrEmpty(line))
-        rules = [.. rules.OrderBy(rule => rule[0])];
-    else
+    else if (!string.IsNullOrEmpty(line))
         CheckUpdate(line.Split(',').Select(int.Parse).ToList());
 
 Console.WriteLine(answer);
