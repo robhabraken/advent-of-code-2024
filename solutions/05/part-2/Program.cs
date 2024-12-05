@@ -1,6 +1,6 @@
 string[] lines = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-io\\05\\input.txt");
 
-var r = new Dictionary<int, List<int>>();
+var rules = new Dictionary<int, List<int>>();
 
 var answer = 0;
 foreach (var line in lines)
@@ -13,10 +13,10 @@ Console.WriteLine(answer);
 
 void AddRule(int[] numbers)
 {
-    if (!r.ContainsKey(numbers[0]))
-        r.Add(numbers[0], []);
+    if (!rules.ContainsKey(numbers[0]))
+        rules.Add(numbers[0], []);
 
-    r[numbers[0]].Add(numbers[1]);
+    rules[numbers[0]].Add(numbers[1]);
 }
 
 void CheckUpdate(string numbers)
@@ -29,7 +29,7 @@ void CheckUpdate(string numbers)
 
 int CompareNumbers(int a, int b)
 {
-    if (r.TryGetValue(a, out List<int>? value) && value.Contains(b))
+    if (rules.TryGetValue(a, out List<int>? value) && value.Contains(b))
         return -1;
 
     return 1;
