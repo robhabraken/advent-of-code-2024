@@ -12,6 +12,9 @@ for (int y = 0; y < lines.Length; y++)
 
 while (true)
 {
+    if (!map[location.Item1, location.Item2])
+        answer++;
+
     map[location.Item1, location.Item2] = true;
 
     var dY = location.Item1 + deltaMap[direction % 4, 0];
@@ -28,10 +31,5 @@ while (true)
         location.Item2 = dX;
     }
 }
-
-for (int y = 0; y < lines.Length; y++)
-    for (int x = 0; x < lines[0].Length; x++)
-        if (map[y, x])
-            answer++;
 
 Console.WriteLine(answer);
