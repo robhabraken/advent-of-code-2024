@@ -1,6 +1,6 @@
 string[] lines = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-io\\07\\input.txt");
 
-var ops = new char[] {'+', '|', '*'};
+var ops = new char[] { '+', '|', '*' };
 
 long answer = 0;
 foreach (var line in lines)
