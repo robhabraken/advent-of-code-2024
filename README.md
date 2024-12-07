@@ -9,7 +9,7 @@ My solutions to the Advent of Code puzzles for the 2024 edition, written in C#.
 | [Day 4: Ceres Search](./solutions/04/) | 4.1 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | 4.2 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> |  <sub>21 LoC / 6 ms</sub> |  <sub>14 LoC / 2 ms</sub> |
 | [Day 5: Print Queue](./solutions/05/) | 5.1 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | 5.2 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> |  <sub>21 LoC / 7 ms</sub> |  <sub>35 LoC / 7 ms</sub> |
 | [Day 6: Guard Gallivant](./solutions/06/) | 6.1 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | 6.2 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> |  <sub>34 LoC / 1 ms</sub> |  <sub>50 LoC / 307 ms</sub> |
-| [Day 7: ..](./solutions/07/) |  |  |  |  |
+| [Day 7: Bridge Repair](./solutions/07/) | 7.1 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | 7.2 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> |  <sub>35 LoC / 17 ms</sub> |  <sub>37 LoC / 315 ms</sub> |
 | [Day 8: ..](./solutions/08/) |  |  |  |  |
 | [Day 9: ..](./solutions/09/) |  |  |  |  |
 | [Day 10: ..](./solutions/10/) |  |  |  |  |
