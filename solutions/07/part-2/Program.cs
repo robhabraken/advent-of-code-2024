@@ -32,7 +32,7 @@ foreach (var line in lines)
     foreach (var operators in combinations[numbers.Length - 2])
     {
         long result = numbers[0];
-        for (var i = 0; i < operators.Length; i++)
+        for (var i = 0; i < operators.Length && result <= testValue; i++)
         {
             if (operators[i].Equals('+'))
                 result += numbers[i + 1];
