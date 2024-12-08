@@ -14,8 +14,7 @@ var antinodes = new HashSet<Tuple<int, int>>();
 
 foreach (var frequency in antennas.Keys)
     for (var i = 0; i < antennas[frequency].Count; i++)
-        for (var j = 0; j < antennas[frequency].Count; j++)
-            if (i != j)
+        for (var j = i + 1; j < antennas[frequency].Count; j++)
             {
                 var dY = antennas[frequency][i].Item1 - antennas[frequency][j].Item1;
                 var dX = antennas[frequency][i].Item2 - antennas[frequency][j].Item2;
