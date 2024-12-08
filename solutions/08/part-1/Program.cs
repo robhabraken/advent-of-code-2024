@@ -1,9 +1,33 @@
-string[] lines = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-io\\08\\input.example");
+string[] lines = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-io\\08\\input.txt");
 
-var answer = 0;
-foreach (var line in lines)
+var antennas = new Dictionary<char, List<Tuple<int, int>>>();
+
+for (var y = 0; y < lines.Length; y++)
+    for (var x = 0; x < lines[y].Length; x++)
+        if (!lines[y][x].Equals('.'))
+            if (!antennas.ContainsKey(lines[y][x]))
+                antennas.Add(lines[y][x], [new Tuple<int, int>(y, x)]);
+            else
+                antennas[lines[y][x]].Add(new Tuple<int, int>(y, x));
+
+var antinodes = new HashSet<Tuple<int, int>>();
+
+foreach (var frequency in antennas.Keys)
+    for (var i = 0; i < antennas[frequency].Count; i++)
+        for (var j = 0; j < antennas[frequency].Count; j++)
+            if (i != j)
+            {
+                var dY = antennas[frequency][i].Item1 - antennas[frequency][j].Item1;
+                var dX = antennas[frequency][i].Item2 - antennas[frequency][j].Item2;
+
+                PlaceAntinode(antennas[frequency][i].Item1 + dY, antennas[frequency][i].Item2 + dX);
+                PlaceAntinode(antennas[frequency][j].Item1 - dY, antennas[frequency][j].Item2 - dX);
+            }
+
+Console.WriteLine(antinodes.Count);
+
+void PlaceAntinode(int y, int x)
 {
-
+    if (y >= 0 && y < lines.Length && x >= 0 && x < lines[y].Length)
+        antinodes.Add(new Tuple<int, int>(y, x));
 }
-
-Console.WriteLine(answer);
