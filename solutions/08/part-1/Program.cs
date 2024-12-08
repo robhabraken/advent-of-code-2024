@@ -3,12 +3,12 @@ string[] lines = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2
 var antennas = new Dictionary<char, List<Tuple<int, int>>>();
 
 for (var y = 0; y < lines.Length; y++)
-    for (var x = 0; x < lines[y].Length; x++)
+    for (var x = 0; x < lines[0].Length; x++)
         if (!lines[y][x].Equals('.'))
-            if (!antennas.ContainsKey(lines[y][x]))
+            if (!antennas.TryGetValue(lines[y][x], out List<Tuple<int, int>>? value))
                 antennas.Add(lines[y][x], [new Tuple<int, int>(y, x)]);
             else
-                antennas[lines[y][x]].Add(new Tuple<int, int>(y, x));
+                value.Add(new Tuple<int, int>(y, x));
 
 var antinodes = new HashSet<Tuple<int, int>>();
 
