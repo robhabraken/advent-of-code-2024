@@ -19,3 +19,5 @@ So while part 1 took me a little while to come up with a smart solution, part 2 
 So, I'll use the same code as part one to loop through the two dimensional input array, but with adjusted start and end indexes. And I don't have to loop through delta's, I'll solve that in a different way. So let's just loop through the input and start searching when I find an `A`, which is the starting point of my `X`.
 
 Then, I can just string concatenate two diagonals, using the outer corner indexes, without worrying about boundaries. And those two diagonals should both either read `SAM` or `MAS`, which is a simple string comparison. And that again leads to conditionally incrementing the answer.
+
+*Edit: having to wait for another puzzle at day 8 I had a shot at optimizing my shortest and quickest solution up until now, so I tweaked my solution for day 4 part 2. I removed the variable declaration and compressed the code a bit, without losing to much readability I think. It's now only 9 lines of code running in 1 ms!*
