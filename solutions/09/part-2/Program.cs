@@ -1,9 +1,9 @@
 var diskmap = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-io\\09\\input.txt")[0];
 
 var fileblocks = new List<int>();
+var firstEmptyBlock = 0;
 
-var id = 0;
-for (var i = 0; i < diskmap.Length; i++)
+for (int i = 0, id = 0; i < diskmap.Length; i++)
 {
     var digit = int.Parse($"{diskmap[i]}");
     if (i % 2 == 1)
@@ -19,20 +19,19 @@ for (var i = 0; i < diskmap.Length; i++)
     }
 }
 
-var currentId = int.MaxValue;
-for (var i = fileblocks.Count - 1; i >= 0; i--)
+for (int i = fileblocks.Count - 1, id = int.MaxValue; i >= 0; i--)
 {
     if (fileblocks[i] >= 0)
     {
-        var blockstart = -1;
+        var blockstart = i;
         for (var j = i; j >= 0 && fileblocks[j] == fileblocks[i]; j--)
             blockstart = j;
 
         var length = i - blockstart + 1;
 
-        if (fileblocks[i] < currentId)
+        if (fileblocks[i] < id)
         {
-            currentId = fileblocks[i];
+            id = fileblocks[i];
 
             var freespace = freeSpaceIndex(length, blockstart);
             if (freespace >= 0)
@@ -58,19 +57,25 @@ Console.WriteLine(checksum);
 
 int freeSpaceIndex(int length, int maxIndex)
 {
-    var firstEmptyBlockIndex = -1;
-    for (var i = 0; i < fileblocks.Count && i < maxIndex && firstEmptyBlockIndex < 0; i++)
+    var firstEmptyBlockFound = false;
+    for (var i = firstEmptyBlock; i < maxIndex; i++)
     {
-        if (firstEmptyBlockIndex < 0 && fileblocks[i] == -1)
+        if (fileblocks[i] == -1)
         {
-            var valid = true;
+            if (!firstEmptyBlockFound)
+            {
+                firstEmptyBlockFound = true;
+                firstEmptyBlock = i;
+            }
+
+            var blockFits = true;
             for (var j = 0; j < length; j++)
                 if (fileblocks[i + j] >= 0)
-                    valid = false;
+                    blockFits = false;
 
-            if (valid)
-                firstEmptyBlockIndex = i;
+            if (blockFits)
+                return i;
         }
     }
-    return firstEmptyBlockIndex;
+    return -1;
 }
