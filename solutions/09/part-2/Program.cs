@@ -21,30 +21,27 @@ for (int i = 0, id = 0; i < diskmap.Length; i++)
 
 for (int i = fileblocks.Count - 1, id = int.MaxValue; i >= 0; i--)
 {
-    if (fileblocks[i] >= 0)
+    if (fileblocks[i] >= 0 && fileblocks[i] < id)
     {
-        var blockstart = i;
+        var filestart = i;
         for (var j = i; j >= 0 && fileblocks[j] == fileblocks[i]; j--)
-            blockstart = j;
+            filestart = j;
 
-        var length = i - blockstart + 1;
+        var length = i - filestart + 1;
 
-        if (fileblocks[i] < id)
+        id = fileblocks[i];
+
+        var freespace = freeSpaceIndex(length, filestart);
+        if (freespace >= 0)
         {
-            id = fileblocks[i];
-
-            var freespace = freeSpaceIndex(length, blockstart);
-            if (freespace >= 0)
+            for (var j = 0; j < length; j++)
             {
-                for (var j = 0; j < length; j++)
-                {
-                    fileblocks[freespace + j] = fileblocks[i];
-                    fileblocks[blockstart + j] = -1;
-                }
+                fileblocks[freespace + j] = fileblocks[i];
+                fileblocks[filestart + j] = -1;
             }
         }
 
-        i = blockstart;
+        i = filestart;
     }
 }
 
@@ -68,12 +65,12 @@ int freeSpaceIndex(int length, int maxIndex)
                 firstEmptyBlock = i;
             }
 
-            var blockFits = true;
+            var fileFits = true;
             for (var j = 0; j < length; j++)
                 if (fileblocks[i + j] >= 0)
-                    blockFits = false;
+                    fileFits = false;
 
-            if (blockFits)
+            if (fileFits)
                 return i;
         }
     }
