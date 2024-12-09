@@ -1,6 +1,7 @@
 var diskmap = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-io\\09\\input.txt")[0];
 
 var fileblocks = new List<int>();
+var leftMostFreeBlock = 0;
 
 var id = 0;
 for (var i = 0; i < diskmap.Length; i++)
@@ -41,13 +42,16 @@ Console.WriteLine(checksum);
 int freeSpaceIndex()
 {
     var firstEmptyBlockIndex = -1;
-    for (var i = 0; i < fileblocks.Count; i++)
+    for (var i = leftMostFreeBlock; i < fileblocks.Count; i++)
     {
         if (firstEmptyBlockIndex < 0 && fileblocks[i] == -1)
             firstEmptyBlockIndex = i;
 
         if (firstEmptyBlockIndex >= 0 && fileblocks[i] >= 0)
+        {
+            leftMostFreeBlock = firstEmptyBlockIndex + 1;
             return firstEmptyBlockIndex;
+        }
     }
     return -1;
 }
