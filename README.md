@@ -12,7 +12,7 @@ My solutions to the Advent of Code puzzles for the 2024 edition, written in C#.
 | [Day 7: Bridge Repair](./solutions/07/) | 7.1 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | 7.2 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> |  <sub>35 LoC / 17 ms</sub> |  <sub>37 LoC / 315 ms</sub> |
 | [Day 8: Resonant Collinearity](./solutions/08/) | 8.1 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | 8.2 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> |  <sub>30 LoC / 6 ms</sub> |  <sub>38 LoC / 6 ms</sub> |
 | [Day 9: Disk Fragmenter](./solutions/09/) | 9.1 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | 9.2 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> |  <sub>45 LoC / 11 ms</sub> |  <sub>77 LoC / 190 ms</sub> |
-| [Day 10: ..](./solutions/10/) |  |  |  |  |
+| [Day 10: Hoof It](./solutions/10/) | 10.1 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | 10.2 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> |  <sub>40 LoC / 14 ms</sub> |  <sub>30 LoC / 16 ms</sub> |
 | [Day 11: ..](./solutions/11/) |  |  |  |  |
 | [Day 12: ..](./solutions/12/) |  |  |  |  |
 | [Day 13: ..](./solutions/13/) |  |  |  |  |

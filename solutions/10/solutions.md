@@ -1,4 +1,4 @@
-# Solutions to Day 10: ..
+# Solutions to Day 10: Hoof It
 
 Here are my solutions to the puzzles of today. Written chronologically so you can follow both my code and line of thought.
 
