@@ -2,20 +2,20 @@ var lines = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-i
 
 var deltaMap = new int[4, 2] { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 } };
 
-var answer = 0;
+var rating = 0;
 for (var y = 0; y < lines.Length; y++)
     for (var x = 0; x < lines[0].Length; x++)
         if (lines[y][x].Equals('0'))
             Walk(y, x);
 
-Console.WriteLine(answer);
+Console.WriteLine(rating);
 
 void Walk(int y, int x)
 {
-    var here = int.Parse($"{lines[y][x]}");
-    if (here == 9)
+    var height = int.Parse($"{lines[y][x]}");
+    if (height == 9)
     {
-        answer++;
+        rating++;
         return;
     }
 
@@ -25,7 +25,7 @@ void Walk(int y, int x)
         var dX = x + deltaMap[i, 1];
 
         if (dY >= 0 && dY < lines.Length && dX >= 0 && dX < lines[0].Length)
-            if (int.Parse($"{lines[dY][dX]}") == here + 1)
+            if (int.Parse($"{lines[dY][dX]}") == height + 1)
                 Walk(dY, dX);
     }
 }
