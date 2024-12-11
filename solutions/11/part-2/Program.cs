@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 var lines = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-io\\11\\input.txt");
 
 var answer = 0L;
@@ -43,5 +45,6 @@ List<long> changeStones(long engraving)
     else
         breakdown.Add(engraving * 2024);
 
+    cache.Add(engraving, breakdown);
     return breakdown;
 }
