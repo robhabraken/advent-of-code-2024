@@ -3,7 +3,6 @@ var lines = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-i
 var cache = new Dictionary<long, List<long>>();
 var stones = lines[0].Split(' ').Select(long.Parse).ToList();
 
-stones.Sort();
 for (var i = 0; i < 25; i++)
 {
     var blink = new List<long>();
