@@ -24,7 +24,7 @@ With this trick, I can cram the whole algorithm in one single while-loop!
 - if I am still in, I will check if there's an obstruction on that new location, and if so, I will change direction by incrementing my `direction` variable (but I don't update the location since that's not a valid one, so for this loop I'll stay put and only change direction)
 - else, if there's no obstacle, change the location to the new location
 
-This is now super efficient and runs in 1 ms, so I have a great starting point for part 2.
+This is now super efficient and runs in 0.09 ms, so I have a great starting point for part 2.
 
 ## Part 2
 

@@ -10,7 +10,7 @@ Part 1 was worryingly simple. I took the linear approach (or brute-force if you 
 
 I created a function named `changeStones()` that does the stone and engraving change as described in the puzzle description: `0` changes to `1`, even digit numbers are split into two, and everything else is multiplied by `2024`. To avoid calculating the same engraving multiple times I stored the outcome in a cache collection (a `Dictionary<long, List<long>>` that keeps track of the input and output of this function), which saves me a little bit of time.
 
-Then for each blink I loop over the list of stones, change them and store the outcome in a new list and swap the lists when done with a single iteration. I actually was surprised it was fast enough (under 15ms) and that it got me the answer straight away.
+Then for each blink I loop over the list of stones, change them and store the outcome in a new list and swap the lists when done with a single iteration. I actually was surprised it was fast enough (under 15 ms) and that it got me to the answer straight away.
 
 ## Part 2
 

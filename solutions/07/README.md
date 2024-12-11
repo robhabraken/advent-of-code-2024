@@ -16,7 +16,7 @@ With those issues out of the way, it's quite straight forward. I wrote the first
 
 For part 2, I needed to rewrite my cartesian map generation, as I first used a trick to generate that list by iterating over the power of the number of operations, converting that to a binary notation. Now I needed to do a bit more looping and list operations to get the cartesian product of three values times the number of operations.
 
-The logic worked equally well, but wasn't very fast (2600 ms on average). So after submitting, I decided to rewrite my solution using recursion. This ended up being less code, a bit cleaner, and way faster - now part 2 only took me 315 ms on average!
+The logic worked equally well, but wasn't very fast (2600 ms on average). So after submitting, I decided to rewrite my solution using recursion. This ended up being less code, a bit cleaner, and way faster - now part 2 only took me 207 ms on average!
 
 Also, the recursive function is quite simple:
 - if I already found a possible solution, don't continue - this is to make other branches of the recursion stop when one of them found the answer, and to be able to do this, I use a boolean value by reference, so all branches can access that same variable, as well as the code that needs to know the outcome
