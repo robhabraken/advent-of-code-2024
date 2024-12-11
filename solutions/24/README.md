@@ -1,4 +1,12 @@
-*This is a copy of the original puzzle description. If you want to learn more about my approach to solving these puzzles see [my solutions](solutions.md).*
+# Solutions to Day 24: ..
 
----
-# Day 24: 
+*For the puzzle description, see [Advent of Code 2024 - Day 24](https://adventofcode.com/2024/day/24).*
+
+Here are my solutions to the puzzles of today. Written chronologically so you can follow both my code and line of thought.
+
+## Part 1
+
+
+
+## Part 2
+
