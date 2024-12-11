@@ -1,5 +1,7 @@
 # Solutions to Day 3: Mull It Over
 
+*For the puzzle description, see [Advent of Code 2024 - Day 3](https://adventofcode.com/2024/day/3).*
+
 Here are my solutions to the puzzles of today. Written chronologically so you can follow both my code and line of thought.
 
 ## Part 1
