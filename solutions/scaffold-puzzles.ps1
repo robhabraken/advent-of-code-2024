@@ -9,9 +9,11 @@ function Create-PuzzleStructure {
     $folderName = "{0:D2}" -f ${DayNumber}
     New-Item -Path $folderName -ItemType Directory -Force
 
-    # Create and populate solutions.md
-    $solutionsContent = @"
+    # Create and populate README.md
+    $readmeContent = @"
 # Solutions to Day ${DayNumber}: ..
+
+*For the puzzle description, see [Advent of Code 2024 - Day ${DayNumber}](https://adventofcode.com/2024/day/${DayNumber}).*
 
 Here are my solutions to the puzzles of today. Written chronologically so you can follow both my code and line of thought.
 
@@ -21,15 +23,6 @@ Here are my solutions to the puzzles of today. Written chronologically so you ca
 
 ## Part 2
 
-"@
-    Set-Content -Path "$folderName\solutions.md" -Value $solutionsContent
-
-    # Create and populate README.md
-    $readmeContent = @"
-*This is a copy of the original puzzle description. If you want to learn more about my approach to solving these puzzles see [my solutions](solutions.md).*
-
----
-# Day ${DayNumber}: 
 "@
     Set-Content -Path "$folderName\README.md" -Value $readmeContent
 
