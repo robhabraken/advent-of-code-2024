@@ -1,5 +1,3 @@
-using static System.Collections.Specialized.BitVector32;
-
 var lines = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-io\\12\\input.txt");
 
 var visited = new bool[lines.Length, lines[0].Length];
