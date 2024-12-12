@@ -1,3 +1,5 @@
+using static System.Collections.Specialized.BitVector32;
+
 var lines = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-io\\12\\input.txt");
 
 var visited = new bool[lines.Length, lines[0].Length];
@@ -16,13 +18,13 @@ void visitRegion(int y, int x)
     visited[y, x] = true;
 
     var plots = new List<Tuple<int, int>>() { new(y, x) };
-    var sides = new List<Tuple<int, int, int, int>>();
+    var sections = new List<Tuple<int, int, int, int>>();
 
-    discover(y, x, ref plots, ref sides);
-    answer += (plots.Count * countSides(sides));
+    discover(y, x, ref plots, ref sections);
+    answer += (plots.Count * countSides(sections));
 }
 
-void discover(int y, int x, ref List<Tuple<int, int>> plots, ref List<Tuple<int, int,int, int>> sides)
+void discover(int y, int x, ref List<Tuple<int, int>> plots, ref List<Tuple<int, int,int, int>> sections)
 {
     int dY, dX;
     for (var i = 0; i < 4; i++)
@@ -38,41 +40,41 @@ void discover(int y, int x, ref List<Tuple<int, int>> plots, ref List<Tuple<int,
                 {
                     plots.Add(new Tuple<int, int>(dY, dX));
                     visited[dY, dX] = true;
-                    discover(dY, dX, ref plots, ref sides);
+                    discover(dY, dX, ref plots, ref sections);
                 }
             }
             else
-                addSide(ref sides, i, dY, dX);
+                addPerimeterSection(ref sections, i, dY, dX);
         }
         else
-            addSide(ref sides, i, dY, dX);
+            addPerimeterSection(ref sections, i, dY, dX);
     }
 }
 
-void addSide(ref List<Tuple<int, int, int, int>> sides, int i, int dY, int dX)
+void addPerimeterSection(ref List<Tuple<int, int, int, int>> sections, int i, int dY, int dX)
 {
     if (deltaMap[i, 0] != 0)
-        sides.Add(new Tuple<int, int, int, int>(i % 2, dY * 2 - deltaMap[i, 0], dX, i));
+        sections.Add(new Tuple<int, int, int, int>(i % 2, dY * 2 - deltaMap[i, 0], dX, i));
     else
-        sides.Add(new Tuple<int, int, int, int>(i % 2, dX * 2 - deltaMap[i, 1], dY, i));
+        sections.Add(new Tuple<int, int, int, int>(i % 2, dX * 2 - deltaMap[i, 1], dY, i));
 }
 
-int countSides(List<Tuple<int, int, int, int>> sides)
+int countSides(List<Tuple<int, int, int, int>> sections)
 {
-    var counter = 0;
-    var sortedSides = sides.OrderBy(t => t.Item1).ThenBy(t => t.Item2).ThenBy(t => t.Item3).ThenBy(t => t.Item4).ToList();
+    var sides = 0;
+    var sortedSections = sections.OrderBy(t => t.Item1).ThenBy(t => t.Item2).ThenBy(t => t.Item3).ThenBy(t => t.Item4).ToList();
     int orientation = -1, axis = -2, plot = -2, direction = -1;    
-    foreach (var side in sortedSides)
+    foreach (var section in sortedSections)
     {
-        if ((side.Item1 != orientation || side.Item2 != axis ||
-            !(side.Item3 == plot || side.Item3 == plot + 1)) ||
-            side.Item1 == orientation && side.Item4 != direction)
-            counter++;
+        if ((section.Item1 != orientation || section.Item2 != axis ||
+            !(section.Item3 == plot || section.Item3 == plot + 1)) ||
+            section.Item1 == orientation && section.Item4 != direction)
+            sides++;
 
-        orientation = side.Item1;
-        axis = side.Item2;
-        plot = side.Item3;
-        direction = side.Item4;
+        orientation = section.Item1;
+        axis = section.Item2;
+        plot = section.Item3;
+        direction = section.Item4;
     }
-    return counter;
+    return sides;
 }
