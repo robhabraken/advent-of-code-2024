@@ -37,7 +37,7 @@ This certainly is a bit more tricky than it initially looks like. Even more beca
 I used the exact same code from part 1, with two small changes and two additional functions. 
 
 ### The first small change, a complex collection
-The first modification was to change the integer `perimeter` counter to a list to store all sides in. Or actually, perimeter sections *(which would've been a far better name for this variable actually)*. And I've made it into quite an exotic type, a `List<Tuple<int, int, int, int>>`. Why? Because for each perimeter section I want to store multiple values:
+The first modification was to change the integer `perimeter` counter to a list to store all perimeter sections in. And I've made that into quite an exotic type, a `List<Tuple<int, int, int, int>>`. Why? Because for each perimeter section I want to store multiple values:
 - First an integer for the *orientation*, a `0` for vertical and a `1` for horizontal, which is easily produce by taking the module of a division by 2 over my direction counter in the `deltaMap`. Remember in there I store the delta coordinates for `up`, `right`, `down` and `left`, with the respective indexes `0`, `1`, `2` and `3`, which by doing `index % 2` gives me `0`, `1`, `0` and `1`, splitting the directions by their orientation!
 - Then an integer value for the *axis* of the section. For vertically oriented sides this holds the x-coordinate, and horizontal sides hold the y-coordinate. All perimeter sections that form a single side should have the same axis (though there could be multiple separate section on the same axis too).
 - Then an integer value for the *plot* this section lies at. For vertically oriented sides this holds the y-coordinate, and horizontal sides hold the x-coordinate. Why? Because this is a way to determine if perimeter sections on the same axis are connected, or lie adjacent to each other. Horizontal perimeter sections with y-coordinate `1` at x-coordinates `52`, `53`, `54` and `57` show that we have four sections with the same orientation and on the same axis, but three sections are connected (ascending x-coordinates) and one separate section at index `57`. So this tells us that we have two 'sides'.
@@ -50,7 +50,7 @@ XXEEEEX
 XXEEXEX
 XXEXEEX
 ```
-You can see that where the shape has an enclosed plot, the perimeter sections indicated by the arrows are both vertically orientated, lie on the same axis (same x-coordinate), and are connected, but this is counted as two separte sides. The lower section is the left side of the A right next to it, and the upper section is the right side of the A in the middle row on the left of that section:
+You can see that where the shape has an enclosed plot, the perimeter sections indicated by the arrows are both vertically orientated, lie on the same axis (same x-coordinate), and are connected, but this is counted as two separate sides. The lower section is the left side of the A right next to it, and the upper section is the right side of the A in the middle row on the left of that section:
 ```
 +-------+
 |E E E E|
@@ -64,10 +64,10 @@ For this reason, we also store the direction from which the perimeter section is
 At the end of `visitRegion()` I then call `countSides()` to count the sides based on the collected perimeter sections. And of course, instead of passing `perimeter` to `discover()` I now pass this collection by reference.
 
 ### The second change
-The second change is that, instead of incrementing the `perimeter` count, I now add each separate perimeter section to my collection by calling `addSide`. On the exact same spots as where I first counted the perimeters. Which makes sense, because that already was the right place to count the individual perimeter sections.
+The second change is that, instead of incrementing the `perimeter` count, I now add each separate perimeter section to my collection by calling `addPerimeterSection()`. On the exact same spots as where I first counted the perimeters. Which makes sense, because that already was the right place to count the individual perimeter sections.
 
-### addSide()
-This function does what I described above when explaining the new perimeter collection. It adds the given side to the `sides` collection with its orientation (`direction index % 2`), axis, plot location (other coordinate), and direction.
+### addPerimeterSection()
+This function does what I described above when explaining the new perimeter collection. It adds the given section to the `sections` collection with its orientation (`direction index % 2`), axis, plot location (other coordinate), and direction.
 
 We need one more trick though, and that's centered around the second value, the axis. Let's say we have a plot at the first row, y-coordinate `0`, with a fence on the south side. Thus, the orientation is horizontal. To make things easy, I use the y-coordinate next to the plot as the coordinate of the fence. So for a plot at y-coordinate `0` a north bound fence would have the coordinate `-1` and on the south that would be `1`. It doesn't really matter what we use here, I just need to know which fences are on the same line, so which ones have the same coordinates. The issue is the following: this specific region has another 'peninsula' if you like, that lies two plots down, so on y-coordinate `2`. Like this:
 ```
