@@ -14,7 +14,7 @@ My solutions to the Advent of Code puzzles for the 2024 edition, written in C#.
 | [Day 9: Disk Fragmenter](./solutions/09/) | 9.1 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | 9.2 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> |  <sub>44 LoC /  0.96 ms</sub> |  <sub>77 LoC / **172 ms**</sub> |
 | [Day 10: Hoof It](./solutions/10/) | 10.1 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | 10.2 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> |  <sub>40 LoC / 2.41 ms</sub> |  <sub>31 LoC / 0.67 ms</sub> |
 | [Day 11: Plutonian Pebbles](./solutions/11/) | 11.1 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | 11.2 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> |  <sub>36 LoC / 14.9 ms</sub> |  <sub>47 LoC / 14.8 ms</sub> |
-| [Day 12: ..](./solutions/12/) |  |  |  |  |
+| [Day 12: Garden Groups](./solutions/12/) | 12.1 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | 12.2 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> |  <sub>49 LoC / 1.89 ms</sub> |  <sub>77 LoC / 4.79 ms</sub> |
 | [Day 13: ..](./solutions/13/) |  |  |  |  |
 | [Day 14: ..](./solutions/14/) |  |  |  |  |
 | [Day 15: ..](./solutions/15/) |  |  |  |  |
