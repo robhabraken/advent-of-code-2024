@@ -24,7 +24,7 @@ void visitRegion(int y, int x)
 
 void discover(int y, int x, ref List<Tuple<int, int>> plots, ref List<Tuple<int, int,int, int>> sides)
 {
-    int dY = 0, dX = 0;
+    int dY, dX;
     for (var i = 0; i < 4; i++)
     {
         dY = y + deltaMap[i, 0];
