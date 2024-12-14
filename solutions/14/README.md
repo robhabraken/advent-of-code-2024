@@ -55,4 +55,4 @@ As an explanation for the hard-coded values, I included this comment section in 
  * Because I actually only need to check one of the lines (I chose the bottom of the needles), but what fun would that be?
   */
 ```
-That was good fun! Check out the [Christmas Tree](./ChristmasTree.md) that I found in the bathroom!
+That was good fun! Check out the [Christmas tree](./ChristmasTree.md) that I found in the bathroom!
