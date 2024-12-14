@@ -14,7 +14,7 @@ Then, I create a list of outcomes using a `Tuple<int, int>` list, effectively st
 
 Now I iterate over the 100 pushes (didn't know if it was allowed to also not push one of the buttons, so I started my index at `0`), calculate the position of the claw for each button for that number of pushes, and store the outcome in the respective lists.
 
-Lastly, I iterate over the outcome lists in a nested loop, so I test every number of pushes on the `B` button with every number of pushes on the `C` button. When both coordinates add up to the coordinate of the prize, I add the cost to the answer. I could've stepped out of the loop once I found an answer, but it already was this quick that I didn't bother, and continued with part two.
+Lastly, I iterate over the outcome lists in a nested loop, so I test every number of pushes on the `B` button with every number of pushes on the `A` button. When both coordinates add up to the coordinate of the prize, I add the cost to the answer. I could've stepped out of the loop once I found an answer, but it already was this quick that I didn't bother, and continued with part two.
 
 ## Part 2
 
