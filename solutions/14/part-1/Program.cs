@@ -16,7 +16,7 @@ foreach (var robot in robots)
     robot.Move(dimensions, 100);
 
 var quadrants = new int[4];
-foreach (var  robot in robots)
+foreach (var robot in robots)
 {
     if (robot.position.Item1 < dimensions.Item1 / 2 && robot.position.Item2 < dimensions.Item2 / 2)
         quadrants[0]++;
