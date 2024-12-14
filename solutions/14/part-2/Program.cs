@@ -12,93 +12,51 @@ foreach (var line in lines)
     robots.Add(new Robot(new Tuple<int, int>(pos[0], pos[1]), new Tuple<int, int>(vel[0], vel[1])));
 }
 
-/**
- * This solution can't do without hard-coded values: I discovered a pattern of positions that stood out from
- * the rest, and this started occuring after 77 seconds for my input, with a steady cycle of 101 seconds after that.
- * I knew I had to observe those states, and those states only - also making my code a bit faster than iterating over
- * every state for each second.
- * 
- * When I found the Christmas tree in the output I knew what to look for and hard-coded it, just for aesthetics!
- * Because I actually only need to check one of the lines (I chose the bottom of the needles), but what fun would that be?
-  */
-var patternStart = 77;
-var patternIncrement = 101;
-var christmasTreePicture = new string[33]
-{
-    "1111111111111111111111111111111",
-    "1.............................1",
-    "1.............................1",
-    "1.............................1",
-    "1.............................1",
-    "1..............1..............1",
-    "1.............111.............1",
-    "1............11111............1",
-    "1...........1111111...........1",
-    "1..........111111111..........1",
-    "1............11111............1",
-    "1...........1111111...........1",
-    "1..........111111111..........1",
-    "1.........11111111111.........1",
-    "1........1111111111111........1",
-    "1..........111111111..........1",
-    "1.........11111111111.........1",
-    "1........1111111111111........1",
-    "1.......111111111111111.......1",
-    "1......11111111111111111......1",
-    "1........1111111111111........1",
-    "1.......111111111111111.......1",
-    "1......11111111111111111......1",
-    "1.....1111111111111111111.....1",
-    "1....111111111111111111111....1",
-    "1.............111.............1",
-    "1.............111.............1",
-    "1.............111.............1",
-    "1.............................1",
-    "1.............................1",
-    "1.............................1",
-    "1.............................1",
-    "1111111111111111111111111111111"
-};
-
-var christmasTree = christmasTreePicture[24].Replace(".", "0");
-
-foreach (var robot in robots)
-    robot.Move(dimensions, patternStart);
-
 var seconds = 0;
+var deviationCalibration = 0D;
 while (true)
 {
-    var bathroom = string.Empty;
-    for (var x = 38; x < 69; x++)
+    var average = new int[2];
+    foreach (var robot in robots)
     {
-        var count = 0;
-        foreach (var robot in robots)
-            if (robot.position.Item1 == x && robot.position.Item2 == 53)
-                count++;
-
-        bathroom += $"{count}";
+        average[0] += robot.position.Item1;
+        average[1] += robot.position.Item2;
     }
 
-    if (bathroom.Contains(christmasTree))
-        break;
+    average[0] /= robots.Count;
+    average[1] /= robots.Count;
 
+    var deviation = new int[2];
     foreach (var robot in robots)
-        robot.Move(dimensions, patternIncrement);
+    {
+        deviation[0] += Math.Abs(average[0] - robot.position.Item1);
+        deviation[1] += Math.Abs(average[1] - robot.position.Item2);
+
+        robot.Move(dimensions);
+    }
+
+    deviation[0] /= robots.Count;
+    deviation[1] /= robots.Count;
+
+    if (deviationCalibration == 0)
+        deviationCalibration = deviation[0] + deviation[1];
+    else if (deviationCalibration / (deviation[0] + deviation[1]) > 1.5D)
+        break;
 
     seconds++;
 }
 
-Console.WriteLine(patternStart + seconds * patternIncrement);
+Console.WriteLine(seconds);
 
 internal class Robot(Tuple<int, int> position, Tuple<int, int> velocity)
 {
     public Tuple<int, int> position = position;
     public Tuple<int, int> velocity = velocity;
 
-    public void Move(Tuple<int, int> dimensions, int steps)
+    public void Move(Tuple<int, int> dimensions)
     {
-        var pX = position.Item1 + (velocity.Item1 * steps) % dimensions.Item1;
-        var pY = position.Item2 + (velocity.Item2 * steps) % dimensions.Item2;
+        var pX = position.Item1 + velocity.Item1;
+        var pY = position.Item2 + velocity.Item2;
 
 
         if (pX < 0)
