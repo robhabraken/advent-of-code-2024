@@ -32,4 +32,27 @@ Lastly, I loop over all robots, and check in which quadrant they are by comparin
 
 ## Part 2
 
-*todo*
+I expected a lot, but this.. this certainly was the weirdest and most fun challenge yet! No clues at what to find our what that Christmas tree would look like. I initially assumed that it should be fully and easily detectable by code, and since there's no pointers on what to expect, I imagined it should be something like that all robots where positioned in a triangular shape. But after running through lots of frames based on my test output (I just increases by 10, 100 and 1000 to see how the pattern changes) I concluded that they always are somewhat scattered throught the entire map. My second assumption was that the shape would form gradually, and would start to gradually appear, so it should be noticeable in the upcoming seconds to the formation of the tree as well, but that also wasn't the case. Oh, and one more thing, it didn't occur to me the puzzle description said that *most of the robots should arrange themselves*... so even not all robots are included in the pattern.
+
+Then I looked at the number of robots (`500`) and realized that's way to low to fill a lot of 'pixels' in a map that is this large, because `101 x 103 = 10,403 tiles`. This made me stop looking for a pattern via code, as I didn't think it was possible to make a correct assumption on how the pattern would look: is it a filled area? Is it a large more pixelated shape with empty spots in it? Or is it merely the contour of a Christmas tree?
+
+So I continued running my animation in the console of increments of `100` (because I thought I would see it gradually appear as I said), and then I hit a frame that looked totally different than others. I wrote down the frame number, and started to do more tests closer to that number. That's when I learned that this anomaly really only occured for one frame and than it was gone again. But I quickly found another that was looking quite the same. And another one. And they were all spaced apart `101` frames for my input. Then I decided to write my output to a file starting at the initial position, and now by increments of `1` to not miss anything. This showed that the pattern deviation I observed occured first at frame `77` and then every other `101` frames after that. So I changed my code to start at `77` and loop with increments of `101` seconds and write that to a file. And that's when I suddenly saw the Christmas tree appearing! It was way more perfectly shaped as a pictogram than I thought, really only occured at one frame exactly every few thousand frames, and was also centered and way smaller than I imagined.
+
+So I got my answer, by visual analysis. Helped with the code from part 1. I submitted my answer, which obviously was correct, and cleaned up my code to browse through the pattern I found based on these findings, hard-coding them as variables to my input. I included the shape of the Christmas tree as a `string[]` in my code, just for the fun, and wrote my variables in such a way that I could write:
+```
+if (bathroom.Contains(christmasTree))
+    break;
+```
+As an explanation for the hard-coded values, I included this comment section in my code:
+```
+/**
+ * This solution can't do without hard-coded values: I discovered a pattern of positions that stood out from
+ * the rest, and this started occuring after 77 seconds for my input, with a steady cycle of 101 seconds after that.
+ * I knew I had to observe those states, and those states only - also making my code a bit faster than iterating over
+ * every state for each second.
+ * 
+ * When I found the Christmas tree in the output I knew what to look for and hard-coded it, just for aesthetics!
+ * Because I actually only need to check one of the lines (I chose the bottom of the needles), but what fun would that be?
+  */
+```
+That was good fun! Check out the [Christmas](./ChristmasTree.md) tree that I found in the bathroom!
