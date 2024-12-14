@@ -28,7 +28,7 @@ This way, it doesn't matter if you take `2` steps or `100.000`, it'll take just 
 
 Now we only need to parse the input, create our `Robot` objects, iterate over them and all move the `100` steps in one go.
 
-Lastly, I loop over all robots, and check in which quadrant they are by comparing their x,y-coordinate against each halve of the grid for both the width and the height, counting the robots per quadrant. The answer is the product of all quadrants. A fast and clean solution, let's see what part two brings us today.
+Lastly, I loop over all robots, and check in which quadrant they are by comparing their x,y-coordinate against each halve of the grid for both the width and the height, counting the robots per quadrant. The answer is the product of all quadrants. A super fast (0.3793 ms) and clean solution, let's see what part two brings us today.
 
 ## Part 2
 
