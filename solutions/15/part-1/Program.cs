@@ -16,7 +16,7 @@ for (var i = 0; i < lines.Length; i++)
         moves.Add(lines[i]);
 
     if (lines[i].Contains('@'))
-        robot = new Point(i, lines[i].IndexOf('@'));
+        robot = new Point(lines[i].IndexOf('@'), i);
 }
 
 var map = new char[mapList.Count, mapList[0].Length];
