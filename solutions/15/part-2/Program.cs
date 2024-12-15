@@ -76,74 +76,36 @@ internal class Obstacle(int x, int y, ObstacleType type)
         var dX = x + deltaMap[direction, 1];
         var dY = y + deltaMap[direction, 0];
 
-        if (direction % 2 == 0)
-        {
-            var boxes = new List<Obstacle>();
-            foreach (var obstacle in obstacles)
-                if (obstacle.y == dY && (obstacle.x == dX || obstacle.x == dX - 1 || obstacle.x == dX + 1))
+        var boxes = new List<Obstacle>();
+        foreach (var obstacle in obstacles)
+            if (obstacle.y == dY)
+                if (direction % 2 == 0 && (obstacle.x == dX || obstacle.x == dX - 1 || obstacle.x == dX + 1) ||
+                    direction % 2 == 1 && ((direction == 1 && obstacle.x == dX + 1) || (direction == 3 && obstacle.x == dX - 1)))
                     if (obstacle.type == ObstacleType.Wall)
                         return false;
                     else
                         boxes.Add(obstacle);
 
-            if (boxes.Count == 0)
-            {
-                if (doMove)
-                    Move(deltaMap, direction);
-                return true;
-            }
-            else
-            {
-                var possible = true;
-                foreach (var box in boxes)
-                    possible = possible && box.TryMove(obstacles, deltaMap, direction, false);
-
-                if (possible)
-                {
-                    if (doMove) { 
-                        foreach (var box in boxes)
-                            box.TryMove(obstacles, deltaMap, direction, true);
-                        Move(deltaMap, direction);
-                    }
-                    return true;
-                }
-            }
+        if (boxes.Count == 0)
+        {
+            if (doMove)
+                Move(deltaMap, direction);
+            return true;
         }
         else
         {
-            Obstacle? box = null;
-            foreach (var obstacle in obstacles)
-                if (obstacle.y == dY)
-                    if ((direction == 1 && obstacle.x == dX + 1) || (direction == 3 && obstacle.x == dX - 1))
-                        if (obstacle.type == ObstacleType.Wall)
-                            return false;
-                        else
-                        {
-                            box = obstacle;
-                            break;
-                        }
+            var possible = true;
+            foreach (var box in boxes)
+                possible = possible && box.TryMove(obstacles, deltaMap, direction, false);
 
-            if (box == null)
-            {
-                if (doMove)
-                    Move(deltaMap, direction);
-                return true;
+            if (possible && doMove)
+            { 
+                foreach (var box in boxes)
+                    box.TryMove(obstacles, deltaMap, direction, true);
+                Move(deltaMap, direction);
             }
-            else
-            {
-                if (box.TryMove(obstacles, deltaMap, direction, false))
-                {
-                    if (doMove)
-                    {
-                        box.TryMove(obstacles, deltaMap, direction, true);
-                        Move(deltaMap, direction);
-                    }
-                    return true;
-                }
-            }
+            return possible;
         }
-
-        return false;
     }
 
     private void Move(int[,] deltaMap, int direction)
