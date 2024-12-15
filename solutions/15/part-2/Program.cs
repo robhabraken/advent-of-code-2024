@@ -1,4 +1,4 @@
-var lines = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-io\\15\\input.example");
+var lines = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-io\\15\\input.txt");
 
 var directions = "^>v<";
 var deltaMap = new int[4, 2] { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 } };
@@ -42,48 +42,47 @@ foreach (var line in moves)
         drawMap();
     }
 
-for (var y = 0; y < map.GetLength(0); y++)
-    for (var x = 0; x < map.GetLength(1); x++)
-        if (map[y, x].Equals('O'))
-            answer += 100 * y + x;
+foreach (var obstacle in obstacles)
+    if (obstacle.tileType == TileType.Box)
+        answer += 100 * obstacle.y + obstacle.x;
 
 Console.WriteLine(answer);
 
 void drawMap()
 {
-    map = new char[mapList.Count, mapList[0].Length];
-    for (var y = 0; y < map.GetLength(0); y++)
-    {
-        for (var x = 0; x < map.GetLength(1); x++)
-        {
-            if (map[y, x].Equals('\0'))
-                map[y, x] = '.';
-            foreach (var obstacle in obstacles)
-            {
-                if (obstacle.y == y && obstacle.x == x)
-                    if (obstacle.tileType == TileType.Wall)
-                    {
-                        map[y, x] = '#';
-                        map[y, x + 1] = '#';
-                    }
-                    else
-                    {
-                        map[y, x] = '[';
-                        map[y, x + 1] = ']';
-                    }
-                if (robot.y == y && robot.x == x)
-                    map[y, x] = '@';
-            }
-            Console.Write(map[y, x]);
-        }
-        Console.WriteLine();
-    }
-    Console.WriteLine();
+    //map = new char[mapList.Count, mapList[0].Length];
+    //for (var y = 0; y < map.GetLength(0); y++)
+    //{
+    //    for (var x = 0; x < map.GetLength(1); x++)
+    //    {
+    //        if (map[y, x].Equals('\0'))
+    //            map[y, x] = '.';
+    //        foreach (var obstacle in obstacles)
+    //        {
+    //            if (obstacle.y == y && obstacle.x == x)
+    //                if (obstacle.tileType == TileType.Wall)
+    //                {
+    //                    map[y, x] = '#';
+    //                    map[y, x + 1] = '#';
+    //                }
+    //                else
+    //                {
+    //                    map[y, x] = '[';
+    //                    map[y, x + 1] = ']';
+    //                }
+    //            if (robot.y == y && robot.x == x)
+    //                map[y, x] = '@';
+    //        }
+    //        Console.Write(map[y, x]);
+    //    }
+    //    Console.WriteLine();
+    //}
+    //Console.WriteLine();
 }
 
 void performMove(List<Obstacle> obstacles, int direction)
 {
-    Console.WriteLine($"Moving in direction {directions[direction]}");
+    //Console.WriteLine($"Moving in direction {directions[direction]}");
 
     var dY = robot.y + deltaMap[direction, 0];
     var dX = robot.x + deltaMap[direction, 1];
@@ -142,7 +141,7 @@ internal class Obstacle(int x, int y, TileType tileType)
             var boxes = new List<Obstacle>();
             foreach (var obstacle in obstacles)
             {
-                if (obstacle.y == dY && obstacle.x == dX || obstacle.x == dX - 1 || obstacle.x == dX + 1)
+                if (obstacle.y == dY && (obstacle.x == dX || obstacle.x == dX - 1 || obstacle.x == dX + 1))
                 {
                     if (obstacle.tileType == TileType.Wall)
                         return false;
@@ -165,9 +164,11 @@ internal class Obstacle(int x, int y, TileType tileType)
 
                 if (possible)
                 {
-                    if (doMove)
+                    if (doMove) { 
                         foreach (var box in boxes)
                             box.TryMove(obstacles, deltaMap, direction, true);
+                        move(deltaMap, direction);
+                    }
                     return true;
                 }
             }
@@ -203,7 +204,10 @@ internal class Obstacle(int x, int y, TileType tileType)
                 if (box.TryMove(obstacles, deltaMap, direction, false))
                 {
                     if (doMove)
+                    {
                         box.TryMove(obstacles, deltaMap, direction, true);
+                        move(deltaMap, direction);
+                    }
                     return true;
                 }
             }
