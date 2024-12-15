@@ -5,9 +5,8 @@ var deltaMap = new int[4, 2] { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 } };
 
 var mapList = new List<string>();
 var moves = new List<string>();
-var robot = new Point(0, 0);
+var robot = new Robot(0, 0);
 
-var answer = 0;
 for (var i = 0; i < lines.Length; i++)
 {
     if (lines[i].StartsWith('#'))
@@ -16,7 +15,7 @@ for (var i = 0; i < lines.Length; i++)
         moves.Add(lines[i]);
 
     if (lines[i].Contains('@'))
-        robot = new Point(lines[i].IndexOf('@'), i);
+        robot = new Robot(lines[i].IndexOf('@'), i);
 }
 
 var map = new char[mapList.Count, mapList[0].Length];
@@ -24,12 +23,11 @@ for (var y = 0; y < mapList.Count; y++)
     for (var x = 0; x < mapList[y].Length; x++)
         map[y, x] = mapList[y][x];
 
-drawMap();
-
 foreach (var line in moves)
     foreach (var move in line)
-        performMove(robot, directions.IndexOf(move));
+        attemptMove(directions.IndexOf(move));
 
+var answer = 0;
 for (var y = 0; y < map.GetLength(0); y++)
     for (var x = 0; x < map.GetLength(1); x++)
         if (map[y, x].Equals('O'))
@@ -37,20 +35,8 @@ for (var y = 0; y < map.GetLength(0); y++)
 
 Console.WriteLine(answer);
 
-void drawMap()
+void attemptMove(int direction)
 {
-    //for (var y = 0; y < map.GetLength(0); y++)
-    //{
-    //    for (var x = 0; x < map.GetLength(1); x++)
-    //        Console.Write(map[y, x]);
-    //    Console.WriteLine();
-    //}
-}
-
-void performMove(Point robot, int direction)
-{
-    //Console.WriteLine($"Moving in direction {directions[direction]}");
-
     var dY = robot.y + deltaMap[direction, 0];
     var dX = robot.x + deltaMap[direction, 1];
 
@@ -98,15 +84,11 @@ void performMove(Point robot, int direction)
                 nextY = previousY;
                 nextX = previousX;
             }
-
-
         }
     }
-
-    drawMap();
 }
 
-internal class Point(int x, int y)
+internal class Robot(int x, int y)
 {
     public int x = x;
     public int y = y;
