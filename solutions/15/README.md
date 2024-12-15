@@ -81,4 +81,4 @@ Last piece of the puzzle, quite literally, the new implementation of the `attemp
 ### Result
 As I said I really like this kind of challenges. Not hard, but fun to code. My solution isn't the quickest (117 ms), possibly due to the list approach instead of a map, and also because I am using objects instead of native types. I think it could be done quicker if I use a grid approach, saving me looping through all objects all the time. But I like the solution and it works fast enough I think. If I would've had more time, I would probably make a very cool animation to actually see the robot pushing around the boxes, but I don't, so I just threw out this quick console animation of the example input:
 
-![Animation of solution of AoC Day 15 puzzle using example input](./WarehouseWoes.gif)
+![Animation of solution of AoC Day 15 puzzle using example input](./WarehouseWoes.gif "Warehouse Woes")
