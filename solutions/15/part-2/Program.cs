@@ -3,95 +3,46 @@ var lines = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-i
 var directions = "^>v<";
 var deltaMap = new int[4, 2] { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 } };
 
-var mapList = new List<string>();
 var moves = new List<string>();
-var robot = new Point(0, 0);
-
+var robot = new Obstacle(0, 0, ObstacleType.Robot);
 var obstacles = new List<Obstacle>();
 
-var answer = 0;
 for (var y = 0; y < lines.Length; y++)
 {
     if (lines[y].StartsWith('#'))
     {
-        mapList.Add(lines[y].Replace("#", "##").Replace("O", "[]").Replace(".", "..").Replace("@", "@."));
         for (var x = 0; x < lines[y].Length; x++)
-        {
             if (lines[y][x].Equals('#'))
-                obstacles.Add(new Obstacle(x * 2, y, TileType.Wall));
+                obstacles.Add(new Obstacle(x * 2, y, ObstacleType.Wall));
             else if (lines[y][x].Equals('O'))
-                obstacles.Add(new Obstacle(x * 2, y, TileType.Box));
-        }
+                obstacles.Add(new Obstacle(x * 2, y, ObstacleType.Box));
     }
     else if (!string.IsNullOrEmpty(lines[y]))
         moves.Add(lines[y]);
 
     if (lines[y].Contains('@'))
-        robot = new Point(lines[y].IndexOf('@') * 2, y);
+        robot = new Obstacle(lines[y].IndexOf('@') * 2, y, ObstacleType.Robot);
 }
-
-var map = new char[mapList.Count, mapList[0].Length];
-
-
-drawMap();
 
 foreach (var line in moves)
     foreach (var move in line)
-    {
-        performMove(obstacles, directions.IndexOf(move));
-        drawMap();
-    }
+        attemptMove(obstacles, directions.IndexOf(move));
 
+var answer = 0;
 foreach (var obstacle in obstacles)
-    if (obstacle.tileType == TileType.Box)
+    if (obstacle.type == ObstacleType.Box)
         answer += 100 * obstacle.y + obstacle.x;
 
 Console.WriteLine(answer);
 
-void drawMap()
+void attemptMove(List<Obstacle> obstacles, int direction)
 {
-    //map = new char[mapList.Count, mapList[0].Length];
-    //for (var y = 0; y < map.GetLength(0); y++)
-    //{
-    //    for (var x = 0; x < map.GetLength(1); x++)
-    //    {
-    //        if (map[y, x].Equals('\0'))
-    //            map[y, x] = '.';
-    //        foreach (var obstacle in obstacles)
-    //        {
-    //            if (obstacle.y == y && obstacle.x == x)
-    //                if (obstacle.tileType == TileType.Wall)
-    //                {
-    //                    map[y, x] = '#';
-    //                    map[y, x + 1] = '#';
-    //                }
-    //                else
-    //                {
-    //                    map[y, x] = '[';
-    //                    map[y, x + 1] = ']';
-    //                }
-    //            if (robot.y == y && robot.x == x)
-    //                map[y, x] = '@';
-    //        }
-    //        Console.Write(map[y, x]);
-    //    }
-    //    Console.WriteLine();
-    //}
-    //Console.WriteLine();
-}
-
-void performMove(List<Obstacle> obstacles, int direction)
-{
-    //Console.WriteLine($"Moving in direction {directions[direction]}");
-
     var dY = robot.y + deltaMap[direction, 0];
     var dX = robot.x + deltaMap[direction, 1];
 
-    Obstacle obstruction = null;
+    Obstacle? obstruction = null;
     foreach (var obstacle in obstacles)
-    {
         if (obstacle.y == dY)
-        {
             if ((direction % 2 == 0 && obstacle.x == dX || obstacle.x + 1 == dX) ||
                 (direction == 1 && obstacle.x == dX) ||
                 (direction == 3 && obstacle.x + 1 == dX))
@@ -99,37 +50,26 @@ void performMove(List<Obstacle> obstacles, int direction)
                 obstruction = obstacle;
                 break;
             }
-        }
-    }
 
-    if (obstruction != null && obstruction.tileType == TileType.Wall)
+    if (obstruction != null && obstruction.type == ObstacleType.Wall)
         return;
 
     if (obstruction != null)
-    {
         if (obstruction.TryMove(obstacles, deltaMap, direction, false))
             obstruction.TryMove(obstacles, deltaMap, direction, true);
         else
             return;
-    }
 
     robot.y = dY;
     robot.x = dX;
 }
 
-internal class Point(int x, int y)
+internal class Obstacle(int x, int y, ObstacleType type)
 {
     public int x = x;
     public int y = y;
-}
 
-internal class Obstacle(int x, int y, TileType tileType)
-{
-    public int x = x;
-    public int y = y;
-    public int width = 2;
-
-    public TileType tileType = tileType;
+    public ObstacleType type = type;
 
     public bool TryMove(List<Obstacle> obstacles, int[,] deltaMap, int direction, bool doMove)
     {
@@ -140,20 +80,16 @@ internal class Obstacle(int x, int y, TileType tileType)
         {
             var boxes = new List<Obstacle>();
             foreach (var obstacle in obstacles)
-            {
                 if (obstacle.y == dY && (obstacle.x == dX || obstacle.x == dX - 1 || obstacle.x == dX + 1))
-                {
-                    if (obstacle.tileType == TileType.Wall)
+                    if (obstacle.type == ObstacleType.Wall)
                         return false;
                     else
                         boxes.Add(obstacle);
-                }
-            }
 
             if (boxes.Count == 0)
             {
                 if (doMove)
-                    move(deltaMap, direction);
+                    Move(deltaMap, direction);
                 return true;
             }
             else
@@ -167,7 +103,7 @@ internal class Obstacle(int x, int y, TileType tileType)
                     if (doMove) { 
                         foreach (var box in boxes)
                             box.TryMove(obstacles, deltaMap, direction, true);
-                        move(deltaMap, direction);
+                        Move(deltaMap, direction);
                     }
                     return true;
                 }
@@ -175,28 +111,22 @@ internal class Obstacle(int x, int y, TileType tileType)
         }
         else
         {
-            Obstacle box = null;
+            Obstacle? box = null;
             foreach (var obstacle in obstacles)
-            {
                 if (obstacle.y == dY)
-                {
                     if ((direction == 1 && obstacle.x == dX + 1) || (direction == 3 && obstacle.x == dX - 1))
-                    {
-                        if (obstacle.tileType == TileType.Wall)
+                        if (obstacle.type == ObstacleType.Wall)
                             return false;
                         else
                         {
                             box = obstacle;
                             break;
                         }
-                    }
-                }
-            }
 
             if (box == null)
             {
                 if (doMove)
-                    move(deltaMap, direction);
+                    Move(deltaMap, direction);
                 return true;
             }
             else
@@ -206,7 +136,7 @@ internal class Obstacle(int x, int y, TileType tileType)
                     if (doMove)
                     {
                         box.TryMove(obstacles, deltaMap, direction, true);
-                        move(deltaMap, direction);
+                        Move(deltaMap, direction);
                     }
                     return true;
                 }
@@ -216,15 +146,16 @@ internal class Obstacle(int x, int y, TileType tileType)
         return false;
     }
 
-    private void move(int[,] deltaMap, int direction)
+    private void Move(int[,] deltaMap, int direction)
     {
         x += deltaMap[direction, 1];
         y += deltaMap[direction, 0];
     }
 }
 
-enum TileType
+enum ObstacleType
 {
-    Wall,
-    Box
+    Box,
+    Robot,
+    Wall
 }
