@@ -38,7 +38,7 @@ Each puzzle solution is executed 100 times, excluding the time taken for reading
 | Star | Description | 
 | :-- | :-- |
 | <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | Solved completely by myself without any help or external input |
-| <img src="https://www.robhabraken.nl/img/green-yellow.png" title="Solved completely by myself after multiple attempts"> | Solved completely by myself after multiple attempts |
+| <img src="https://www.robhabraken.nl/img/green-yellow.png" title="Solved myself, involuntarily received a hint or looked up a math or coding detail"> | Solved myself, involuntarily received a hint or looked up a math or coding detail |
 | <img src="https://www.robhabraken.nl/img/yellow.png" title="Searched online for algorithms or inspiration to solve this problem"> | Searched online for algorithms or inspiration to solve this problem |
 | <img src="https://www.robhabraken.nl/img/orange.png" title="Own implementation based on approach as seen on AoC subreddit"> | Own implementation based on approach as seen on AoC subreddit |
 | <img src="https://www.robhabraken.nl/img/red.png" title="Wasn't able to solve this myself, implemented someone else's logic to learn from"> | Wasn't able to solve this myself, implemented someone else's logic to learn from |
