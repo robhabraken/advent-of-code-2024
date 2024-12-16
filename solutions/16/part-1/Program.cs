@@ -64,10 +64,10 @@ void Search()
             var penalty = 0;
             if (c.direction != nodeTuple.Item2)
                 penalty = 1000;
-            var tempCost = nodeTuple.Item1.minCostToStart + c.Cost + penalty;
-            if (connectedNode.minCostToStart == null || tempCost < connectedNode.minCostToStart)
+            var cost = nodeTuple.Item1.minCostToStart + c.Cost + penalty;
+            if (connectedNode.minCostToStart == null || cost < connectedNode.minCostToStart)
             {
-                connectedNode.minCostToStart = tempCost;
+                connectedNode.minCostToStart = cost;
                 connectedNode.nearestToStart = nodeTuple.Item1;
 
                 var newTuple = new Tuple<Node, int>(connectedNode, c.direction);
@@ -75,7 +75,7 @@ void Search()
                     priorityQueue.Add(newTuple);
             }
 
-            nodeTuple.Item1.visited[nodeTuple.Item2] = true;
+            nodeTuple.Item1.visited[c.direction] = true;
         }
         if (nodeTuple.Item1.end)
             return;
