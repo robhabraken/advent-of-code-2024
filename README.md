@@ -18,7 +18,7 @@ My solutions to the Advent of Code puzzles for the 2024 edition, written in C#.
 | [Day 13: Claw Contraption](./solutions/13/) | 13.1 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | 13.2<img src="https://www.robhabraken.nl/img/green-yellow.png" title="Solved completely by myself, but looked up math rules for solving equations with fractions"> |  <sub>29 LoC / 15.42 ms</sub> |  <sub>19 LoC / 0.39 ms</sub> |
 | [Day 14: Restroom Redoubt](./solutions/14/) | 14.1 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | 14.2 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> |  <sub>55 LoC / 0.38 ms</sub> |  <sub>73 LoC / 199 ms</sub> |
 | [Day 15: Warehouse Woes](./solutions/15/) | 15.1 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | 15.2 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> |  <sub>94 LoC / 0.84 ms</sub> |  <sub>122 LoC / 117 ms</sub> |
-| [Day 16: ..](./solutions/16/) |  |  |  |  |
+| [Day 16: Reindeer Maze](./solutions/16/) | 16.1 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> |  | <sub>109 LoC / 840 ms</sub> |  |
 | [Day 17: ..](./solutions/17/) |  |  |  |  |
 | [Day 18: ..](./solutions/18/) |  |  |  |  |
 | [Day 19: ..](./solutions/19/) |  |  |  |  |
