@@ -17,20 +17,20 @@ Console.WriteLine(output[..^1]);
 
 int executeInstruction(int pointer, int opcode, int operand)
 {
-    var comboOperand = operand;
-    if (comboOperand > 3)
-        comboOperand = register[comboOperand - 4];
+    var combo = operand;
+    if (operand > 3)
+        combo = register[combo - 4];
 
     return opcode switch
     {
-        0 => adv(pointer, comboOperand),
+        0 => adv(pointer, combo),
         1 => bxl(pointer, operand),
-        2 => bst(pointer, comboOperand),
+        2 => bst(pointer, combo),
         3 => jnz(pointer, operand),
-        4 => bxc(pointer, operand),
-        5 => ovt(pointer, comboOperand),
-        6 => bdv(pointer, comboOperand),
-        7 => cdv(pointer, comboOperand),
+        4 => bxc(pointer),
+        5 => ovt(pointer, combo),
+        6 => bdv(pointer, combo),
+        7 => cdv(pointer, combo),
         _ => -1,
     };
 }
@@ -60,7 +60,7 @@ int jnz(int pointer, int literalOperand)
     return literalOperand;
 }
 
-int bxc(int pointer, int ignoredOperand)
+int bxc(int pointer)
 {
     register[1] = register[1] ^ register[2];
     return pointer + 2;
