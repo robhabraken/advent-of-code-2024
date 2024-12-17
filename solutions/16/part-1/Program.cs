@@ -58,13 +58,13 @@ void Search()
         foreach (var c in nodeTuple.Item1.connections.OrderBy(x => x.Cost))
         {
             var connectedNode = c.ConnectedNode;
-            if (connectedNode.visited[c.direction])
+            if (connectedNode.visited)
                 continue;
 
-            var penalty = 0;
+            var cost = nodeTuple.Item1.minCostToStart + c.Cost;
             if (c.direction != nodeTuple.Item2)
-                penalty = 1000;
-            var cost = nodeTuple.Item1.minCostToStart + c.Cost + penalty;
+                cost += 1000;
+
             if (connectedNode.minCostToStart == null || cost < connectedNode.minCostToStart)
             {
                 connectedNode.minCostToStart = cost;
@@ -75,7 +75,7 @@ void Search()
                     priorityQueue.Add(newTuple);
             }
 
-            nodeTuple.Item1.visited[c.direction] = true;
+            nodeTuple.Item1.visited = true;
         }
         if (nodeTuple.Item1.end)
             return;
@@ -92,7 +92,7 @@ internal class Node(Point p, bool start, bool end)
 
     public int? minCostToStart;
     public double totalDistance;
-    public bool[] visited = new bool[4];
+    public bool visited;
     public Node nearestToStart;
 }
 
