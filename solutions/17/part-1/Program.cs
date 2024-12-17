@@ -17,26 +17,27 @@ Console.WriteLine(output[..^1]);
 
 int executeInstruction(int pointer, int opcode, int operand)
 {
+    var comboOperand = operand;
+    if (comboOperand > 3)
+        comboOperand = register[comboOperand - 4];
+
     return opcode switch
     {
-        0 => adv(pointer, operand),
+        0 => adv(pointer, comboOperand),
         1 => bxl(pointer, operand),
-        2 => bst(pointer, operand),
+        2 => bst(pointer, comboOperand),
         3 => jnz(pointer, operand),
         4 => bxc(pointer, operand),
-        5 => ovt(pointer, operand),
-        6 => bdv(pointer, operand),
-        7 => cdv(pointer, operand),
+        5 => ovt(pointer, comboOperand),
+        6 => bdv(pointer, comboOperand),
+        7 => cdv(pointer, comboOperand),
         _ => -1,
     };
 }
 
 int adv(int pointer, int comboOperand)
 {
-    if (comboOperand <= 3)
-        register[0] /= (int)Math.Pow(2, comboOperand);
-    else
-        register[0] /= (int)Math.Pow(2, register[comboOperand - 4]);
+    register[0] /= (int)Math.Pow(2, comboOperand);
     return pointer + 2;
 }
 
@@ -45,12 +46,10 @@ int bxl(int pointer, int literalOperand)
     register[1] = register[1] ^ literalOperand;
     return pointer + 2;
 }
+
 int bst(int pointer, int comboOperand)
 {
-    if (comboOperand <= 3)
-        register[1] = comboOperand % 8;
-    else
-        register[1] = register[comboOperand - 4] % 8;
+    register[1] = comboOperand % 8;
     return pointer + 2;
 }
 
@@ -69,27 +68,18 @@ int bxc(int pointer, int ignoredOperand)
 
 int ovt(int pointer, int comboOperand)
 {
-    if (comboOperand <= 3)
-        output += $"{comboOperand % 8},";
-    else
-        output += $"{register[comboOperand - 4] % 8},";
+    output += $"{comboOperand % 8},";
     return pointer + 2;
 }
 
 int bdv(int pointer, int comboOperand)
 {
-    if (comboOperand <= 3)
-        register[1] = register[0] / (int)Math.Pow(2, comboOperand);
-    else
-        register[1] = register[0] / (int)Math.Pow(2, register[comboOperand - 4]);
+    register[1] = register[0] / (int)Math.Pow(2, comboOperand);
     return pointer + 2;
 }
 
 int cdv(int pointer, int comboOperand)
 {
-    if (comboOperand <= 3)
-        register[2] = register[0] / (int)Math.Pow(2, comboOperand);
-    else
-        register[2] = register[0] / (int)Math.Pow(2, register[comboOperand - 4]);
+    register[2] = register[0] / (int)Math.Pow(2, comboOperand);
     return pointer + 2;
 }
