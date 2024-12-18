@@ -42,7 +42,7 @@ What I saw was that for the first 7 values of input into `A`, I got an output of
 ```
 So the first second digit appears at 8, which is the same as `8^1`. And the third digit apperas at 64, or `8^2`. The fourth at `8^3`. In other words, if we take the number of digits we want in our output and name that `instructions`, we can state that this range would then start at `8^(instructions-1)`.
 
-Second thing that I saw was that when the second range started, the first range (`7543210`) appeared at the rightmost position, each character in that order appearing exactly 8 times (so 8 times `7`, then 8 times `5` etc.). And when we moved up to three numbers of output, that same range started appearing with 64 occurences of each of those! So it actually functions like a decimal or binary numeric system, but reversed. Only the numbers aren't in an incremental order, but of a quite unpredictable pattern:
+Second thing that I saw was that when the second range started, the first range (`7543210`) appeared at the rightmost position, each character in that order appearing exactly 8 times (so 8 times `7`, then 8 times `5` etc.). And when we moved up to three numbers of output, that same range started appearing with 64 occurrences of each of those! So it actually functions like a decimal or binary numeric system, but reversed. Only the numbers aren't in an incremental order, but of a quite unpredictable pattern:
 ```
 1 number output, first position: 7 5 4 3 2 1 0
 2 numbers output, first position: 3 7 4 6 3 2 1 0 7 7 7 0 3 3 1 0 3 7 6 2 3 3 1 0 7 7 1 4 2 0 1 0 3 7 0 6 2 0 1 0 7 7 3 0 2 1 1 0 3 7 2 2 2 1 1 0
@@ -50,15 +50,15 @@ Second thing that I saw was that when the second range started, the first range 
 (..)
 ```
 So, we cannot predict those numbers (or at least I didn't see how), but we know exactly when a number changes:
-- We have an output of 16 numbers, so the first occurence of 16 numbers in the output would be at `8^(16-1) = 8^15 = 35,184,372,088,832`.
+- We have an output of 16 numbers, so the first occurrence of 16 numbers in the output would be at `8^(16-1) = 8^15 = 35,184,372,088,832`.
 - Then we will have a `7` at the last position for the next `8^15 = 35,184,372,088,832` numbers of input into the `A` register.
 - Then we will have a `5` at the last position (still following the range I first got with only one digit output) for another `8^15`.
 - And that goes up all the way until we reach `8^16` (which is actually 8 times `8^15` so we've gone through our entire 3-bit range), which will then produce 17 numbers of output; but that's beyond the number we're looking for, we need 16 numbers output.
 - In my case, the last number of the `program` I got was a `0`. So, I now know that that will start appearing at `7 * 8^15 = 246,290,604,621,824` (because the `0` is at the 7th position in our `7543210` range).
 - Then, we are going to shift one position inward (to the left), because we have our last digit. Now we are looking at increments of `8^14` (for the 15th position).
 - My input program wants a `3` at that position. If you look at the list, you can see it starts right away with a `3` (the second range shown above). So actually that's at `7 * 8^15` already (or in other words `7 * 8^15 + 0 * 8^14`). Without any increments. The next number in that list (a `7`) will appear at `7 * 8^15 + 1 * 8^14` though.
-- Now there's something interesting, the first range has all unique numbers, so we *know* where we have to be. The second range though, contains multiple duplicates and our number (`3`) appears at an increment of `0 * 8^14`, `4 * 8^14`, `12 * 8^14`, `13 * 8^14`.. But! For the first few ranges, I can check this manually, but our data set is way to large, so we need to come up with a plan to test any of those and compare it with the number we're looking for. And that way is quite simple: increase our input number with increments of `8^14` until we've found our number. The first one is the one we're going to continue with, because they want *the first occurence* so that's most likely, though not necessarily the one we're looking for. But let's continue.
-- Then, we move on to the next digit, which in my case should be a `5`. We will start incrementing our input number with `8^13` until we've found it. At the third position of this range is a `5`, so we absolutely know for sure that the first occurence of the pattern we're looking for *must* be at a number higher than `7 * 8^15 + 0 * 8^14 + 3 * 8^13` for the input of the register `A`. And there we can see our solution and program taking shape.
+- Now there's something interesting, the first range has all unique numbers, so we *know* where we have to be. The second range though, contains multiple duplicates and our number (`3`) appears at an increment of `0 * 8^14`, `4 * 8^14`, `12 * 8^14`, `13 * 8^14`.. But! For the first few ranges, I can check this manually, but our data set is way to large, so we need to come up with a plan to test any of those and compare it with the number we're looking for. And that way is quite simple: increase our input number with increments of `8^14` until we've found our number. The first one is the one we're going to continue with, because they want *the first occurrence* so that's most likely, though not necessarily the one we're looking for. But let's continue.
+- Then, we move on to the next digit, which in my case should be a `5`. We will start incrementing our input number with `8^13` until we've found it. At the third position of this range is a `5`, so we absolutely know for sure that the first occurrence of the pattern we're looking for *must* be at a number higher than `7 * 8^15 + 0 * 8^14 + 3 * 8^13` for the input of the register `A`. And there we can see our solution and program taking shape.
 
 The idea then is to:
 - Check the desired program length and loop from that minus 1, to 0 (our index range).
@@ -75,7 +75,7 @@ I did implement that by not checking if my `output[i]` matches my `program[i]` i
 ```
 !output[(i * 2)..^1].Equals(programString[(i * 2)..])
 ```
-The `i * 2` is because we need to skip the commas. So what this does is compare everything from where we are to the end of the string. And only when we found the correct number at the current position `i` that doesn't change all the rest, we've found the correct *first occurence* of that combination at that position.
+The `i * 2` is because we need to skip the commas. So what this does is compare everything from where we are to the end of the string. And only when we found the correct number at the current position `i` that doesn't change all the rest, we've found the correct *first occurrence* of that combination at that position.
 
 So, when we put all of that into a little bit of code, we get:
 ```
