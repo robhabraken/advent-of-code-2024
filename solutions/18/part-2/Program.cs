@@ -7,16 +7,16 @@ var nodes = new List<Node>();
 var start = new Node(0, 0, true, false);
 var end = new Node(0, 0, false, true);
 
-var from = 0;
-var to = lines.Length;
-var byteCount = to;
-while (byteCount != from)
+var left = 0;
+var right = lines.Length;
+var byteCount = right;
+while (byteCount != left)
 {
-    byteCount = from + (to - from) / 2;
+    byteCount = left + (right - left) / 2;
     if (endReachable(byteCount))
-        from = byteCount + 1;
+        left = byteCount + 1;
     else
-        to = byteCount - 1;
+        right = byteCount - 1;
 }
 
 Console.WriteLine(lines[byteCount - 1]);
