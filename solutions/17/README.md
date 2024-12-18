@@ -61,7 +61,7 @@ So, we cannot predict those numbers (or at least I didn't see how), but we know 
 - Then, we move on to the next digit, which in my case should be a `5`. We will start incrementing our input number with `8^13` until we've found it. At the third position of this range is a `5`, so we absolutely know for sure that the first occurence of the pattern we're looking for *must* be at a number higher than `7 * 8^15 + 0 * 8^14 + 3 * 8^13` for the input of the register `A`. And there we can see our solution and program taking shape.
 
 The idea then is to:
-- Check the desired program length and loop from that minus 1 to 0 (our index range).
+- Check the desired program length and loop from that minus 1, to 0 (our index range).
 - Start incrementing the input value with `8^index`.
 - Run my original program code (the do/while loop over the `executeInstruction()` function) for that input.
 - Check if the output *at the digit of our index* is equal to the number we're looking for.
