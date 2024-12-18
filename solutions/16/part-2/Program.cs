@@ -1,7 +1,3 @@
-using System.Diagnostics;
-
-var s = new Stopwatch(); s.Start();
-
 var lines = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-io\\16\\input.txt");
 
 var deltaMap = new int[4, 2] { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 } };
@@ -10,69 +6,30 @@ var nodes = new List<Node>();
 var start = new Node(0, 0, true, false);
 var end = new Node(0, 0, false, true);
 
-var allNodes = new HashSet<Tuple<int, int>>();
-var allNodesVis = new List<Node>();
-
 var minCost = buildMap(-1, -1);
 
-var path = new List<Node>();
-path.Add(end);
-buildPath(path, end);
+var shortestPath = new List<Node> { end };
+buildPath(shortestPath, end);
 
-draw(path);
-
-var counter = 0;
-
-allNodesVis.AddRange(path);
-foreach (var rNode in path)
+var seats = new HashSet<Tuple<int, int>>();
+foreach (var node in shortestPath)
 {
-    allNodes.Add(new Tuple<int, int>(rNode.x, rNode.y));
-    if (!rNode.start && !rNode.end && rNode.connections.Count != 2)
+    seats.Add(new Tuple<int, int>(node.x, node.y));
+    if (!node.start && !node.end && node.connections.Count != 2)
     {
-        var thisCost = buildMap(rNode.x, rNode.y);
-        if (thisCost == minCost)
+        var cost = buildMap(node.x, node.y);
+        if (cost == minCost)
         {
-            var p = new List<Node>();
-            buildPath(p, end);
+            var path = new List<Node>();
+            buildPath(path, end);
 
-            allNodesVis.AddRange(p);
-            foreach (var n in p)
-                allNodes.Add(new Tuple<int, int>(n.x, n.y));
+            foreach (var newNode in path)
+                seats.Add(new Tuple<int, int>(newNode.x, newNode.y));
         }
-        counter++;
     }
 }
 
-draw(allNodesVis);
-
-s.Stop(); Console.WriteLine(s.ElapsedMilliseconds + " ms");
-
-Console.WriteLine(minCost);
-Console.WriteLine(allNodes.Count);
-Console.WriteLine("tests done: " + counter);
-
-
-void draw(List<Node> list)
-{
-    //for (var ry = 0; ry < lines.Length; ry++)
-    //{
-    //    for (var rx = 0; rx < lines[0].Length; rx++)
-    //    {
-    //        var found = false;
-    //        foreach (var node in list)
-    //            if (node.x == rx && node.y == ry)
-    //            {
-    //                found = true;
-    //                break;
-    //            }
-    //        if (found)
-    //            Console.Write("O");
-    //        else
-    //            Console.Write(lines[ry][rx]);
-    //    }
-    //    Console.WriteLine();
-    //}
-}
+Console.WriteLine(seats.Count);
 
 int buildMap(int blockX, int blockY)
 {
