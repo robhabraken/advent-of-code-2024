@@ -1,24 +1,24 @@
 var lines = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-io\\17\\input.txt");
 
-var output = string.Empty;
-
 var register = new long[3];
 var programString = lines[4].Replace("Program: ", string.Empty);
 var program = programString.Split(',').Select(int.Parse).ToArray();
+
+var output = string.Empty;
 
 var answer = 0L;
 for (var i = program.Length - 1; i >= 0; i--)
 {
     var increment = (long)Math.Pow(8, i);
     var incrementCounter = 0;
-    var target = program[i];
+
     while (string.IsNullOrEmpty(output) || !output[(i * 2)..^1].Equals(programString[(i * 2)..]))
     {
-        incrementCounter++;
-        register[0] = answer + increment * incrementCounter; ;
-        output = string.Empty;
+        register[0] = answer + increment * ++incrementCounter;
 
         var pointer = 0;
+        output = string.Empty;
+
         do pointer = executeInstruction(pointer, program[pointer], program[pointer + 1]);
         while (pointer < program.Length);
     }
