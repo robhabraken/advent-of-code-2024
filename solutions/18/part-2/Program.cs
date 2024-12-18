@@ -52,17 +52,12 @@ bool endReachable(int bytesToRead)
                 ((Math.Abs(otherNode.x - node.x) <= 1 && otherNode.y == node.y) ||
                  (Math.Abs(otherNode.y - node.y) <= 1) && otherNode.x == node.x))
                 node.connections.Add(otherNode);
-        node.totalDistance = straightLineDistance(node, end);
+        node.totalDistance = Math.Sqrt(Math.Pow(node.x - end.x, 2) + Math.Pow(node.y - end.y, 2));
     }
 
     search();
 
     return end.visited;
-}
-
-double straightLineDistance(Node from, Node to)
-{
-    return Math.Sqrt(Math.Pow(from.x - to.x, 2) + Math.Pow(from.y - from.y, 2));
 }
 
 void search()
