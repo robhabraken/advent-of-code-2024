@@ -6,7 +6,7 @@ var program = programString.Split(',').Select(int.Parse).ToArray();
 
 var output = string.Empty;
 
-var answer = 0L;
+long answer = 0;
 for (var i = program.Length - 1; i >= 0; i--)
 {
     var increment = (long)Math.Pow(8, i);
@@ -29,90 +29,72 @@ Console.WriteLine(answer);
 
 int executeInstruction(int pointer, int opcode, int operand)
 {
-    switch (opcode)
+    return opcode switch
     {
-        case 0: return adv(pointer, operand);
-        case 1: return bxl(pointer, operand);
-        case 2: return bst(pointer, operand);
-        case 3: return jnz(pointer, operand);
-        case 4: return bxc(pointer, operand);
-        case 5: return OUT(pointer, operand);
-        case 6: return bdv(pointer, operand);
-        case 7: return cdv(pointer, operand);
-        default: return -1;
-    }
+        0 => adv(pointer, combine(operand)),
+        1 => bxl(pointer, operand),
+        2 => bst(pointer, combine(operand)),
+        3 => jnz(pointer, operand),
+        4 => bxc(pointer),
+        5 => ovt(pointer, combine(operand)),
+        6 => bdv(pointer, combine(operand)),
+        7 => cdv(pointer, combine(operand)),
+        _ => -1,
+    };
 }
 
-int adv(int pointer, int comboOperand) //
+long combine(int literalOperand)
 {
-    if (comboOperand <= 3)
-        register[0] /= (long)Math.Pow(2, comboOperand);
-    else
-        register[0] /= (long)Math.Pow(2, register[comboOperand - 4]);
+    var comboOperand = (long)literalOperand;
+    if (literalOperand > 3)
+        comboOperand = register[comboOperand - 4];
+    return comboOperand;
+}
 
+int adv(int pointer, long comboOperand)
+{
+    register[0] /= (int)Math.Pow(2, comboOperand);
     return pointer + 2;
 }
 
 int bxl(int pointer, int literalOperand)
 {
     register[1] = register[1] ^ literalOperand;
-
     return pointer + 2;
 }
-int bst(int pointer, int comboOperand)
+int bst(int pointer, long comboOperand)
 {
-    if (comboOperand <= 3)
-        register[1] = comboOperand % 8;
-    else
-        register[1] = register[comboOperand - 4] % 8;
-
+    register[1] = comboOperand % 8;
     return pointer + 2;
 }
 
-int jnz(int pointer, int literalOperand) //
+int jnz(int pointer, int literalOperand)
 {
     if (register[0] == 0)
         return pointer + 2;
-
     return literalOperand;
 }
 
-int bxc(int pointer, int ignoredOperand)
+int bxc(int pointer)
 {
     register[1] = register[1] ^ register[2];
-
     return pointer + 2;
 }
 
-int OUT(int pointer, int comboOperand) //
+int ovt(int pointer, long comboOperand)
 {
-    var outputValue = 0L;
-    if (comboOperand <= 3)
-        outputValue = comboOperand % 8;
-    else
-        outputValue = register[comboOperand - 4] % 8;
-
-    output += $"{outputValue},";
-
+    output += $"{comboOperand % 8},";
     return pointer + 2;
 }
 
-int bdv(int pointer, int comboOperand)
+int bdv(int pointer, long comboOperand)
 {
-    if (comboOperand <= 3)
-        register[1] = register[0] / (int)Math.Pow(2, comboOperand);
-    else
-        register[1] = register[0] / (int)Math.Pow(2, register[comboOperand - 4]);
-
+    register[1] = register[0] / (int)Math.Pow(2, comboOperand);
     return pointer + 2;
 }
 
-int cdv(int pointer, int comboOperand)
+int cdv(int pointer, long comboOperand)
 {
-    if (comboOperand <= 3)
-        register[2] = register[0] / (int)Math.Pow(2, comboOperand);
-    else
-        register[2] = register[0] / (int)Math.Pow(2, register[comboOperand - 4]);
-
+    register[2] = register[0] / (int)Math.Pow(2, comboOperand);
     return pointer + 2;
 }
