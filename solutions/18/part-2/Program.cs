@@ -88,7 +88,8 @@ void search()
         }
         if (node.end)
             return;
-    } while (priorityQueue.Count > 0);
+    }
+    while (priorityQueue.Count > 0);
 }
 
 internal class Node(int x, int y, bool start, bool end)

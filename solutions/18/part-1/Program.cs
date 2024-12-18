@@ -71,7 +71,8 @@ void search()
         }
         if (node.end)
             return;
-    } while (priorityQueue.Count > 0);
+    }
+    while (priorityQueue.Count > 0);
 }
 
 void buildPath(List<Node> nodes, Node node)
