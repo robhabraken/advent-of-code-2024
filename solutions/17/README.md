@@ -40,16 +40,16 @@ What I saw was that for the first 7 values of input into `A`, I got an output of
 512..4095 produces 4 characters
 (..)
 ```
-So the first second digit appears at 8, which is the same as `8^1`. And the third digit apperas at 64, or `8^2`. The fourth at `8^3`. In other words, if we take the number of digits we want in our output and name that `instructions`, we can state that this range would start at `8^(instructions-1)`.
+So the first second digit appears at 8, which is the same as `8^1`. And the third digit apperas at 64, or `8^2`. The fourth at `8^3`. In other words, if we take the number of digits we want in our output and name that `instructions`, we can state that this range would then start at `8^(instructions-1)`.
 
-Second thing that I saw was that when the second range started, the first range (`7543210`) appeared at the rightmost position, each character in that order appearing exactly 8 (so 8 times `7`, then 8 times `5` etc.). And when we moved up to three numbers of output, that same range started appearing with 64 occurences of each of those! So it actually functions like a decimal or binary numeric system, but reversed. Only the numbers aren't in an incremental order, but of a quite unpredictable pattern:
+Second thing that I saw was that when the second range started, the first range (`7543210`) appeared at the rightmost position, each character in that order appearing exactly 8 times (so 8 times `7`, then 8 times `5` etc.). And when we moved up to three numbers of output, that same range started appearing with 64 occurences of each of those! So it actually functions like a decimal or binary numeric system, but reversed. Only the numbers aren't in an incremental order, but of a quite unpredictable pattern:
 ```
 1 number output, first position: 7 5 4 3 2 1 0
 2 numbers output, first position: 3 7 4 6 3 2 1 0 7 7 7 0 3 3 1 0 3 7 6 2 3 3 1 0 7 7 1 4 2 0 1 0 3 7 0 6 2 0 1 0 7 7 3 0 2 1 1 0 3 7 2 2 2 1 1 0
 3 numbers output, first position: 7 7 5 4 1 6 1 1 3 7 4 6 1 6 1 1 7 7 7 0 1 7 1 1 3 7 6 2 1 7 1 1 7 7 1 4 0 4 1 1 3 7 0 6 0 4 1 1 7 7 3 0 0 5 1 1 (..)
 (..)
 ```
-So, we cannot predict those numbers (or at least I didn't see how), but we know exactly when that number changes:
+So, we cannot predict those numbers (or at least I didn't see how), but we know exactly when a number changes:
 - We have an output of 16 numbers, so the first occurence of 16 numbers in the output would be at `8^(16-1) = 8^15 = 35,184,372,088,832`.
 - Then we will have a `7` at the last position for the next `8^15 = 35,184,372,088,832` numbers of input into the `A` register.
 - Then we will have a `5` at the last position (still following the range I first got with only one digit output) for another `8^15`.
