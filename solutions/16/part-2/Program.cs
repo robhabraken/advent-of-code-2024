@@ -6,7 +6,7 @@ var nodes = new List<Node>();
 var start = new Node(0, 0, true, false);
 var end = new Node(0, 0, false, true);
 
-var minCost = buildMap(-1, -1);
+var minCost = initSearch(-1, -1);
 
 var shortestPath = new List<Node> { end };
 buildPath(shortestPath, end);
@@ -17,7 +17,7 @@ foreach (var node in shortestPath)
     seats.Add(new Tuple<int, int>(node.x, node.y));
     if (!node.start && !node.end && node.connections.Count != 2)
     {
-        var cost = buildMap(node.x, node.y);
+        var cost = initSearch(node.x, node.y);
         if (cost == minCost)
         {
             var path = new List<Node>();
@@ -31,7 +31,7 @@ foreach (var node in shortestPath)
 
 Console.WriteLine(seats.Count);
 
-int buildMap(int blockX, int blockY)
+int initSearch(int blockX, int blockY)
 {
     nodes = [];
 
