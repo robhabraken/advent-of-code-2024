@@ -6,18 +6,18 @@ var nodes = new List<Node>();
 var start = new Node(0, 0, true, false);
 var end = new Node(0, 0, false, true);
 
-var map = new char[71, 71];
+var memorySpace = new bool[71, 71];
 for (var i = 0; i < 1024; i++)
 {
     var bytePosition = lines[i].Split(',').Select(int.Parse).ToArray();
-    map[bytePosition[1], bytePosition[0]] = '#';
+    memorySpace[bytePosition[1], bytePosition[0]] = true;
 }
 
-for (var y = 0; y < map.GetLength(0); y++)
-    for (var x = 0; x < map.GetLength(1); x++)
-        if (!map[y, x].Equals('#'))
+for (var y = 0; y < memorySpace.GetLength(0); y++)
+    for (var x = 0; x < memorySpace.GetLength(1); x++)
+        if (!memorySpace[y, x])
         {
-            var node = new Node(x, y, y == 0 && x == 0, y == map.GetLength(0) - 1 && x == map.GetLength(1) - 1);
+            var node = new Node(x, y, y == 0 && x == 0, y == memorySpace.GetLength(0) - 1 && x == memorySpace.GetLength(1) - 1);
             nodes.Add(node);
 
             if (node.start)
