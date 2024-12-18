@@ -34,19 +34,19 @@ foreach (var node in nodes)
 
             node.connections.Add(e);
         }
-    node.totalDistance = StraightLineDistance(node, end);
+    node.totalDistance = straightLineDistance(node, end);
 }
 
-Search();
+search();
 
 Console.WriteLine(end.minCostToStart);
 
-double StraightLineDistance(Node from, Node to)
+double straightLineDistance(Node from, Node to)
 {
     return Math.Sqrt(Math.Pow(from.p.x - to.p.x, 2) + Math.Pow(from.p.y - from.p.y, 2));
 }
 
-void Search()
+void search()
 {
     start.minCostToStart = 0;
     var priorityQueue = new List<Tuple<Node, int>> { new(start, 1) };
