@@ -11,25 +11,23 @@ Console.WriteLine(answer);
 
 bool sortTowels(string design)
 {
-    var selectPatterns = new List<string>();
-    foreach (var pattern in availablePatterns)
-        if (design.Contains(pattern))
-            selectPatterns.Add(pattern);
-
     var merge = "".PadLeft(design.Length, '.');
-    for (var i = 0; i < selectPatterns.Count; i++)
+    foreach (var pattern in availablePatterns)
     {
-        var lastIndex = 0;
-        var indexes = new List<int>();
-
-        while (design[lastIndex..].Contains(selectPatterns[i]))
+        if (design.Contains(pattern))
         {
-            indexes.Add(design.IndexOf(selectPatterns[i], lastIndex));
-            lastIndex = design.IndexOf(selectPatterns[i], lastIndex) + selectPatterns[i].Length;
-        }
+            var lastIndex = 0;
+            var indexes = new List<int>();
 
-        foreach (var index in indexes)
-            merge = merge[..index] + selectPatterns[i] + merge[(index + selectPatterns[i].Length)..];
+            while (design[lastIndex..].Contains(pattern))
+            {
+                indexes.Add(design.IndexOf(pattern, lastIndex));
+                lastIndex = design.IndexOf(pattern, lastIndex) + pattern.Length;
+            }
+
+            foreach (var index in indexes)
+                merge = merge[..index] + pattern + merge[(index + pattern.Length)..];
+        }
     }
 
     return !merge.Contains('.');
