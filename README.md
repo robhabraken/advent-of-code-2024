@@ -21,7 +21,7 @@ My solutions to the Advent of Code puzzles for the 2024 edition, written in C#.
 | [Day 16: Reindeer Maze](./solutions/16/) | 16.1 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | 16.2 <img src="https://www.robhabraken.nl/img/green-yellow.png" title="Solved completely by myself, but saw mention to use blocking paths to force alternatives"> | <sub>100 LoC / 840 ms</sub> | <sub>139 LoC / 82 s</sub> |
 | [Day 17: Chronospatial Computer](./solutions/17/) | 17.1 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | 17.2 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | <sub>88 LoC / 0.01 ms</sub> | <sub>99 LoC / 0.01 ms</sub> |
 | [Day 18: RAM Run](./solutions/18/) | 18.1 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | 18.2 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | <sub>99 LoC / 141 ms</sub> | <sub>106 LoC / 525 ms</sub> |
-| [Day 19: ..](./solutions/19/) |  |  |  |  |
+| [Day 19: Linen Layout](./solutions/19/) | 19.1 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> |  | <sub>33 LoC / 23.3 ms</sub> |  |
 | [Day 20: ..](./solutions/20/) |  |  |  |  |
 | [Day 21: ..](./solutions/21/) |  |  |  |  |
 | [Day 22: ..](./solutions/22/) |  |  |  |  |
