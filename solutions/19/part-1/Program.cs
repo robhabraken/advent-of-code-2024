@@ -4,11 +4,8 @@ var answer = 0;
 var availablePatterns = lines[0].Split(", ");
 
 for (var i = 2; i < lines.Length; i++)
-{
-    var possible = sortTowels(lines[i]);
-    if (possible)
+    if (sortTowels(lines[i]))
         answer++;
-}
 
 Console.WriteLine(answer);
 
@@ -19,23 +16,21 @@ bool sortTowels(string design)
         if (design.Contains(pattern))
             selectPatterns.Add(pattern);
 
-    var condense = string.Empty.PadLeft(design.Length, '.');
+    var merge = "".PadLeft(design.Length, '.');
     for (var i = 0; i < selectPatterns.Count; i++)
     {
         var lastIndex = 0;
-        var crop = design;
         var indexes = new List<int>();
 
-        while (crop.Contains(selectPatterns[i]))
+        while (design[lastIndex..].Contains(selectPatterns[i]))
         {
             indexes.Add(design.IndexOf(selectPatterns[i], lastIndex));
-            lastIndex += crop.IndexOf(selectPatterns[i]) + selectPatterns[i].Length;
-            crop = crop[(crop.IndexOf(selectPatterns[i]) + selectPatterns[i].Length)..];
+            lastIndex = design.IndexOf(selectPatterns[i], lastIndex) + selectPatterns[i].Length;
         }
 
         foreach (var index in indexes)
-            condense = condense[..index] + selectPatterns[i] + condense[(index + selectPatterns[i].Length)..];
+            merge = merge[..index] + selectPatterns[i] + merge[(index + selectPatterns[i].Length)..];
     }
 
-    return !condense.Contains('.');
+    return !merge.Contains('.');
 }
