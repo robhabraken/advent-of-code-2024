@@ -1,7 +1,5 @@
 var lines = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-io\\18\\input.txt");
 
-var deltaMap = new int[4, 2] { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 } };
-
 var memorySpace = new bool[71, 71];
 var nodes = new List<Node>();
 var start = new Node(0, 0, true, false);
