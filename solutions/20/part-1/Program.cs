@@ -53,13 +53,15 @@ for (var y = 1; y < lines.Length - 1; y++)
 
 Console.WriteLine(answer);
 
-void cheat(int from, int to)
+void cheat(int a, int b)
 {
-    var saved = to - from - 2;
-    if (from > to)
-        saved = from - to - 2;
-    if (saved >= 100)
+    if (saved(a, b, 2) >= 100)
         answer++;
+}
+
+int saved(int a, int b, int steps)
+{
+    return a > b ? a - b - steps : b - a - steps;
 }
 
 class Point(int x, int y)

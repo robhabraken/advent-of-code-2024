@@ -47,33 +47,28 @@ for (var y = 1; y < lines.Length - 1; y++)
             for (var dY = 1; dY < lines.Length - 1; dY++)
                 for (var dX = 1; dX < lines[0].Length - 1; dX++)            // loop over the grid again, for the end coords
                     if (racetrack[dY, dX] != -1 && !(y == dY && x == dX))   // if that's on the track, and not the same as the start, continue
-                        cheat(x, y, dX, dY);
+                        cheat(x, y, dX, dY);                                // try to cheat from each start to end point on the track
 
 Console.WriteLine(answer / 2);
 
-void cheat(int fromX, int fromY, int toX, int toY)
+void cheat(int aX, int aY, int bX, int bY)
 {
-    var picoseconds = steps(fromX, fromY, toX, toY);
-    if (picoseconds <= 20 && saved(racetrack[fromY, fromX], racetrack[toY, toX], picoseconds) >= 100)
+    var picoseconds = distance(aX, bX) + distance(aY, bY);
+    if (picoseconds <= 20 && saved(racetrack[aY, aX], racetrack[bY, bX], picoseconds) >= 100)
         answer++;
 }
 
-int steps(int fromX, int fromY, int toX, int toY)
+int saved(int a, int b, int steps)
 {
-    return distance(fromX, toX) + distance(fromY, toY);
+    return a > b ? a - b - steps : b - a - steps;
 }
 
-int saved(int from, int to, int steps)
+int distance(int a, int b)
 {
-    return from > to ? from - to - steps : to - from - steps;
+    return a > b ? a - b : b - a;
 }
 
-int distance(int from, int to)
-{
-    return from > to ? from - to : to - from;
-}
-
-internal class Point(int x, int y)
+class Point(int x, int y)
 {
     public int x = x;
     public int y = y;
