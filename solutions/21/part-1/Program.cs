@@ -7,13 +7,13 @@ var robots = new List<DirectionalKeypad>();
 for (var i = 0; i < nboRobots; i++)
     robots.Add(new DirectionalKeypad());
 
-var answer = 0L;
+var answer = 0;
 foreach (var line in lines)
     answer += typeCode(line);
 
 Console.WriteLine(answer);
 
-long typeCode(string code)
+int typeCode(string code)
 {
     var requiredSequence = string.Empty;
     foreach (var character in code)
@@ -209,5 +209,6 @@ class Keypad
         else
             return string.Empty.PadLeft(Distance(y, dY), '^');
     }
+
     protected int Distance(int a, int b) => a > b ? a - b : b - a;
 }
