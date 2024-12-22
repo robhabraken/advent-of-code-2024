@@ -18,31 +18,7 @@ int typeCode(string code)
     var requiredSequence = string.Empty;
     foreach (var character in code)
     {
-        var result = string.Empty;
-        var chosenOption = 0;
-        for (var i = 0; i < 2; i++)
-        {
-            numpad.Backup();
-            foreach (var robot in robots)
-                robot.Backup();
-
-            var optionResult = "";
-            var sequence = numpad.MoveTo(character, i == 0);
-            foreach (var move in sequence)
-                pressButtons(move, 0, ref optionResult);
-
-            if (result.Equals(string.Empty) || optionResult.Length < result.Length)
-            {
-                result = optionResult;
-                chosenOption = i;
-            }
-
-            numpad.Restore();
-            foreach (var robot in robots)
-                robot.Restore();
-        }
-
-        var numpadSequence = numpad.MoveTo(character, chosenOption == 0);
+        var numpadSequence = numpad.MoveTo(character);
         foreach (var move in numpadSequence)
             pressButtons(move, 0, ref requiredSequence);
     }
@@ -53,7 +29,7 @@ int typeCode(string code)
 void pressButtons(char button, int robotIndex, ref string result)
 {
     var sequence = robots[robotIndex].MoveTo(button);
-    if (robotIndex == 1)
+    if (robotIndex == nboRobots - 1)
         result += sequence;
     else
         foreach (var move in sequence)
@@ -84,22 +60,7 @@ class DirectionalKeypad : Keypad
             {
                 if (buttons[dY, dX].Equals(button))
                 {
-                    if (y == 0 && dY > 0)
-                    {
-                        requiredSequence += MotionsX(x, dX);
-                        requiredSequence += MotionsY(y, dY);
-                    }
-                    else if (y > 0 && dY == 0)
-                    {
-                        requiredSequence += MotionsX(x, dX);
-                        requiredSequence += MotionsY(y, dY);
-                    }
-                    else
-                    {
-                        requiredSequence += MotionsX(x, dX);
-                        requiredSequence += MotionsY(y, dY);
-                    }
-                    requiredSequence += "A";
+                    requiredSequence = MotionsX(x, dX) + MotionsY(y, dY) + "A";
 
                     x = dX;
                     y = dY;
@@ -127,7 +88,7 @@ class NumericKeypad : Keypad
         };
     }
 
-    public string MoveTo(char button, bool upFirst)
+    public string MoveTo(char button)
     {
         var requiredSequence = string.Empty;
 
@@ -149,7 +110,7 @@ class NumericKeypad : Keypad
                     }
                     else
                     {
-                        if (!upFirst)
+                        if (dX < x)
                         {
                             requiredSequence += MotionsX(x, dX);
                             requiredSequence += MotionsY(y, dY);
@@ -178,21 +139,6 @@ class Keypad
 
     public int x;
     public int y;
-
-    private int bX;
-    private int bY;
-
-    public void Backup()
-    {
-        bX = x;
-        bY = y;
-    }
-
-    public void Restore()
-    {
-        x = bX;
-        y = bY;
-    }
 
     protected string MotionsX(int x, int dX)
     {
