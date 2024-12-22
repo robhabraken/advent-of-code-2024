@@ -1,6 +1,6 @@
 var lines = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-io\\21\\input.txt");
 
-var nboRobots = 2;
+var nboRobots = 5;
 
 var numpad = new NumericKeypad();
 var robots = new List<DirectionalKeypad>();
@@ -60,7 +60,30 @@ class DirectionalKeypad : Keypad
             {
                 if (buttons[dY, dX].Equals(button))
                 {
-                    requiredSequence = MotionsX(x, dX) + MotionsY(y, dY) + "A";
+                    if (dX == 0 && x > 0)
+                    {
+                        requiredSequence += MotionsY(y, dY);
+                        requiredSequence += MotionsX(x, dX);
+                    }
+                    else if (x == 0 && dY == 0)
+                    {
+                        requiredSequence += MotionsX(x, dX);
+                        requiredSequence += MotionsY(y, dY);
+                    }
+                    else
+                    {
+                        if (dX < x)
+                        {
+                            requiredSequence += MotionsX(x, dX);
+                            requiredSequence += MotionsY(y, dY);
+                        }
+                        else
+                        {
+                            requiredSequence += MotionsY(y, dY);
+                            requiredSequence += MotionsX(x, dX);
+                        }
+                    }
+                    requiredSequence += "A";
 
                     x = dX;
                     y = dY;
