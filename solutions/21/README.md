@@ -43,9 +43,10 @@ result: v<<A>>^AAv<A<A>>^AAvAA<^A>A
         v<A
         <A
         A
+        >>^A
 <
     A
-        >>^A
+        A
 ^
     >^A
         vA
@@ -59,7 +60,7 @@ A
         vA
         ^A
 
-result: v<A<AA>>^AvA^<A>AAvA^A
+result: v<A<AA>>^AAvA^<A>AAvA^A
 
 ```
 So as you can see, the two paths travelled over the keypad initially are of equal length (either `^^<<A`, `<<^^A`), which for the second robot still goes. But for the third robot the required amount of presses is totally different! So as for the shortest route, in *this particular* case, it is shorter to first go to the left and then go up over the keypad. But of course, that would not be possible if you would go from the `A` to the `4`, a path that requires the same amount of steps in the same directions, because you can't go over the gap on the bottom left! So there, despite being longer, going up twice and then left twice is the best option.
@@ -76,5 +77,7 @@ But after finishing part 1 and finding the correct answer (by trying the differe
 *Solution for part 1 uploaded, yet to explain here*
 
 ## Part 2
+
+With the removal of the workaround and a few fixes, I was able to increase the performance of my solution considerably. I changed the counters from an `int` to a `long`, and I removed concatenating the output sequence (which I used to retrieve the length after each code), but instead now just retrieve the length of each single move (like `<^A`) and add that to my counter while I go. That save a whole lot of string concatenation and builds up the answer right away pretty much (apart from multiplying it with the numeric part of the code afterwards). Now, a chain of 10 robots took only 78 ms, 15 robots took 2 seconds, 17 robots took 12 seconds, and 20 robots took 3 minutes. So I was getting close, but obviously after that the runtime explodes without further optimization.
 
 *Still working on part 2*
