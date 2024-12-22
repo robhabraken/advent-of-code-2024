@@ -58,15 +58,9 @@ void cheat(int aX, int aY, int bX, int bY)
         answer++;
 }
 
-int saved(int a, int b, int steps)
-{
-    return a > b ? a - b - steps : b - a - steps;
-}
+int saved(int a, int b, int steps) => a > b ? a - b - steps : b - a - steps;
 
-int distance(int a, int b)
-{
-    return a > b ? a - b : b - a;
-}
+int distance(int a, int b) => a > b ? a - b : b - a;
 
 class Point(int x, int y)
 {
