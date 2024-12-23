@@ -6,90 +6,73 @@ foreach (var line in lines)
 {
     var names = line.Split('-');
     foreach (var name in names)
-    {
         if (!computers.ContainsKey(name))
-        {
-            var c = new Computer();
-            c.Name = name;
-            c.connections = new List<Computer>();
-            computers.Add(name, c);
-        }
-    }
+            computers.Add(name, new Computer(name));
 
     computers[names[0]].connections.Add(computers[names[1]]);
     computers[names[1]].connections.Add(computers[names[0]]);
 }
 
 var answer = string.Empty;
-foreach (var c in computers.Keys)
+foreach (var computerName in computers.Keys)
 {
-    test(computers[c]);
+    var connections = findMutualConnections(computers[computerName]);
+    removeComputersThatAreNotConnectedToAllOthers(connections);
+    setAnswer(computerName, connections);
 }
-
 
 Console.WriteLine(answer);
 
-void test(Computer c)
+HashSet<string> findMutualConnections(Computer computer)
 {
-    //if (c.Name != "ka") return; // test
-
-    var list = new List<string>();
-    foreach (var conn in c.connections)
+    var mutualConnections = new HashSet<string>();
+    foreach (var computerConnection in computer.connections)
     {
-        //Console.WriteLine(c.Name + "-" + conn.Name);
-
-        foreach (var conn2 in conn.connections)
+        foreach (var thirdGradeConnection in computerConnection.connections)
         {
-                
-            if (c.connections.Contains(conn2))
+            if (computer.connections.Contains(thirdGradeConnection))
             {
-                //Console.WriteLine("\t" + conn.Name + "-" + conn2.Name);
-                if (!list.Contains(conn.Name))
-                    list.Add(conn.Name);
-                if (!list.Contains(conn2.Name))
-                    list.Add(conn2.Name);
+                mutualConnections.Add(computerConnection.name);
+                mutualConnections.Add(thirdGradeConnection.name);
             }
         }
     }
-
-    if (list.Count > 0)
-    {
-        var remove = new List<string>();
-        foreach (var comp in list)
-        {
-            foreach (var comp2 in list)
-            {
-                if (comp != comp2)
-                {
-                    if (!computers[comp].connections.Contains(computers[comp2]))
-                    {
-                        remove.Add(comp);
-                    }
-                }
-            }
-        }
-
-        foreach (var r in remove)
-        {
-            list.Remove(r);
-        }
-    }
-
-    if (list.Count > 0)
-    {
-        list.Add(c.Name);
-        list.Sort();
-        var result = "";
-        foreach (var l in list)
-            result += $"{l},";
-
-        if (result.Length > answer.Length + 1)
-            answer = result[..^1];
-    }
+    return mutualConnections;
 }
 
-class Computer
+void removeComputersThatAreNotConnectedToAllOthers(HashSet<string> computerNames)
 {
-    public string Name;
-    public List<Computer> connections;
+    if (computerNames.Count == 0) return;
+    
+    var toRemove = new List<string>();
+    foreach (var name1 in computerNames)
+        foreach (var name2 in computerNames)
+            if (name1 != name2)
+                if (!computers[name1].connections.Contains(computers[name2]))
+                    toRemove.Add(name1);
+
+    foreach (var name in toRemove)
+        computerNames.Remove(name);
+}
+
+void setAnswer(string computerName, HashSet<string> connections)
+{
+    if (connections.Count == 0) return;
+
+    var list = connections.ToList();
+    list.Add(computerName);
+    list.Sort();
+
+    var password = string.Empty;
+    foreach (var name in list)
+        password += $"{name},";
+
+    if (password.Length > answer.Length + 1)
+        answer = password[..^1];
+}
+
+class Computer(string name)
+{
+    public string name = name;
+    public List<Computer> connections = [];
 }
