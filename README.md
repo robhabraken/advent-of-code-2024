@@ -25,7 +25,7 @@ My solutions to the Advent of Code puzzles for the 2024 edition, written in C#.
 | [Day 20: Race Condition](./solutions/20/) | 20.1 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | 20.2 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | <sub>70 LoC / 0.73 ms</sub> | <sub>68 LoC / 1.89 s</sub> |
 | [Day 21: Keypad Conundrum](./solutions/21/) | 21.1 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | 21.2 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | <sub>182 LoC / 0.04 ms</sub> |  |
 | [Day 22: Monkey Market](./solutions/22/) | 22.1 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | 22.2 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | <sub>28 LoC / 73.9 ms</sub> | <sub>48 LoC / 13 s</sub> |
-| [Day 23: ..](./solutions/23/) |  |  |  |  |
+| [Day 23: LAN Party](./solutions/23/) | 23.1 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | 23.2 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | <sub>40 LoC / 12.6 ms</sub> | <sub>77 LoC / 11.2 ms</sub> |
 | [Day 24: ..](./solutions/24/) |  |  |  |  |
 | [Day 25: ..](./solutions/25/) |  |  |  |  |
 
