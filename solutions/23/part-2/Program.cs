@@ -27,16 +27,13 @@ HashSet<string> findMutualConnections(Computer computer)
 {
     var mutualConnections = new HashSet<string>();
     foreach (var computerConnection in computer.connections)
-    {
         foreach (var secondGradeConnection in computerConnection.connections)
-        {
             if (computer.connections.Contains(secondGradeConnection))
             {
                 mutualConnections.Add(computerConnection.name);
                 mutualConnections.Add(secondGradeConnection.name);
             }
-        }
-    }
+
     return mutualConnections;
 }
 
