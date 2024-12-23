@@ -16,17 +16,17 @@ foreach (var line in lines)
 var sets = new HashSet<string>();
 foreach (var computerName in computers.Keys)
     foreach (var computerConnection in computers[computerName].connections)
-        foreach (var thirdGradeConnection in computers[computerName].connections)
-            if (computerConnection != thirdGradeConnection &&
-                thirdGradeConnection.connections.Contains(computers[computerName]) &&
-                thirdGradeConnection.connections.Contains(computerConnection) &&
-                (computerName.StartsWith("t") || computerConnection.name.StartsWith("t") || thirdGradeConnection.name.StartsWith("t")))
+        foreach (var secondGradeConnection in computers[computerName].connections)
+            if (computerConnection != secondGradeConnection &&
+                secondGradeConnection.connections.Contains(computers[computerName]) &&
+                secondGradeConnection.connections.Contains(computerConnection) &&
+                (computerName.StartsWith("t") || computerConnection.name.StartsWith("t") || secondGradeConnection.name.StartsWith("t")))
                 {
                     var list = new List<string>
                     {
                         computerName,
                         computerConnection.name,
-                        thirdGradeConnection.name
+                        secondGradeConnection.name
                     };
                     list.Sort();
                     sets.Add($"{list[0]},{list[1]},{list[2]}");
