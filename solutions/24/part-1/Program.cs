@@ -38,20 +38,22 @@ do
 }
 while (!allReady);
 
-// produce number
-var answer = string.Empty;
-foreach (var wireName in wires.Keys)
-    if (wireName.StartsWith("z"))
-        answer = $"{(wires[wireName].value.Value ? 1 : 0)}{answer}";
-
-Console.WriteLine(Convert.ToInt64(answer, 2));
-
-Console.WriteLine();
+Console.WriteLine(produceNumberFor("z"));
 
 void addWire(string wireName)
 {
     if (!wires.ContainsKey(wireName))
         wires.Add(wireName, new Wire(wireName, null));
+}
+
+long produceNumberFor(string wireType)
+{
+    var result = string.Empty;
+    foreach (var wireName in wires.Keys)
+        if (wireName.StartsWith(wireType))
+            result = $"{(wires[wireName].value.Value ? 1 : 0)}{result}";
+
+    return Convert.ToInt64(result, 2);
 }
 
 class Gate(Wire in1, Wire in2, Wire output, string op)
