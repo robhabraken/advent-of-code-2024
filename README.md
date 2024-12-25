@@ -31,7 +31,7 @@ My solutions to the Advent of Code puzzles for the 2024 edition, written in C#.
 
 ### Performance metrics
 
-Each puzzle solution is executed 100 times, excluding the time taken for reading the input file from disk and printing the answer to the console. To account for .NET startup time and potential outliers, I calculate the average (mean) execution time after removing the slowest and fastest measurements. In cases where multiple solutions are implemented for a single puzzle, the table displays the metrics for the fastest or most optimal solution.
+Each puzzle solution is executed 100 times, excluding the time taken for reading the input file from disk and printing the answer to the console. To account for .NET startup time and potential outliers, I calculate the average (mean) execution time after removing the slowest and fastest measurement. In cases where multiple solutions are implemented for a single puzzle, the table displays the metrics for the fastest or most optimal solution.
 
 ### Legend
 
