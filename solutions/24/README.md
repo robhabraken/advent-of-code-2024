@@ -1,4 +1,4 @@
-# Solutions to Day 24: ..
+# Solutions to Day 24: Crossed Wires
 
 *For the puzzle description, see [Advent of Code 2024 - Day 24](https://adventofcode.com/2024/day/24).*
 
@@ -6,7 +6,25 @@ Here are my solutions to the puzzles of today. Written chronologically so you ca
 
 ## Part 1
 
+Because the given gates wait until they receive a value, I couldn't find the answer by running over the input just once, and thus had to create a data structure to store both the wire and gate data, as well as their current state. So I've created a `Wire` class with a name and a value (but used a `bool?` because the value could also be empty still), and a `Gate` class that references two input wires, an output wire, has an operator type, and a boolean indicating if it is ready processing yet. I also included the code to process the values within this gate in the `Gate` class itself, because I think that's easier and more elegant. This `Process()` function first checks if the gate is already finished processing, and only continues if that's not the case. Then, it checks if both input wires already have a value, and if not, it aborts further processing. This way I can call `Process()` as many times as I want, it won't change it state, won't give an error, and it will only actually perform the gate action once, as soon as the values of both inputs are known (and I'm calling `Process()` of course). An event driven setup would be even better, or at least prettiger, but for the goal of part 1 this suffices.
 
+Then I started reading the input. I first iterate over the *gate* section, not the input values, as the input values or only given for a smaller subset of the actual wires - so if I want to know which wires do exist across all gates, I have to read through the gate section and store every wire mention in both the inputs and the output connections. I then add the three wires to my collection, but also create the gate for those three right away. The wires by the way, are stored in a `SortedDictionary<string, Wire>`, which is super useful, as I can reference my object by the string name of the wire, but also because the dictionary is automatically sorted on the keys, already arranging all `z` wires for the output later on.
+
+After that, when all `Wire` and `Gate` objects are created, I loop over the *first* section, to set the initial values of all wires that are mentioned in this section.
+
+Now the only thing left to do is simulate all gates. I loop over all gates using a do/while-loop as long as any of the gates is still returning me a `false` response, indicating it did not yet receive its input values. For the answer, I concatenate all `z` wires back to front, and convert them from a binary to a decimal (`long`) notation.
 
 ## Part 2
 
+Part 2 of Day 24 is actually the only puzzle where I needed a little help to solve it. I scrolled through some visualizations on Reddit for inspiration as I was lost at finding at starting point to solve this, given the vast amount of possibilities. I tried to find a way in to reverse engineer the answer and the last gates in the chain, but couldn't find a useful clue. Looking back I should've started creating better visualizations myself first (I did give it a shot), because maybe then I would've seen that there's a very rigid pattern in the way the gates are built up. After seeing the visualizations and getting this hint I started writing lots of code to output information about the gates. It also helped me a lot to rewrite the gate operators from `AND`, `OR` and `XOR` to `&&`, `||` and `!=` as that made it far easier to see which gates stood out with deviating operators. What I saw in my test output was that there is a certain pattern to how almost all of the gates are built up:
+- All input gates are paired `x` and `y` wires with the same number.
+- Almost all input gate pairs consist of a `AND` and `XOR` operators, followed by a second grade gate of `OR` and `AND` operators (respectively).
+- Almost all output gates (connected to `z` wires) have `XOR` operators.
+- Almost all other gates (neither at the front or at the end of the chain) have either `AND` or `OR` operators.
+
+I started scrolling through these gates and their operators, and found a number of deviating gates. I thought I was onto something, but found I think 11 or 12 gates that were 'suspicious'. I tried to come up with an explanation for what I found and also tried a few times to submit an answer that was wrong. I tried to submit all equal pairs of the 4 ones I was sure about were anomalies. That wasn't the answer. I also saw that the first input nodes and the last output node were different, so I included those, but that also wasn't correct. To be honest, by trying it a few times and writing down derivations based on what I learned, I found my answer. And only after that I understood what was going on: the first input gates and the last output gate are indeed different, but that's normal apparently. The crossed wires are not crossed between equal pairs per se, but that *could* be the case. Furthermore, there are three set rules:
+- Starting gates should be followed by OR if AND, and by AND if XOR, except for the first one.
+- Gates in the middle should not have XOR operators.
+- Gates at the end should always have XOR operators, except for the last one.
+
+So after finding the answer manually, I've written out some code to do these selections, and it gave me the right answer. I didn't even need to run the program, because these anomalies to the apparant rules revealed the incorrect gates and thus the crossed wires. So I could also remove all code that simulated the gates. My initial idea, to actually simulate different options after switching wires back, wasn't necessary to find the answer, but maybe I will add that anyway because I think it would be a cool addition and a fun challenge still.
