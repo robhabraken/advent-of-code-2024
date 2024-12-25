@@ -27,16 +27,7 @@ foreach (var line in lines)
     }
 }
 
-// start processing
-bool allReady;
-do
-{
-    allReady = true;
-    foreach (var gate in gates)
-        if (!gate.Process())
-            allReady = false;
-}
-while (!allReady);
+simulateGates();
 
 Console.WriteLine(produceNumberFor("z"));
 
@@ -44,6 +35,19 @@ void addWire(string wireName)
 {
     if (!wires.ContainsKey(wireName))
         wires.Add(wireName, new Wire(wireName, null));
+}
+
+void simulateGates()
+{
+    bool allReady;
+    do
+    {
+        allReady = true;
+        foreach (var gate in gates)
+            if (!gate.Process())
+                allReady = false;
+    }
+    while (!allReady);
 }
 
 long produceNumberFor(string wireType)
