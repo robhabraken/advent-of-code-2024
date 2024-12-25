@@ -23,8 +23,8 @@ Part 2 of Day 24 is actually the only puzzle where I needed a little help to sol
 - Almost all other gates (neither at the front or at the end of the chain) have either `AND` or `OR` operators.
 
 I started scrolling through these gates and their operators, and found a number of deviating gates. I thought I was onto something, but found I think 11 or 12 gates that were 'suspicious'. I tried to come up with an explanation for what I found and also tried a few times to submit an answer that was wrong. I tried to submit all equal pairs of the 4 ones I was sure about were anomalies. That wasn't the answer. I also saw that the first input nodes and the last output node were different, so I included those, but that also wasn't correct. To be honest, by trying it a few times and writing down derivations based on what I learned, I found my answer. And only after that I understood what was going on: the first input gates and the last output gate are indeed different, but that's normal apparently. The crossed wires are not crossed between equal pairs per se, but that *could* be the case. Furthermore, there are three set rules:
-- Starting gates should be followed by OR if AND, and by AND if XOR, except for the first one.
-- Gates in the middle should not have XOR operators.
-- Gates at the end should always have XOR operators, except for the last one.
+- Starting gates should be followed by `OR` if `AND`, and by `AND` if `XOR`, except for the first one.
+- Gates in the middle should not have `XOR` operators.
+- Gates at the end should always have `XOR` operators, except for the last one.
 
 So after finding the answer manually, I've written out some code to do these selections, and it gave me the right answer. I didn't even need to run the program, because these anomalies to the apparant rules revealed the incorrect gates and thus the crossed wires. So I could also remove all code that simulated the gates. My initial idea, to actually simulate different options after switching wires back, wasn't necessary to find the answer, but maybe I will add that anyway because I think it would be a cool addition and a fun challenge still.
