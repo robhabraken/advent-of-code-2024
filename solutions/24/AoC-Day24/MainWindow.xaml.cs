@@ -35,9 +35,12 @@ namespace AoC_Day24
         private readonly SolidColorBrush backgroundBrush;
         private readonly SolidColorBrush elementBackgroundBrush;
         private readonly SolidColorBrush greenBrush;
+        private readonly SolidColorBrush darkGreenBrush;
+        private readonly SolidColorBrush lightGreenBrush;
         private readonly SolidColorBrush goldBrush;
 
         public Dictionary<string, Path> connections;
+        public Dictionary<string, TextBox> bits;
         public Circuit circuit;
 
         public Storyboard storyboard;
@@ -50,9 +53,26 @@ namespace AoC_Day24
             backgroundBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#0f0f23");
             elementBackgroundBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#10101a");
             greenBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#00cc00");
+            darkGreenBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#009900");
+            lightGreenBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#99ff99");
             goldBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#ffff66");
 
+            // refactor into method for all buttons
+            buttonSimulate.Background = Brushes.Transparent;
+            buttonSimulate.FontFamily = consolasFamily;
+            buttonSimulate.FontSize = cellHeight * 0.4;
+            buttonSimulate.Foreground = darkGreenBrush;
+            buttonSimulate.BorderThickness = new Thickness(0);
+
+            buttonRepare.Background = Brushes.Transparent;
+            buttonRepare.FontFamily = consolasFamily;
+            buttonRepare.FontSize = cellHeight * 0.4;
+            buttonRepare.Foreground = darkGreenBrush;
+            buttonRepare.BorderThickness = new Thickness(0);
+
+
             connections = new Dictionary<string, Path>();
+            bits = new Dictionary<string, TextBox>();
 
             Width = spacing + (cellWidth + spacing) * 12;
             Height = Width;
@@ -80,72 +100,10 @@ namespace AoC_Day24
 
             // -- animation test
 
-            circuit.SimulateGates();
-
             storyboard = new Storyboard();
 
             foreach (var connection in connections)
-            {
-                var wireName = connection.Key[..3];
-
-                if (connection.Key.StartsWith("AND") ||
-                    connection.Key.StartsWith("OR") ||
-                    connection.Key.StartsWith("XOR"))
-                    wireName = connection.Key[^3..];
-
-                Wire wire = new(string.Empty, null);
-                foreach (var wireOjbect in circuit.wires.Values)
-                    if (wireOjbect.name.Equals(wireName))
-                        wire = wireOjbect;
-
-                if (wire != null && !wire.value.HasValue)
-                    continue;
-
-                var bit = new TextBox
-                {
-                    Background = Brushes.Transparent,
-                    BorderThickness = new Thickness(0),
-                    FontFamily = consolasFamily,
-                    FontSize = cellHeight * 0.4,
-                    FontWeight = FontWeights.Light,
-                    Foreground = wire.suspicious ? Brushes.Red : goldBrush,
-                    Text = wire.value.Value ? "1" : "0",
-                    TextAlignment = TextAlignment.Center,
-                    VerticalContentAlignment = VerticalAlignment.Center,
-                    
-                };
-                canvas.Children.Add(bit);
-
-                var animatedMatrixTransform = new MatrixTransform();
-                RegisterName($"AnimatedMatrixTransform{connection.Key}", connection.Key);
-                bit.RenderTransform = animatedMatrixTransform;
-
-                RegisterName(connection.Key, animatedMatrixTransform);
-
-                var geometry = (PathGeometry)connection.Value.Data;
-                var start = geometry.Figures[0].StartPoint;
-                var segment = geometry.Figures[0].Segments.Last();
-
-                Point end;
-                if (segment is LineSegment)
-                    end = ((LineSegment)segment).Point;
-                else
-                    end = ((BezierSegment)segment).Point3;
-
-                var length = Math.Sqrt(Math.Pow(end.X - start.X, 2) + Math.Pow(end.Y - start.Y, 2));
-
-                var animation = new MatrixAnimationUsingPath()
-                {
-                    PathGeometry = geometry,
-                    Duration = new Duration(TimeSpan.FromSeconds(length / cellWidth)),
-                    RepeatBehavior = RepeatBehavior.Forever
-                };
-
-                Storyboard.SetTargetName(animation, connection.Key);
-                Storyboard.SetTargetProperty(animation, new PropertyPath(MatrixTransform.MatrixProperty));
-
-                storyboard.Children.Add(animation);
-            }
+                animateConnection(connection);
 
             var lastPath = connections.Values.Last();
             lastPath.Loaded += delegate (object sender, RoutedEventArgs e)
@@ -160,6 +118,150 @@ namespace AoC_Day24
 
             foreach (var wire in circuit.wires.Values)
                 DrawWire(canvas, wire, wire.suspicious);
+        }
+
+        private void animateConnection(KeyValuePair<string, Path> connection)
+        {
+            var wireName = connection.Key[..3];
+
+            if (connection.Key.StartsWith("AND") ||
+                connection.Key.StartsWith("OR") ||
+                connection.Key.StartsWith("XOR"))
+                wireName = connection.Key[^3..];
+
+            Wire wire = new(string.Empty, null);
+            foreach (var wireOjbect in circuit.wires.Values)
+                if (wireOjbect.name.Equals(wireName))
+                    wire = wireOjbect;
+
+            var bit = new TextBox
+            {
+                Background = Brushes.Transparent,
+                BorderThickness = new Thickness(0),
+                FontFamily = consolasFamily,
+                FontSize = cellHeight * 0.4,
+                FontWeight = FontWeights.Light,
+                Foreground = wire.suspicious ? Brushes.Red : goldBrush,
+                TextAlignment = TextAlignment.Center,
+                VerticalContentAlignment = VerticalAlignment.Center,
+
+            };
+            bits.Add(connection.Key, bit);
+            canvas.Children.Add(bit);
+
+            if (wire != null && wire.value.HasValue)
+                bit.Text = wire.value.Value ? "1" : "0";
+
+            var animatedMatrixTransform = new MatrixTransform();
+            RegisterName($"AnimatedMatrixTransform{connection.Key}", connection.Key);
+            bit.RenderTransform = animatedMatrixTransform;
+
+            RegisterName(connection.Key, animatedMatrixTransform);
+
+            var geometry = (PathGeometry)connection.Value.Data;
+            var start = geometry.Figures[0].StartPoint;
+            var segment = geometry.Figures[0].Segments.Last();
+
+            Point end;
+            if (segment is LineSegment)
+                end = ((LineSegment)segment).Point;
+            else
+                end = ((BezierSegment)segment).Point3;
+
+            var length = Math.Sqrt(Math.Pow(end.X - start.X, 2) + Math.Pow(end.Y - start.Y, 2));
+
+            var animation = new MatrixAnimationUsingPath()
+            {
+                PathGeometry = geometry,
+                Duration = new Duration(TimeSpan.FromSeconds(length / cellWidth)),
+                RepeatBehavior = RepeatBehavior.Forever
+            };
+
+            Storyboard.SetTargetName(animation, connection.Key);
+            Storyboard.SetTargetProperty(animation, new PropertyPath(MatrixTransform.MatrixProperty));
+
+            storyboard.Children.Add(animation);
+        }
+
+        private void updateConnection(string connectionKey)
+        {
+            var wireName = connectionKey[..3];
+
+            if (connectionKey.StartsWith("AND") ||
+                connectionKey.StartsWith("OR") ||
+                connectionKey.StartsWith("XOR"))
+                wireName = connectionKey[^3..];
+
+            Wire wire = new(string.Empty, null);
+            foreach (var wireOjbect in circuit.wires.Values)
+                if (wireOjbect.name.Equals(wireName))
+                    wire = wireOjbect;
+
+            if (wire != null && wire.value.HasValue)
+                bits[connectionKey].Text = wire.value.Value ? "1" : "0";
+        }
+
+        internal async void simulate(object sender, RoutedEventArgs e)
+        {
+            foreach (var wire in circuit.wires.Values)
+                wire.Reset();
+
+            //circuit.SimulateGates();
+            //bool allReady;
+            //do
+            //{
+            //    allReady = true;
+            //    foreach (var gate in circuit.gates)
+            //    {
+            //        if (!gate.Process())
+            //        {
+            //            allReady = false;
+            //        }
+            //        else
+            //        {
+            //            updateConnection($"{gate.inputs[0].name}{gate.op}");
+            //            updateConnection($"{gate.inputs[1].name}{gate.op}");
+            //            updateConnection($"{gate.op}{gate.output.name}");
+
+            //            await Task.Delay(500);
+            //        }
+            //    }
+            //}
+            //while (!allReady);
+            
+            await test(circuit.wires["x00"]);
+            await test(circuit.wires["x01"]);
+        }
+
+        internal async Task test(Wire wire)
+        {
+
+            foreach (var gate in circuit.gates)
+            {
+                if (!gate.ready && (gate.inputs[0] == wire || gate.inputs[1] == wire))
+                {
+                    gate.Process();
+
+                    updateConnection($"{gate.inputs[0].name}{gate.op}");
+                    updateConnection($"{gate.inputs[1].name}{gate.op}");
+                    updateConnection($"{gate.op}{gate.output.name}");
+
+                    await Task.Delay(500);
+
+                    await test(gate.output);
+                }
+            }
+        }
+
+        internal void simulateMouseEnter(object sender, RoutedEventArgs e)
+        {
+            //buttonSimulate.Background = backgroundBrush;
+            //buttonSimulate.Foreground = lightGreenBrush;
+        }
+        internal void simulateMouseLeave(object sender, RoutedEventArgs e)
+        {
+            //buttonSimulate.Background = Brushes.Transparent;
+            //buttonSimulate.Foreground = darkGreenBrush;
         }
 
         private void DrawAnswer(Canvas canvas, string answer)
