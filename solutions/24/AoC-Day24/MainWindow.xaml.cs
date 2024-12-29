@@ -52,7 +52,7 @@ namespace AoC_Day24
             DrawConnection(canvas, 4, 2, 0, 6, 2, 0);
             DrawConnection(canvas, 4, 0, 0, 7, 0, 0);
             DrawConnection(canvas, 5, 1, 0, 9, 1, 0);
-            DrawConnection(canvas, 6, 2, 0, 8, 2, 0);
+            DrawConnection(canvas, 6, 2, 0, 8, 2, 0, true);
             DrawConnection(canvas, 7, 0, 0, 6, 2, 0);
             DrawConnection(canvas, 8, 2, 0, 4, 0, 1);
             DrawConnection(canvas, 8, 2, 0, 5, 1, 1);
@@ -148,7 +148,7 @@ namespace AoC_Day24
         }
 
         // always draw from input to gate and from gate to output for logic to work
-        public void DrawConnection(Canvas canvas, int fromX, int fromY, int fromOffset, int toX, int toY, int toOffset)
+        public void DrawConnection(Canvas canvas, int fromX, int fromY, int fromOffset, int toX, int toY, int toOffset, bool suspicious = false)
         {
             var x1 = CalculateLeft(fromX) + cellWidth / 2;
             var y1 = CalculateTop(fromY, fromOffset) + cellHeight / 2;
@@ -206,8 +206,8 @@ namespace AoC_Day24
 
             // Display the PathGeometry.
             var myPath = new Path();
-            myPath.Stroke = Brushes.Silver;
-            myPath.StrokeThickness = 1;
+            myPath.Stroke = suspicious ? Brushes.Red : Brushes.Silver;
+            myPath.StrokeThickness = suspicious ? 1.5 : 1;
             myPath.Data = myPathGeometry;
 
             canvas.Children.Add(myPath);
