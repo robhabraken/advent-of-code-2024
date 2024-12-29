@@ -14,6 +14,8 @@ namespace AoC_Day24.Device
 
         public bool? initialValue;
 
+        public bool suspicious;
+
         public void Set()
         {
             initialValue = value;

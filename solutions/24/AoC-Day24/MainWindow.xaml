@@ -6,7 +6,9 @@
         xmlns:local="clr-namespace:AoC_Day24"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
-
-    </Grid>
+    <ScrollViewer>
+        <Grid>
+            <Canvas Name="canvas"></Canvas>
+        </Grid>
+    </ScrollViewer>
 </Window>

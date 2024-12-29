@@ -14,7 +14,20 @@ namespace AoC_Day24.Device
         public string op = op;
         public bool ready = false;
 
-        public bool suspicious;
+        private bool suspicious;
+
+        public bool Suspicious
+        {
+            get
+            {
+                return suspicious;
+            }
+            set
+            {
+                suspicious = value;
+                output.suspicious = value;
+            }
+        }
 
         public bool Process()
         {

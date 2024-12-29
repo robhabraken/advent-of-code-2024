@@ -101,7 +101,7 @@ namespace AoC_Day24.Device
 
                             // didn't expect a direct connection to an end wire here
                             if (offset > 0 && endWires.Contains(gate.output))
-                                gate.suspicious = true;
+                                gate.Suspicious = true;
 
                             foreach (var gate2 in gates)
                             {
@@ -119,11 +119,11 @@ namespace AoC_Day24.Device
 
                                         // expected different preceding operator
                                         if (offset > 0 && !gate.op.Equals("XOR"))
-                                            gate.suspicious = true;
+                                            gate.Suspicious = true;
 
                                         // expected connection to end wire here
                                         if (!endWires.Contains(gate2.output))
-                                            gate2.suspicious = true;
+                                            gate2.Suspicious = true;
                                     }
                                     else if (offset > 0 && gate2.op.Equals("OR"))
                                     {
@@ -132,12 +132,12 @@ namespace AoC_Day24.Device
 
                                         // expected different preceding operator
                                         if (!gate.op.Equals("AND"))
-                                            gate.suspicious = true;
+                                            gate.Suspicious = true;
                                     }
 
                                     // expected different outgoing operator to end wire
                                     if (offset < 44 && endWires.Contains(gate2.output) && !gate2.op.Equals("XOR"))
-                                        gate2.suspicious = true;
+                                        gate2.Suspicious = true;
                                 }
                             }
                         }
@@ -154,9 +154,9 @@ namespace AoC_Day24.Device
                     Console.WriteLine($"Gate not positioned: {gate}");
 
             var answer = string.Empty;
-            foreach (var gate in gates.OrderBy(x => x.output.name))
-                if (gate.suspicious)
-                    answer += $"{gate.output.name},";
+            foreach (var wire in wires.Values)
+                if (wire.suspicious)
+                    answer += $"{wire.name},";
 
             Console.WriteLine(answer[..^1]);
         }

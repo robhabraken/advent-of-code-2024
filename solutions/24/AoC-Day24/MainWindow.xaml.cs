@@ -38,46 +38,41 @@ namespace AoC_Day24
             backgroundBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#0f0f23");
 
             Width = spacing + (cellWidth + spacing) * 12;
-            Height = Width; // make scrollable
+            Height = Width;
 
-            var canvas = new Canvas();
             canvas.Width = spacing + (cellWidth + spacing) * 12;
             canvas.Height = spacing + 46 * (cellHeight + spacing) * 4;
             canvas.Background = backgroundBrush;
-            Canvas.SetTop(canvas, 0);
-            Canvas.SetLeft(canvas, 0);
 
             var circuit = new Circuit();
             circuit.Import();
 
             foreach (var gate in circuit.gates)
             {
+                DrawGate(canvas, gate);
+
                 DrawConnection(canvas, gate.inputs[0], gate);
                 DrawConnection(canvas, gate.inputs[1], gate);
-                DrawConnection(canvas, gate, gate.output, gate.suspicious);
-                DrawGate(canvas, gate);
+                DrawConnection(canvas, gate, gate.output, gate.Suspicious);
             }
 
             foreach (var wire in circuit.wires.Values)
-                DrawWire(canvas, wire);
-
-            Content = canvas;
-            Show();
+                DrawWire(canvas, wire, wire.suspicious);
         }
 
-        private void DrawWire(Canvas canvas, Wire wire)
+        private void DrawWire(Canvas canvas, Wire wire, bool suspicious = false)
         {
             if (wire.position == null) return;
 
-            DrawWire(canvas, wire.name, wire.position.x, wire.position.y, wire.position.offset);
+            DrawWire(canvas, wire.name, wire.position.x, wire.position.y, wire.position.offset, suspicious);
         }
 
-        private void DrawWire(Canvas canvas, string name, int xPos, int yPos, int offset)
+        private void DrawWire(Canvas canvas, string name, int xPos, int yPos, int offset, bool suspicious = false)
         {
             var rectangle = new Rectangle
             {
-                //Fill = backgroundBrush,
-                Stroke = Brushes.Silver,
+                Stroke = suspicious ? Brushes.Red : Brushes.Silver,
+                StrokeThickness = suspicious ? 1.5 : 1,
                 RadiusX = cellHeight / 10,
                 RadiusY = cellHeight / 10,
                 Width = cellWidth,
@@ -124,7 +119,6 @@ namespace AoC_Day24
         {
             var circle = new Ellipse
             {
-                //Fill = backgroundBrush,
                 Stroke = Brushes.Silver,
                 Width = cellHeight,
                 Height = cellHeight
