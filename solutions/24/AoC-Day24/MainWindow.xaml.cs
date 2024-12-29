@@ -159,7 +159,6 @@ namespace AoC_Day24
             DrawConnection(canvas, from.position.x, from.position.y, from.position.offset, from is Gate, to.position.x, to.position.y, to.position.offset, to is Gate, suspicious);
         }
 
-        // always draw from input to gate and from gate to output for logic to work
         private void DrawConnection(Canvas canvas, int fromX, int fromY, int fromOffset, bool fromRound, int toX, int toY, int toOffset, bool toRound, bool suspicious = false)
         {
             var x1 = CalculateLeft(fromX) + cellWidth / 2;
@@ -170,16 +169,32 @@ namespace AoC_Day24
             var figure = new PathFigure();
             if (x1 < x2 && y1 < y2)
             {
-                y1 += cellHeight / 2;
-                x2 -= toRound ? cellHeight / 2 : cellWidth / 2;
+                if (fromOffset == toOffset)
+                {
+                    y1 += cellHeight / 2;
+                    x2 -= toRound ? cellHeight / 2 : cellWidth / 2;
 
-                figure.StartPoint = new Point(x1, y1);
-                figure.Segments.Add(
-                    new BezierSegment(
-                        new Point(x1 - spacing, y1 + cellHeight),
-                        new Point(x2 - cellWidth, y2 + spacing),
-                        new Point(x2, y2),
-                        true));
+                    figure.StartPoint = new Point(x1, y1);
+                    figure.Segments.Add(
+                        new BezierSegment(
+                            new Point(x1, y1 + cellHeight),
+                            new Point(x2 - cellWidth, y2),
+                            new Point(x2, y2),
+                            true));
+                }
+                else
+                {
+                    x1 += fromRound ? cellHeight / 2 : cellWidth / 2;
+                    y2 -= cellHeight / 2;
+
+                    figure.StartPoint = new Point(x1, y1);
+                    figure.Segments.Add(
+                        new BezierSegment(
+                            new Point(x1 + cellWidth, y1),
+                            new Point(x2, y2 - cellHeight),
+                            new Point(x2, y2),
+                            true));
+                }
             }
             else if (x1 < x2 && y1 > y2)
             {
