@@ -17,6 +17,9 @@ using AoC_Day24.Visualization;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Diagnostics;
 using System.Xml.Linq;
+using System.Security.AccessControl;
+using System.Windows.Media.Animation;
+using System.Net.WebSockets;
 
 namespace AoC_Day24
 {
@@ -32,6 +35,12 @@ namespace AoC_Day24
         private readonly SolidColorBrush backgroundBrush;
         private readonly SolidColorBrush elementBackgroundBrush;
         private readonly SolidColorBrush greenBrush;
+        private readonly SolidColorBrush goldBrush;
+
+        public Dictionary<string, Path> connections;
+        public Circuit circuit;
+
+        public Storyboard storyboard;
 
         public MainWindow()
         {
@@ -41,6 +50,9 @@ namespace AoC_Day24
             backgroundBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#0f0f23");
             elementBackgroundBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#10101a");
             greenBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#00cc00");
+            goldBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#ffff66");
+
+            connections = new Dictionary<string, Path>();
 
             Width = spacing + (cellWidth + spacing) * 12;
             Height = Width;
@@ -49,20 +61,15 @@ namespace AoC_Day24
             canvas.Height = spacing + 46 * (cellHeight + spacing) * 4;
             canvas.Background = backgroundBrush;
 
-            var circuit = new Circuit();
+            circuit = new Circuit();
             circuit.Import();
 
             foreach (var gate in circuit.gates)
             {
-                DrawGate(canvas, gate);
-
-                DrawConnection(canvas, gate.inputs[0], gate);
-                DrawConnection(canvas, gate.inputs[1], gate);
-                DrawConnection(canvas, gate, gate.output, gate.Suspicious);
+                DrawConnection(canvas, gate.inputs[0], gate, $"{gate.inputs[0].name}{gate.op}");
+                DrawConnection(canvas, gate.inputs[1], gate, $"{gate.inputs[1].name}{gate.op}");
+                DrawConnection(canvas, gate, gate.output, $"{gate.op}{gate.output.name}", gate.Suspicious);
             }
-
-            foreach (var wire in circuit.wires.Values)
-                DrawWire(canvas, wire, wire.suspicious);
 
             var answer = string.Empty;
             foreach (var wire in circuit.wires.Values)
@@ -70,6 +77,89 @@ namespace AoC_Day24
                     answer += $"{wire.name},";
 
             DrawAnswer(canvas, $"Puzzle answer: {answer[..^1]}");
+
+            // -- animation test
+
+            circuit.SimulateGates();
+
+            storyboard = new Storyboard();
+
+            foreach (var connection in connections)
+            {
+                var wireName = connection.Key[..3];
+
+                if (connection.Key.StartsWith("AND") ||
+                    connection.Key.StartsWith("OR") ||
+                    connection.Key.StartsWith("XOR"))
+                    wireName = connection.Key[^3..];
+
+                Wire wire = new(string.Empty, null);
+                foreach (var wireOjbect in circuit.wires.Values)
+                    if (wireOjbect.name.Equals(wireName))
+                        wire = wireOjbect;
+
+                if (wire != null && !wire.value.HasValue)
+                    continue;
+
+                var bit = new TextBox
+                {
+                    Background = Brushes.Transparent,
+                    BorderThickness = new Thickness(0),
+                    FontFamily = consolasFamily,
+                    FontSize = cellHeight * 0.4,
+                    FontWeight = FontWeights.Light,
+                    Foreground = wire.suspicious ? Brushes.Red : goldBrush,
+                    Text = wire.value.Value ? "1" : "0",
+                    TextAlignment = TextAlignment.Center,
+                    VerticalContentAlignment = VerticalAlignment.Center,
+                    
+                };
+                canvas.Children.Add(bit);
+
+                var animatedMatrixTransform = new MatrixTransform();
+                RegisterName($"AnimatedMatrixTransform{connection.Key}", connection.Key);
+                bit.RenderTransform = animatedMatrixTransform;
+
+                RegisterName(connection.Key, animatedMatrixTransform);
+
+                var geometry = (PathGeometry)connection.Value.Data;
+                var start = geometry.Figures[0].StartPoint;
+                var segment = geometry.Figures[0].Segments.Last();
+
+                Point end;
+                if (segment is LineSegment)
+                    end = ((LineSegment)segment).Point;
+                else
+                    end = ((BezierSegment)segment).Point3;
+
+                var length = Math.Sqrt(Math.Pow(end.X - start.X, 2) + Math.Pow(end.Y - start.Y, 2));
+
+                var animation = new MatrixAnimationUsingPath()
+                {
+                    PathGeometry = geometry,
+                    Duration = new Duration(TimeSpan.FromSeconds(length / cellWidth)),
+                    RepeatBehavior = RepeatBehavior.Forever
+                };
+
+                Storyboard.SetTargetName(animation, connection.Key);
+                Storyboard.SetTargetProperty(animation, new PropertyPath(MatrixTransform.MatrixProperty));
+
+                storyboard.Children.Add(animation);
+            }
+
+            var lastPath = connections.Values.Last();
+            lastPath.Loaded += delegate (object sender, RoutedEventArgs e)
+            {
+                storyboard.Begin(this);
+            };
+
+            // -- end of animation test
+
+            foreach (var gate in circuit.gates)
+                DrawGate(canvas, gate);
+
+            foreach (var wire in circuit.wires.Values)
+                DrawWire(canvas, wire, wire.suspicious);
         }
 
         private void DrawAnswer(Canvas canvas, string answer)
@@ -94,10 +184,10 @@ namespace AoC_Day24
 
         private void DrawWire(Canvas canvas, Wire wire, bool suspicious = false)
         {
-            DrawWire(canvas, wire.name, wire.position.x, wire.position.y, wire.position.offset, suspicious);
+            wire.uiElement = DrawWire(canvas, wire.name, wire.position.x, wire.position.y, wire.position.offset, suspicious);
         }
 
-        private void DrawWire(Canvas canvas, string name, int xPos, int yPos, int offset, bool suspicious = false)
+        private UIElement DrawWire(Canvas canvas, string name, int xPos, int yPos, int offset, bool suspicious = false)
         {
             var rectangle = new Rectangle
             {
@@ -130,6 +220,8 @@ namespace AoC_Day24
             Canvas.SetLeft(label, CalculateLeft(xPos));
             Canvas.SetTop(label, CalculateTop(yPos, offset));
             canvas.Children.Add(label);
+
+            return rectangle;
         }
 
         private void DrawGate(Canvas canvas, Gate gate)
@@ -141,10 +233,10 @@ namespace AoC_Day24
                 _ => "!="
             };
 
-            DrawGate(canvas, opSymbol, gate.position.x, gate.position.y, gate.position.offset);
+            gate.uiElement = DrawGate(canvas, opSymbol, gate.position.x, gate.position.y, gate.position.offset);
         }
 
-        private void DrawGate(Canvas canvas, string name, int xPos, int yPos, int offset)
+        private UIElement DrawGate(Canvas canvas, string name, int xPos, int yPos, int offset)
         {
             var circle = new Ellipse
             {
@@ -174,14 +266,17 @@ namespace AoC_Day24
             Canvas.SetLeft(label, CalculateLeft(xPos));
             Canvas.SetTop(label, CalculateTop(yPos, offset));
             canvas.Children.Add(label);
+
+            return circle;
         }
 
-        private void DrawConnection(Canvas canvas, Element from, Element to, bool suspicious = false)
+        private void DrawConnection(Canvas canvas, Element from, Element to, string name, bool suspicious = false)
         {
-            DrawConnection(canvas, from.position.x, from.position.y, from.position.offset, from is Gate, to.position.x, to.position.y, to.position.offset, to is Gate, suspicious);
+            var path = DrawConnection(canvas, from.position.x, from.position.y, from.position.offset, from is Gate, to.position.x, to.position.y, to.position.offset, to is Gate, suspicious);
+            connections.Add(name, path);
         }
 
-        private void DrawConnection(Canvas canvas, int fromX, int fromY, int fromOffset, bool fromRound, int toX, int toY, int toOffset, bool toRound, bool suspicious = false)
+        private Path DrawConnection(Canvas canvas, int fromX, int fromY, int fromOffset, bool fromRound, int toX, int toY, int toOffset, bool toRound, bool suspicious = false)
         {
             var x1 = CalculateLeft(fromX) + cellWidth / 2;
             var y1 = CalculateTop(fromY, fromOffset) + cellHeight / 2;
@@ -309,15 +404,19 @@ namespace AoC_Day24
 
             var geometry = new PathGeometry();
             geometry.Figures.Add(figure);
+            geometry.Freeze();
 
             var path = new Path
             {
                 Data = geometry,
+                Name = "",
                 Stroke = suspicious ? Brushes.Red : greenBrush,
                 StrokeThickness = suspicious ? 1.5 : 1
             };
 
             canvas.Children.Add(path);
+
+            return path;
         }
 
         private void DrawArrow(Canvas canvas, double x, double y, int direction, bool suspicious = false)

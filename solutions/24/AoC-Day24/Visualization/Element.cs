@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace AoC_Day24.Visualization
 {
     public class Element
     {
         public Coordinate position;
+        public UIElement uiElement;
     }
 }
