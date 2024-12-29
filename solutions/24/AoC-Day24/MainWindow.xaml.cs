@@ -55,54 +55,11 @@ namespace AoC_Day24
                 DrawConnection(canvas, gate.inputs[0], gate);
                 DrawConnection(canvas, gate.inputs[1], gate);
                 DrawConnection(canvas, gate, gate.output, gate.suspicious);
-            }
-
-            // when fixed overlap these loops can be joined
-            foreach (var gate in circuit.gates)
-            {
                 DrawGate(canvas, gate);
             }
 
             foreach (var wire in circuit.wires.Values)
                 DrawWire(canvas, wire);
-
-            // test code (hardcoded example), will be replaced by input from 24-part-2/Alternative
-            //DrawConnection(canvas, 0, 1, 0, 1, 1, 0);
-            //DrawConnection(canvas, 1, 3, 0, 2, 2, 0);
-            //DrawConnection(canvas, 1, 3, 0, 1, 1, 0);
-            //DrawConnection(canvas, 1, 1, 0, 3, 1, 0);
-            //DrawConnection(canvas, 2, 2, 0, 4, 2, 0);
-            //DrawConnection(canvas, 0, 1, 0, 2, 2, 0);
-            //DrawConnection(canvas, 3, 1, 0, 4, 0, 0);
-            //DrawConnection(canvas, 3, 1, 0, 5, 1, 0);
-            //DrawConnection(canvas, 4, 2, 0, 6, 2, 0);
-            //DrawConnection(canvas, 4, 2, 0, 6, 2, 0);
-            //DrawConnection(canvas, 4, 0, 0, 7, 0, 0);
-            //DrawConnection(canvas, 5, 1, 0, 9, 1, 0);
-            //DrawConnection(canvas, 6, 2, 0, 8, 2, 0, true);
-            //DrawConnection(canvas, 7, 0, 0, 6, 2, 0);
-            //DrawConnection(canvas, 8, 2, 0, 4, 0, 1);
-            //DrawConnection(canvas, 8, 2, 0, 5, 1, 1);
-
-            //DrawWire(canvas, "x02", 0, 1, 0);
-            //DrawGate(canvas, "!=", 1, 1, 0);
-
-            //DrawWire(canvas, "y02", 1, 3, 0);
-            //DrawGate(canvas, "&&", 2, 2, 0);
-
-            //DrawWire(canvas, "jpq", 3, 1, 0);
-            //DrawWire(canvas, "rjb", 4, 2, 0);
-
-            //DrawGate(canvas, "&&", 4, 0, 0);
-            //DrawGate(canvas, "!=", 5, 1, 0);
-            //DrawGate(canvas, "||", 6, 2, 0);
-            //DrawWire(canvas, "kwm", 7, 0, 0);
-            //DrawWire(canvas, "gfc", 8, 2, 0);
-            //DrawWire(canvas, "z02", 9, 1, 0);
-
-            //DrawGate(canvas, "&&", 4, 0, 1);
-            //DrawGate(canvas, "!=", 5, 1, 1);
-
 
             Content = canvas;
             Show();
@@ -199,11 +156,11 @@ namespace AoC_Day24
         {
             if (from.position == null || to.position == null) return;
 
-            DrawConnection(canvas, from.position.x, from.position.y, from.position.offset, to.position.x, to.position.y, to.position.offset, suspicious);
+            DrawConnection(canvas, from.position.x, from.position.y, from.position.offset, from is Gate, to.position.x, to.position.y, to.position.offset, to is Gate, suspicious);
         }
 
         // always draw from input to gate and from gate to output for logic to work
-        private void DrawConnection(Canvas canvas, int fromX, int fromY, int fromOffset, int toX, int toY, int toOffset, bool suspicious = false)
+        private void DrawConnection(Canvas canvas, int fromX, int fromY, int fromOffset, bool fromRound, int toX, int toY, int toOffset, bool toRound, bool suspicious = false)
         {
             var x1 = CalculateLeft(fromX) + cellWidth / 2;
             var y1 = CalculateTop(fromY, fromOffset) + cellHeight / 2;
@@ -214,7 +171,7 @@ namespace AoC_Day24
             if (x1 < x2 && y1 < y2)
             {
                 y1 += cellHeight / 2;
-                x2 -= cellWidth / 2;
+                x2 -= toRound ? cellHeight / 2 : cellWidth / 2;
 
                 figure.StartPoint = new Point(x1, y1);
                 figure.Segments.Add(
@@ -229,7 +186,7 @@ namespace AoC_Day24
                 if (toY == 0)
                 {
                     y1 -= cellHeight / 2;
-                    x2 -= cellWidth / 2;
+                    x2 -= toRound ? cellHeight / 2 : cellWidth / 2;
 
                     figure.StartPoint = new Point(x1, y1);
                     figure.Segments.Add(
@@ -241,7 +198,7 @@ namespace AoC_Day24
                 }
                 else
                 {
-                    x1 += cellWidth / 2;
+                    x1 += fromRound ? cellHeight / 2 : cellWidth / 2;
                     y2 += cellHeight / 2;
 
                     figure.StartPoint = new Point(x1, y1);
@@ -270,13 +227,13 @@ namespace AoC_Day24
             {
                 if (x1 < x2)
                 {
-                    x1 += cellWidth / 2;
-                    x2 -= cellWidth / 2;
+                    x1 += fromRound ? cellHeight / 2 : cellWidth / 2;
+                    x2 -= toRound ? cellHeight / 2 : cellWidth / 2;
                 }
                 else if (x1 > x2)
                 {
-                    x1 -= cellWidth / 2;
-                    x2 += cellWidth / 2;
+                    x1 -= fromRound ? cellHeight / 2 : cellWidth / 2;
+                    x2 += toRound ? cellHeight / 2 : cellWidth / 2;
                 }
                 else if (y1 < y2)
                 {
