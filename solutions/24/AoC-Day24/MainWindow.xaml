@@ -9,7 +9,7 @@
     <ScrollViewer>
         <Grid>
             <DockPanel Name="dockPanel" Height="30" VerticalAlignment="Top" LastChildFill="False" HorizontalAlignment="Right" Margin="0,10,10,0" Panel.ZIndex="10000">
-                <Button Name="buttonSimulate" Click="simulate" MouseEnter="simulateMouseEnter" MouseLeave="simulateMouseLeave" Width="100" Margin="10,0,0,0">[Simulate]</Button>
+                <Button Name="buttonSimulate" Click="Simulate" MouseEnter="SimulateMouseEnter" MouseLeave="SimulateMouseLeave" Width="100" Margin="10,0,0,0">[Simulate]</Button>
                 <Button Name="buttonRepare" Width="100" Margin="10,0,0,0">[Repare]</Button>
             </DockPanel>
             <Canvas Name="canvas"></Canvas>

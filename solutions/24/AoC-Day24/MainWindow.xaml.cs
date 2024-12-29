@@ -57,19 +57,8 @@ namespace AoC_Day24
             lightGreenBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#99ff99");
             goldBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#ffff66");
 
-            // refactor into method for all buttons
-            buttonSimulate.Background = Brushes.Transparent;
-            buttonSimulate.FontFamily = consolasFamily;
-            buttonSimulate.FontSize = cellHeight * 0.4;
-            buttonSimulate.Foreground = darkGreenBrush;
-            buttonSimulate.BorderThickness = new Thickness(0);
-
-            buttonRepare.Background = Brushes.Transparent;
-            buttonRepare.FontFamily = consolasFamily;
-            buttonRepare.FontSize = cellHeight * 0.4;
-            buttonRepare.Foreground = darkGreenBrush;
-            buttonRepare.BorderThickness = new Thickness(0);
-
+            StyleButton(buttonSimulate);
+            StyleButton(buttonRepare);
 
             connections = new Dictionary<string, Path>();
             bits = new Dictionary<string, TextBox>();
@@ -98,20 +87,16 @@ namespace AoC_Day24
 
             DrawAnswer(canvas, $"Puzzle answer: {answer[..^1]}");
 
-            // -- animation test
-
             storyboard = new Storyboard();
 
             foreach (var connection in connections)
-                animateConnection(connection);
+                AnimateConnection(connection);
 
             var lastPath = connections.Values.Last();
             lastPath.Loaded += delegate (object sender, RoutedEventArgs e)
             {
                 storyboard.Begin(this);
             };
-
-            // -- end of animation test
 
             foreach (var gate in circuit.gates)
                 DrawGate(canvas, gate);
@@ -120,7 +105,16 @@ namespace AoC_Day24
                 DrawWire(canvas, wire, wire.suspicious);
         }
 
-        private void animateConnection(KeyValuePair<string, Path> connection)
+        private void StyleButton(Button button)
+        {
+            button.Background = Brushes.Transparent;
+            button.FontFamily = consolasFamily;
+            button.FontSize = cellHeight * 0.4;
+            button.Foreground = darkGreenBrush;
+            button.BorderThickness = new Thickness(0);
+        }
+
+        private void AnimateConnection(KeyValuePair<string, Path> connection)
         {
             var wireName = connection.Key[..3];
 
@@ -183,7 +177,7 @@ namespace AoC_Day24
             storyboard.Children.Add(animation);
         }
 
-        private void updateConnection(string connectionKey)
+        private void UpdateConnectionValue(string connectionKey)
         {
             var wireName = connectionKey[..3];
 
@@ -201,66 +195,41 @@ namespace AoC_Day24
                 bits[connectionKey].Text = wire.value.Value ? "1" : "0";
         }
 
-        internal async void simulate(object sender, RoutedEventArgs e)
+        internal async void Simulate(object sender, RoutedEventArgs e)
         {
             foreach (var wire in circuit.wires.Values)
                 wire.Reset();
 
-            //circuit.SimulateGates();
-            //bool allReady;
-            //do
-            //{
-            //    allReady = true;
-            //    foreach (var gate in circuit.gates)
-            //    {
-            //        if (!gate.Process())
-            //        {
-            //            allReady = false;
-            //        }
-            //        else
-            //        {
-            //            updateConnection($"{gate.inputs[0].name}{gate.op}");
-            //            updateConnection($"{gate.inputs[1].name}{gate.op}");
-            //            updateConnection($"{gate.op}{gate.output.name}");
-
-            //            await Task.Delay(500);
-            //        }
-            //    }
-            //}
-            //while (!allReady);
-            
-            await test(circuit.wires["x00"]);
-            await test(circuit.wires["x01"]);
+            foreach (var wire in circuit.wires.Values)
+                if (wire.name.StartsWith('x'))
+                    await Process(wire);
         }
 
-        internal async Task test(Wire wire)
+        internal async Task Process(Wire wire)
         {
-
             foreach (var gate in circuit.gates)
             {
-                if (!gate.ready && (gate.inputs[0] == wire || gate.inputs[1] == wire))
+                if (!gate.ready && (gate.inputs[0] == wire || gate.inputs[1] == wire) && gate.inputs[0].value.HasValue && gate.inputs[1].value.HasValue)
                 {
                     gate.Process();
 
-                    updateConnection($"{gate.inputs[0].name}{gate.op}");
-                    updateConnection($"{gate.inputs[1].name}{gate.op}");
-                    updateConnection($"{gate.op}{gate.output.name}");
+                    UpdateConnectionValue($"{gate.inputs[0].name}{gate.op}");
+                    UpdateConnectionValue($"{gate.inputs[1].name}{gate.op}");
+                    UpdateConnectionValue($"{gate.op}{gate.output.name}");
 
                     await Task.Delay(500);
 
-                    await test(gate.output);
+                    await Process(gate.output);
                 }
             }
         }
 
-        internal void simulateMouseEnter(object sender, RoutedEventArgs e)
+        internal void SimulateMouseEnter(object sender, RoutedEventArgs e)
         {
-            //buttonSimulate.Background = backgroundBrush;
             //buttonSimulate.Foreground = lightGreenBrush;
         }
-        internal void simulateMouseLeave(object sender, RoutedEventArgs e)
+        internal void SimulateMouseLeave(object sender, RoutedEventArgs e)
         {
-            //buttonSimulate.Background = Brushes.Transparent;
             //buttonSimulate.Foreground = darkGreenBrush;
         }
 
