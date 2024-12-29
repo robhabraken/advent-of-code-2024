@@ -89,7 +89,7 @@ namespace AoC_Day24
                 FontFamily = consolasFamily,
                 FontSize = cellHeight * 0.4,
                 FontWeight = FontWeights.Light,
-                Foreground = Brushes.Silver,
+                Foreground = suspicious ? Brushes.Red : Brushes.Silver,
                 Text = name,
                 Width = cellWidth,
                 Height = cellHeight,
@@ -175,6 +175,8 @@ namespace AoC_Day24
                             new Point(x2 - cellWidth, y2),
                             new Point(x2, y2),
                             true));
+
+                    DrawArrow(canvas, x2, y2, 1, suspicious);
                 }
                 else
                 {
@@ -188,6 +190,8 @@ namespace AoC_Day24
                             new Point(x2, y2 - cellHeight),
                             new Point(x2, y2),
                             true));
+
+                    DrawArrow(canvas, x2, y2, 2, suspicious);
                 }
             }
             else if (x1 < x2 && y1 > y2)
@@ -204,6 +208,8 @@ namespace AoC_Day24
                             new Point(x2 - cellWidth / 2, y2),
                             new Point(x2, y2),
                             true));
+
+                    DrawArrow(canvas, x2, y2, 1, suspicious);
                 }
                 else
                 {
@@ -217,6 +223,8 @@ namespace AoC_Day24
                             new Point(x2, y2 + cellHeight / 2),
                             new Point(x2, y2),
                             true));
+
+                    DrawArrow(canvas, x2, y2, 0, suspicious);
                 }
             }
             else if (x1 > x2 && y1 < y2)
@@ -231,26 +239,33 @@ namespace AoC_Day24
                         new Point(x2 - spacing, y2 - (y2 - y1) * 0.75),
                         new Point(x2, y2),
                         true));
+
+                DrawArrow(canvas, x2, y2, 2, suspicious);
             }
             else
             {
+                var direction = 0;
                 if (x1 < x2)
                 {
+                    direction = 1;
                     x1 += fromRound ? cellHeight / 2 : cellWidth / 2;
                     x2 -= toRound ? cellHeight / 2 : cellWidth / 2;
                 }
                 else if (x1 > x2)
                 {
+                    direction = 3;
                     x1 -= fromRound ? cellHeight / 2 : cellWidth / 2;
                     x2 += toRound ? cellHeight / 2 : cellWidth / 2;
                 }
                 else if (y1 < y2)
                 {
+                    direction = 2;
                     y1 += cellHeight / 2;
                     y2 -= cellHeight / 2;
                 }
                 else if (y1 > y2)
                 {
+                    direction = 0;
                     y1 -= cellHeight / 2;
                     y2 += cellHeight / 2;
                 }
@@ -260,7 +275,67 @@ namespace AoC_Day24
                     new LineSegment(
                         new Point(x2, y2),
                         true));
+
+                DrawArrow(canvas, x2, y2, direction, suspicious);
             }
+
+            var geometry = new PathGeometry();
+            geometry.Figures.Add(figure);
+
+            var path = new Path
+            {
+                Stroke = suspicious ? Brushes.Red : Brushes.Silver,
+                StrokeThickness = suspicious ? 1.5 : 1,
+                Data = geometry
+            };
+
+            canvas.Children.Add(path);
+        }
+
+        private void DrawArrow(Canvas canvas, double x, double y, int direction, bool suspicious = false)
+        {
+            double x1, x3, y1, y3;
+            switch(direction)
+            {
+                case 0:
+                    x1 = x - spacing / 2;
+                    x3 = x + spacing / 2;
+                    y1 = y + spacing / 2;
+                    y3 = y + spacing / 2;
+                    break;
+                case 1:
+                    x1 = x - spacing / 2;
+                    x3 = x - spacing / 2;
+                    y1 = y - spacing / 2;
+                    y3 = y + spacing / 2;
+                    break;
+                case 2:
+                    x1 = x + spacing / 2;
+                    x3 = x - spacing / 2;
+                    y1 = y - spacing / 2;
+                    y3 = y - spacing / 2;
+                    break;
+                default:
+                    x1 = x + spacing / 2;
+                    x3 = x + spacing / 2;
+                    y1 = y + spacing / 2;
+                    y3 = y - spacing / 2;
+                    break;
+            }
+
+            var figure = new PathFigure
+            {
+                StartPoint = new Point(x1, y1)
+            };
+
+            figure.Segments.Add(
+                new LineSegment(
+                    new Point(x, y),
+                    true));
+            figure.Segments.Add(
+                new LineSegment(
+                    new Point(x3, y3),
+                    true));
 
             var geometry = new PathGeometry();
             geometry.Figures.Add(figure);
