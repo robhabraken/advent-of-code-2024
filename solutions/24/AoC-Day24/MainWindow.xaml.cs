@@ -312,9 +312,9 @@ namespace AoC_Day24
 
             var path = new Path
             {
+                Data = geometry,
                 Stroke = suspicious ? Brushes.Red : greenBrush,
-                StrokeThickness = suspicious ? 1.5 : 1,
-                Data = geometry
+                StrokeThickness = suspicious ? 1.5 : 1
             };
 
             canvas.Children.Add(path);
@@ -370,9 +370,9 @@ namespace AoC_Day24
 
             var path = new Path
             {
+                Data = geometry,
                 Stroke = suspicious ? Brushes.Red : greenBrush,
-                StrokeThickness = suspicious ? 1.5 : 1,
-                Data = geometry
+                StrokeThickness = suspicious ? 1.5 : 1
             };
 
             canvas.Children.Add(path);
