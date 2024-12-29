@@ -29,6 +29,8 @@ namespace AoC_Day24
         private readonly static int spacing = 10;
         private readonly FontFamily consolasFamily;
         private readonly SolidColorBrush backgroundBrush;
+        private readonly SolidColorBrush elementBackgroundBrush;
+        private readonly SolidColorBrush greenBrush;
 
         public MainWindow()
         {
@@ -36,6 +38,8 @@ namespace AoC_Day24
 
             consolasFamily = new FontFamily("Consolas");
             backgroundBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#0f0f23");
+            elementBackgroundBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#10101a");
+            greenBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#00cc00");
 
             Width = spacing + (cellWidth + spacing) * 12;
             Height = Width;
@@ -71,6 +75,7 @@ namespace AoC_Day24
         {
             var rectangle = new Rectangle
             {
+                Fill = elementBackgroundBrush,
                 Stroke = suspicious ? Brushes.Red : Brushes.Silver,
                 StrokeThickness = suspicious ? 1.5 : 1,
                 RadiusX = cellHeight / 10,
@@ -119,6 +124,7 @@ namespace AoC_Day24
         {
             var circle = new Ellipse
             {
+                Fill = elementBackgroundBrush,
                 Stroke = Brushes.Silver,
                 Width = cellHeight,
                 Height = cellHeight
@@ -284,7 +290,7 @@ namespace AoC_Day24
 
             var path = new Path
             {
-                Stroke = suspicious ? Brushes.Red : Brushes.Silver,
+                Stroke = suspicious ? Brushes.Red : greenBrush,
                 StrokeThickness = suspicious ? 1.5 : 1,
                 Data = geometry
             };
@@ -342,7 +348,7 @@ namespace AoC_Day24
 
             var path = new Path
             {
-                Stroke = suspicious ? Brushes.Red : Brushes.Silver,
+                Stroke = suspicious ? Brushes.Red : greenBrush,
                 StrokeThickness = suspicious ? 1.5 : 1,
                 Data = geometry
             };
