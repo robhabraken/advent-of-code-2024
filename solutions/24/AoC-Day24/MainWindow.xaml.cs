@@ -43,6 +43,7 @@ namespace AoC_Day24
             Canvas.SetTop(canvas, 0);
             Canvas.SetLeft(canvas, 0);
 
+            // test code (hardcoded example), will be replaced by input from 24-part-2/Alternative
             DrawConnection(canvas, 0, 1, 0, 1, 1, 0);
             DrawConnection(canvas, 1, 3, 0, 2, 2, 0);
             DrawConnection(canvas, 1, 3, 0, 1, 1, 0);
