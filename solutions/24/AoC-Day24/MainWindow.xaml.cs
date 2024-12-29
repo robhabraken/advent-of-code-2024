@@ -58,7 +58,7 @@ namespace AoC_Day24
             Height = Width;
 
             canvas.Width = spacing + (cellWidth + spacing) * 12;
-            canvas.Height = spacing + 46 * (cellHeight + spacing) * 4;
+            canvas.Height = spacing + 45.5 * (cellHeight + spacing) * 4;
             canvas.Background = backgroundBrush;
 
             circuit = new Circuit();
