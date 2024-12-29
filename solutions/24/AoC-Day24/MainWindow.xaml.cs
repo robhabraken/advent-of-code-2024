@@ -66,8 +66,6 @@ namespace AoC_Day24
 
         private void DrawWire(Canvas canvas, Wire wire, bool suspicious = false)
         {
-            if (wire.position == null) return;
-
             DrawWire(canvas, wire.name, wire.position.x, wire.position.y, wire.position.offset, suspicious);
         }
 
@@ -108,8 +106,6 @@ namespace AoC_Day24
 
         private void DrawGate(Canvas canvas, Gate gate)
         {
-            if (gate.position == null) return;
-
             var opSymbol = gate.op switch
             {
                 "AND" => "&&",
@@ -154,8 +150,6 @@ namespace AoC_Day24
 
         private void DrawConnection(Canvas canvas, Element from, Element to, bool suspicious = false)
         {
-            if (from.position == null || to.position == null) return;
-
             DrawConnection(canvas, from.position.x, from.position.y, from.position.offset, from is Gate, to.position.x, to.position.y, to.position.offset, to is Gate, suspicious);
         }
 

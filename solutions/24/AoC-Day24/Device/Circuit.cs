@@ -123,7 +123,17 @@ namespace AoC_Day24.Device
 
                                         // expected connection to end wire here
                                         if (!endWires.Contains(gate2.output))
+                                        {
                                             gate2.Suspicious = true;
+                                            foreach (var gate3 in gates)
+                                            {
+                                                if (gate3.inputs[0] == gate2.output || gate3.inputs[1] == gate2.output)
+                                                {
+                                                    gate3.position = new Coordinate(6, 2, offset);
+                                                    gate3.output.position = new Coordinate(8, 2, offset);
+                                                }
+                                            }
+                                        }
                                     }
                                     else if (offset > 0 && gate2.op.Equals("OR"))
                                     {
@@ -144,14 +154,6 @@ namespace AoC_Day24.Device
                     }
                 }
             }
-
-            foreach (var wire in wires.Values)
-                if (wire.position == null)
-                    Console.WriteLine($"Wire not positioned: {wire.name}");
-
-            foreach (var gate in gates)
-                if (gate.position == null)
-                    Console.WriteLine($"Gate not positioned: {gate}");
 
             var answer = string.Empty;
             foreach (var wire in wires.Values)
