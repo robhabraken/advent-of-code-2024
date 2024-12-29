@@ -15,6 +15,7 @@ using Rectangle = System.Windows.Shapes.Rectangle;
 using AoC_Day24.Device;
 using AoC_Day24.Visualization;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Diagnostics;
 
 namespace AoC_Day24
 {
@@ -118,7 +119,7 @@ namespace AoC_Day24
         {
             var rectangle = new Rectangle
             {
-                Fill = backgroundBrush,
+                //Fill = backgroundBrush,
                 Stroke = Brushes.Silver,
                 RadiusX = cellHeight / 10,
                 RadiusY = cellHeight / 10,
@@ -152,14 +153,21 @@ namespace AoC_Day24
         {
             if (gate.position == null) return;
 
-            DrawGate(canvas, gate.op, gate.position.x, gate.position.y, gate.position.offset);
+            var opSymbol = gate.op switch
+            {
+                "AND" => "&&",
+                "OR" => "||",
+                _ => "!="
+            };
+
+            DrawGate(canvas, opSymbol, gate.position.x, gate.position.y, gate.position.offset);
         }
 
         private void DrawGate(Canvas canvas, string name, int xPos, int yPos, int offset)
         {
             var circle = new Ellipse
             {
-                Fill = backgroundBrush,
+                //Fill = backgroundBrush,
                 Stroke = Brushes.Silver,
                 Width = cellHeight,
                 Height = cellHeight
@@ -203,12 +211,15 @@ namespace AoC_Day24
             var y2 = CalculateTop(toY, toOffset) + cellHeight / 2;
 
             var figure = new PathFigure();
-            figure.StartPoint = new Point(x1, y1);
             if (x1 < x2 && y1 < y2)
             {
+                y1 += cellHeight / 2;
+                x2 -= cellWidth / 2;
+
+                figure.StartPoint = new Point(x1, y1);
                 figure.Segments.Add(
                     new BezierSegment(
-                        new Point(x1 - cellWidth / 2, y1 + cellHeight * 1.5),
+                        new Point(x1 - spacing, y1 + cellHeight),
                         new Point(x2 - cellWidth, y2 + spacing),
                         new Point(x2, y2),
                         true));
@@ -216,31 +227,69 @@ namespace AoC_Day24
             else if (x1 < x2 && y1 > y2)
             {
                 if (toY == 0)
+                {
+                    y1 -= cellHeight / 2;
+                    x2 -= cellWidth / 2;
+
+                    figure.StartPoint = new Point(x1, y1);
                     figure.Segments.Add(
                         new BezierSegment(
-                            new Point(x1 - spacing, y1 - cellHeight),
-                            new Point(x2 - cellWidth, y2 - spacing),
+                            new Point(x1, y1 - cellHeight / 2),
+                            new Point(x2 - cellWidth / 2, y2),
                             new Point(x2, y2),
                             true));
+                }
                 else
+                {
+                    x1 += cellWidth / 2;
+                    y2 += cellHeight / 2;
+
+                    figure.StartPoint = new Point(x1, y1);
                     figure.Segments.Add(
                         new BezierSegment(
-                            new Point(x1 + cellWidth, y1 + spacing),
-                            new Point(x2 + spacing, y2 + cellHeight),
+                            new Point(x1 + cellWidth / 2, y1),
+                            new Point(x2, y2 + cellHeight / 2),
                             new Point(x2, y2),
                             true));
+                }
             }
             else if (x1 > x2 && y1 < y2)
             {
+                y1 += cellHeight / 2;
+                y2 -= cellHeight / 2;
+
+                figure.StartPoint = new Point(x1, y1);
                 figure.Segments.Add(
                     new BezierSegment(
-                        new Point(x1 + cellWidth / 2, y1 + cellHeight * 2),
-                        new Point(x2 - cellWidth / 2, y2 - cellHeight * 2),
+                        new Point(x1 + spacing, y1 + (y2 - y1) * 0.75),
+                        new Point(x2 - spacing, y2 - (y2 - y1) * 0.75),
                         new Point(x2, y2),
                         true));
             }
             else
             {
+                if (x1 < x2)
+                {
+                    x1 += cellWidth / 2;
+                    x2 -= cellWidth / 2;
+                }
+                else if (x1 > x2)
+                {
+                    x1 -= cellWidth / 2;
+                    x2 += cellWidth / 2;
+                }
+                else if (y1 < y2)
+                {
+                    y1 += cellHeight / 2;
+                    y2 -= cellHeight / 2;
+                }
+                else if (y1 > y2)
+                {
+                    y1 -= cellHeight / 2;
+                    y2 += cellHeight / 2;
+                }
+
+                figure.StartPoint = new Point(x1, y1);
                 figure.Segments.Add(
                     new LineSegment(
                         new Point(x2, y2),
