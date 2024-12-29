@@ -33,9 +33,12 @@ namespace AoC_Day24
             consolasFamily = new FontFamily("Consolas");
             backgroundBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#0f0f23");
 
+            Width = spacing + (cellWidth + spacing) * 12;
+            Height = Width; // make scrollable
+
             var canvas = new Canvas();
-            canvas.Width = Width;
-            canvas.Height = 1500;
+            canvas.Width = spacing + (cellWidth + spacing) * 12;
+            canvas.Height = spacing + 46 * (cellHeight + spacing) * 4;
             canvas.Background = backgroundBrush;
             Canvas.SetTop(canvas, 0);
             Canvas.SetLeft(canvas, 0);
@@ -155,62 +158,62 @@ namespace AoC_Day24
             var x2 = CalculateLeft(toX) + cellWidth / 2;
             var y2 = CalculateTop(toY, toOffset) + cellHeight / 2;
 
-            var myPathFigure = new PathFigure();
-            myPathFigure.StartPoint = new Point(x1, y1);
+            var figure = new PathFigure();
+            figure.StartPoint = new Point(x1, y1);
             if (x1 < x2 && y1 < y2)
             {
-                myPathFigure.Segments.Add(
+                figure.Segments.Add(
                     new BezierSegment(
                         new Point(x1 - cellWidth / 2, y1 + cellHeight * 1.5),
                         new Point(x2 - cellWidth, y2 + spacing),
                         new Point(x2, y2),
-                        true /* IsStroked */ ));
+                        true));
             }
             else if (x1 < x2 && y1 > y2)
             {
                 if (toY == 0)
-                    myPathFigure.Segments.Add(
+                    figure.Segments.Add(
                         new BezierSegment(
                             new Point(x1 - spacing, y1 - cellHeight),
                             new Point(x2 - cellWidth, y2 - spacing),
                             new Point(x2, y2),
-                            true /* IsStroked */ ));
+                            true));
                 else
-                    myPathFigure.Segments.Add(
+                    figure.Segments.Add(
                         new BezierSegment(
                             new Point(x1 + cellWidth, y1 + spacing),
                             new Point(x2 + spacing, y2 + cellHeight),
                             new Point(x2, y2),
-                            true /* IsStroked */ ));
+                            true));
             }
             else if (x1 > x2 && y1 < y2)
             {
-                myPathFigure.Segments.Add(
+                figure.Segments.Add(
                     new BezierSegment(
                         new Point(x1 + cellWidth / 2, y1 + cellHeight * 2),
                         new Point(x2 - cellWidth / 2, y2 - cellHeight * 2),
                         new Point(x2, y2),
-                        true /* IsStroked */ ));
+                        true));
             }
             else
             {
-                myPathFigure.Segments.Add(
+                figure.Segments.Add(
                     new LineSegment(
                         new Point(x2, y2),
-                        true /* IsStroked */ ));
+                        true));
             }
 
-            /// Create a PathGeometry to contain the figure.
-            var myPathGeometry = new PathGeometry();
-            myPathGeometry.Figures.Add(myPathFigure);
+            var geometry = new PathGeometry();
+            geometry.Figures.Add(figure);
 
-            // Display the PathGeometry.
-            var myPath = new Path();
-            myPath.Stroke = suspicious ? Brushes.Red : Brushes.Silver;
-            myPath.StrokeThickness = suspicious ? 1.5 : 1;
-            myPath.Data = myPathGeometry;
+            var path = new Path
+            {
+                Stroke = suspicious ? Brushes.Red : Brushes.Silver,
+                StrokeThickness = suspicious ? 1.5 : 1,
+                Data = geometry
+            };
 
-            canvas.Children.Add(myPath);
+            canvas.Children.Add(path);
         }
 
         private static double CalculateLeft(int xPos, bool circle = false)
@@ -219,7 +222,7 @@ namespace AoC_Day24
             if (circle)
                 indent = (cellWidth - cellHeight) / 2;
 
-            return spacing + xPos * (cellWidth + spacing) + indent;
+            return spacing + ++xPos * (cellWidth + spacing) + indent;
         }
 
         private static double CalculateTop(int yPos, int offset)
