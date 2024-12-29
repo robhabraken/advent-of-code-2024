@@ -16,6 +16,7 @@ using AoC_Day24.Device;
 using AoC_Day24.Visualization;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Diagnostics;
+using System.Xml.Linq;
 
 namespace AoC_Day24
 {
@@ -62,6 +63,33 @@ namespace AoC_Day24
 
             foreach (var wire in circuit.wires.Values)
                 DrawWire(canvas, wire, wire.suspicious);
+
+            var answer = string.Empty;
+            foreach (var wire in circuit.wires.Values)
+                if (wire.suspicious)
+                    answer += $"{wire.name},";
+
+            DrawAnswer(canvas, $"Puzzle answer: {answer[..^1]}");
+        }
+
+        private void DrawAnswer(Canvas canvas, string answer)
+        {
+            var label = new TextBox
+            {
+                Background = Brushes.Transparent,
+                BorderThickness = new Thickness(0),
+                FontFamily = consolasFamily,
+                FontSize = cellHeight * 0.4,
+                FontWeight = FontWeights.Light,
+                Foreground = Brushes.Silver,
+                Text = answer,
+                Height = cellHeight,
+                TextAlignment = TextAlignment.Left,
+                VerticalContentAlignment = VerticalAlignment.Center
+            };
+            Canvas.SetLeft(label, spacing);
+            Canvas.SetTop(label, spacing);
+            canvas.Children.Add(label);
         }
 
         private void DrawWire(Canvas canvas, Wire wire, bool suspicious = false)

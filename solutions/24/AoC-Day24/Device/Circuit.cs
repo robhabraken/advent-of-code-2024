@@ -154,13 +154,6 @@ namespace AoC_Day24.Device
                     }
                 }
             }
-
-            var answer = string.Empty;
-            foreach (var wire in wires.Values)
-                if (wire.suspicious)
-                    answer += $"{wire.name},";
-
-            Console.WriteLine(answer[..^1]);
         }
 
         private void AddWire(string wireName)
