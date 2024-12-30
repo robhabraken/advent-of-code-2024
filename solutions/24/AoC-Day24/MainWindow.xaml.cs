@@ -225,14 +225,6 @@ namespace AoC_Day24
 
             circuit.RepairCrossedWires();
 
-            foreach (var wire in circuit.wires.Values)
-                wire.HardReset();
-
-            foreach (var gate in circuit.gates)
-                gate.Reset();
-
-            circuit.SortAndPositionWires();
-
             DrawCircuit();
         }
 

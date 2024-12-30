@@ -265,6 +265,14 @@ namespace AoC_Day24.Device
                     }
                 }
             }
+
+            foreach (var wire in wires.Values)
+                wire.HardReset();
+
+            foreach (var gate in gates)
+                gate.Reset();
+
+            SortAndPositionWires();
         }
 
         private long ProduceNumberFor(string wireType)
