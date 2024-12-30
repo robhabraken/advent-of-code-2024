@@ -79,7 +79,7 @@ namespace AoC_Day24
             {
                 DrawConnection(canvas, gate.inputs[0], gate, $"{gate.inputs[0].name}{gate.op}");
                 DrawConnection(canvas, gate.inputs[1], gate, $"{gate.inputs[1].name}{gate.op}");
-                DrawConnection(canvas, gate, gate.output, $"{gate.op}{gate.output.name}", gate.Suspicious);
+                DrawConnection(canvas, gate, gate.output, $"{gate.op}{gate.output.name}", gate.suspicious);
             }
 
             var answer = string.Empty;

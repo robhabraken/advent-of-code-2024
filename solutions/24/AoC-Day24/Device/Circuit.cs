@@ -101,7 +101,7 @@ namespace AoC_Day24.Device
 
                             // didn't expect a direct connection to an end wire here
                             if (offset > 0 && endWires.Contains(gate.output))
-                                gate.Suspicious = true;
+                                gate.MarkSuspicious(offset);
 
                             foreach (var gate2 in gates)
                             {
@@ -119,12 +119,12 @@ namespace AoC_Day24.Device
 
                                         // expected different preceding operator
                                         if (offset > 0 && !gate.op.Equals("XOR"))
-                                            gate.Suspicious = true;
+                                            gate.MarkSuspicious(offset);
 
                                         // expected connection to end wire here
                                         if (!endWires.Contains(gate2.output))
                                         {
-                                            gate2.Suspicious = true;
+                                            gate2.MarkSuspicious(offset);
                                             foreach (var gate3 in gates)
                                             {
                                                 if (gate3.inputs[0] == gate2.output || gate3.inputs[1] == gate2.output)
@@ -142,12 +142,12 @@ namespace AoC_Day24.Device
 
                                         // expected different preceding operator
                                         if (!gate.op.Equals("AND"))
-                                            gate.Suspicious = true;
+                                            gate.MarkSuspicious(offset);
                                     }
 
                                     // expected different outgoing operator to end wire
                                     if (offset < 44 && endWires.Contains(gate2.output) && !gate2.op.Equals("XOR"))
-                                        gate2.Suspicious = true;
+                                        gate2.MarkSuspicious(offset);
                                 }
                             }
                         }
