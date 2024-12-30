@@ -1,33 +1,16 @@
-﻿using System.Drawing;
-using System.Text;
+﻿using AoC_Day24.Device;
+using AoC_Day24.Visualization;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
+using System.Windows.Media.Animation;
 using System.Windows.Shapes;
-using static System.Net.Mime.MediaTypeNames;
+using Label = System.Windows.Controls.Label;
 using Point = System.Windows.Point;
 using Rectangle = System.Windows.Shapes.Rectangle;
-using AoC_Day24.Device;
-using AoC_Day24.Visualization;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Diagnostics;
-using System.Xml.Linq;
-using System.Security.AccessControl;
-using System.Windows.Media.Animation;
-using System.Net.WebSockets;
-using System.Reflection.Emit;
-using Label = System.Windows.Controls.Label;
 
 namespace AoC_Day24
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
 
