@@ -6,11 +6,25 @@
         xmlns:local="clr-namespace:AoC_Day24"
         mc:Ignorable="d"
         Title="AoC Day 24: Crossed Wires" Height="450" Width="800">
+    <Window.Resources>
+        <ControlTemplate x:Key="AoCButton" TargetType="{x:Type ButtonBase}">
+            <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="true">
+                <ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="true">
+                    <Setter Property="Background" TargetName="border" Value="Transparent"/>
+                    <Setter Property="BorderBrush" TargetName="border" Value="Transparent"/>
+                    <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="#99ff99"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+    </Window.Resources>    
     <ScrollViewer>
         <Grid>
             <DockPanel Name="dockPanel" Height="30" VerticalAlignment="Top" LastChildFill="False" HorizontalAlignment="Right" Margin="0,10,10,0" Panel.ZIndex="10000">
-                <Button Name="buttonSimulate" Click="Simulate" MouseEnter="SimulateMouseEnter" MouseLeave="SimulateMouseLeave" Width="100" Margin="10,0,0,0">[Simulate]</Button>
-                <Button Name="buttonRepare" Width="100" Margin="10,0,0,0">[Repare]</Button>
+                <Button Name="buttonSimulate" Click="Simulate" Template="{DynamicResource AoCButton}" Margin="10,0,0,0" Width="100">[Simulate]</Button>
+                <Button Name="buttonRepare" Template="{DynamicResource AoCButton}" Margin="10,0,0,0" Width="100">[Repare]</Button>
             </DockPanel>
             <Canvas Name="canvas"></Canvas>
         </Grid>

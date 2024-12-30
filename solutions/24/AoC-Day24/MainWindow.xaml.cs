@@ -224,15 +224,6 @@ namespace AoC_Day24
             }
         }
 
-        internal void SimulateMouseEnter(object sender, RoutedEventArgs e)
-        {
-            //buttonSimulate.Foreground = lightGreenBrush;
-        }
-        internal void SimulateMouseLeave(object sender, RoutedEventArgs e)
-        {
-            //buttonSimulate.Foreground = darkGreenBrush;
-        }
-
         private void DrawAnswer(Canvas canvas, string answer)
         {
             var label = new TextBox
