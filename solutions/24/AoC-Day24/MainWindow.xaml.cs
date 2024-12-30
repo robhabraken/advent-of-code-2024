@@ -36,7 +36,6 @@ namespace AoC_Day24
         private readonly SolidColorBrush elementBackgroundBrush;
         private readonly SolidColorBrush greenBrush;
         private readonly SolidColorBrush darkGreenBrush;
-        private readonly SolidColorBrush lightGreenBrush;
         private readonly SolidColorBrush goldBrush;
 
         public Dictionary<string, Path> connections;
@@ -54,14 +53,10 @@ namespace AoC_Day24
             elementBackgroundBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#10101a");
             greenBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#00cc00");
             darkGreenBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#009900");
-            lightGreenBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#99ff99");
             goldBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#ffff66");
 
             StyleButton(buttonSimulate);
             StyleButton(buttonRepair);
-
-            connections = new Dictionary<string, Path>();
-            bits = new Dictionary<string, TextBox>();
 
             MinWidth = spacing + (cellWidth + spacing) * 12;
             MaxWidth = MinWidth;
@@ -75,11 +70,28 @@ namespace AoC_Day24
             circuit = new Circuit();
             circuit.Import();
 
+            DrawCircuit();
+        }
+
+        private void StyleButton(Button button)
+        {
+            button.Background = Brushes.Transparent;
+            button.FontFamily = consolasFamily;
+            button.FontSize = cellHeight * 0.4;
+            button.Foreground = darkGreenBrush;
+            button.BorderThickness = new Thickness(0);
+        }
+
+        private void DrawCircuit()
+        {
+            connections = [];
+            bits = [];
+
             foreach (var gate in circuit.gates)
             {
-                DrawConnection(canvas, gate.inputs[0], gate, $"{gate.inputs[0].name}{gate.op}");
-                DrawConnection(canvas, gate.inputs[1], gate, $"{gate.inputs[1].name}{gate.op}");
-                DrawConnection(canvas, gate, gate.output, $"{gate.op}{gate.output.name}", gate.suspicious);
+                DrawConnection(gate.inputs[0], gate, $"{gate.inputs[0].name}{gate.op}");
+                DrawConnection(gate.inputs[1], gate, $"{gate.inputs[1].name}{gate.op}");
+                DrawConnection(gate, gate.output, $"{gate.op}{gate.output.name}", gate.suspicious);
             }
 
             var answer = string.Empty;
@@ -87,7 +99,7 @@ namespace AoC_Day24
                 if (wire.suspicious)
                     answer += $"{wire.name},";
 
-            DrawAnswer(canvas, $"Puzzle answer: {answer[..^1]}");
+            DrawAnswer($"Puzzle answer: {answer[..^1]}");
 
             storyboard = new Storyboard();
 
@@ -101,19 +113,10 @@ namespace AoC_Day24
             };
 
             foreach (var gate in circuit.gates)
-                DrawGate(canvas, gate);
+                DrawGate(gate);
 
             foreach (var wire in circuit.wires.Values)
-                DrawWire(canvas, wire);
-        }
-
-        private void StyleButton(Button button)
-        {
-            button.Background = Brushes.Transparent;
-            button.FontFamily = consolasFamily;
-            button.FontSize = cellHeight * 0.4;
-            button.Foreground = darkGreenBrush;
-            button.BorderThickness = new Thickness(0);
+                DrawWire(wire);
         }
 
         private void AnimateConnection(KeyValuePair<string, Path> connection)
@@ -149,9 +152,7 @@ namespace AoC_Day24
                 bit.Text = wire.value.Value ? "1" : "0";
 
             var animatedMatrixTransform = new MatrixTransform();
-            RegisterName($"AnimatedMatrixTransform{connection.Key}", connection.Key);
             bit.RenderTransform = animatedMatrixTransform;
-
             RegisterName(connection.Key, animatedMatrixTransform);
 
             var geometry = (PathGeometry)connection.Value.Data;
@@ -213,9 +214,22 @@ namespace AoC_Day24
         internal async void Repair(object sender, RoutedEventArgs e)
         {
             // not yet implemented
-            // reset wires, reset gates (ready to false), flip nodes in same group (in Circuit class with gates and all)
-            // then updateConnections again for all values, so they disappear, and add setting bit text to "" when !HasValue
-            // only thing left is how do I actually change the drawings... dunno yet
+            // yet to flip nodes in same group (in Circuit class with gates and all)
+
+            storyboard.Stop();
+
+            foreach (var connection in connections)
+                UnregisterName(connection.Key);
+
+            canvas.Children.Clear();
+
+            foreach (var wire in circuit.wires.Values)
+                wire.Reset();
+
+            foreach (var gate in circuit.gates)
+                gate.ready = false;
+
+            DrawCircuit();
         }
 
         internal async Task Process(Wire wire)
@@ -266,7 +280,7 @@ namespace AoC_Day24
             }
         }
 
-        private void DrawAnswer(Canvas canvas, string answer)
+        private void DrawAnswer(string answer)
         {
             var label = new TextBox
             {
@@ -286,12 +300,12 @@ namespace AoC_Day24
             canvas.Children.Add(label);
         }
 
-        private void DrawWire(Canvas canvas, Wire wire)
+        private void DrawWire(Wire wire)
         {
-            wire.uiElement = DrawWire(canvas, wire.name, wire.position.x, wire.position.y, wire.position.offset, wire.suspicious);
+            wire.uiElement = DrawWire(wire.name, wire.position.x, wire.position.y, wire.position.offset, wire.suspicious);
         }
 
-        private UIElement DrawWire(Canvas canvas, string name, int xPos, int yPos, int offset, bool suspicious)
+        private UIElement DrawWire(string name, int xPos, int yPos, int offset, bool suspicious)
         {
             var rectangle = new Rectangle
             {
@@ -328,7 +342,7 @@ namespace AoC_Day24
             return rectangle;
         }
 
-        private void DrawGate(Canvas canvas, Gate gate)
+        private void DrawGate(Gate gate)
         {
             var opSymbol = gate.op switch
             {
@@ -337,10 +351,10 @@ namespace AoC_Day24
                 _ => "!="
             };
 
-            gate.uiElement = DrawGate(canvas, opSymbol, gate.position.x, gate.position.y, gate.position.offset);
+            gate.uiElement = DrawGate(opSymbol, gate.position.x, gate.position.y, gate.position.offset);
         }
 
-        private UIElement DrawGate(Canvas canvas, string name, int xPos, int yPos, int offset)
+        private UIElement DrawGate(string name, int xPos, int yPos, int offset)
         {
             var circle = new Ellipse
             {
@@ -374,13 +388,13 @@ namespace AoC_Day24
             return circle;
         }
 
-        private void DrawConnection(Canvas canvas, Element from, Element to, string name, bool suspicious = false)
+        private void DrawConnection(Element from, Element to, string name, bool suspicious = false)
         {
-            var path = DrawConnection(canvas, from.position.x, from.position.y, from.position.offset, from is Gate, to.position.x, to.position.y, to.position.offset, to is Gate, suspicious);
+            var path = DrawConnection(from.position.x, from.position.y, from.position.offset, from is Gate, to.position.x, to.position.y, to.position.offset, to is Gate, suspicious);
             connections.Add(name, path);
         }
 
-        private Path DrawConnection(Canvas canvas, int fromX, int fromY, int fromOffset, bool fromRound, int toX, int toY, int toOffset, bool toRound, bool suspicious = false)
+        private Path DrawConnection(int fromX, int fromY, int fromOffset, bool fromRound, int toX, int toY, int toOffset, bool toRound, bool suspicious = false)
         {
             var x1 = CalculateLeft(fromX) + cellWidth / 2;
             var y1 = CalculateTop(fromY, fromOffset) + cellHeight / 2;
@@ -404,7 +418,7 @@ namespace AoC_Day24
                             new Point(x2, y2),
                             true));
 
-                    arrowFigure = DrawArrow(canvas, x2, y2, 1, suspicious);
+                    arrowFigure = DrawArrow(x2, y2, 1, suspicious);
                 }
                 else
                 {
@@ -419,7 +433,7 @@ namespace AoC_Day24
                             new Point(x2, y2),
                             true));
 
-                    arrowFigure = DrawArrow(canvas, x2, y2, 2, suspicious);
+                    arrowFigure = DrawArrow(x2, y2, 2, suspicious);
                 }
             }
             else if (x1 < x2 && y1 > y2)
@@ -437,7 +451,7 @@ namespace AoC_Day24
                             new Point(x2, y2),
                             true));
 
-                    arrowFigure = DrawArrow(canvas, x2, y2, 1, suspicious);
+                    arrowFigure = DrawArrow(x2, y2, 1, suspicious);
                 }
                 else
                 {
@@ -452,7 +466,7 @@ namespace AoC_Day24
                             new Point(x2, y2),
                             true));
 
-                    arrowFigure = DrawArrow(canvas, x2, y2, 0, suspicious);
+                    arrowFigure = DrawArrow(x2, y2, 0, suspicious);
                 }
             }
             else if (x1 > x2 && y1 < y2)
@@ -468,7 +482,7 @@ namespace AoC_Day24
                         new Point(x2, y2),
                         true));
 
-                arrowFigure = DrawArrow(canvas, x2, y2, 2, suspicious);
+                arrowFigure = DrawArrow(x2, y2, 2, suspicious);
             }
             else
             {
@@ -504,7 +518,7 @@ namespace AoC_Day24
                         new Point(x2, y2),
                         true));
 
-                arrowFigure = DrawArrow(canvas, x2, y2, direction, suspicious);
+                arrowFigure = DrawArrow(x2, y2, direction, suspicious);
             }
 
             var geometry = new PathGeometry();
@@ -525,7 +539,7 @@ namespace AoC_Day24
             return path;
         }
 
-        private PathFigure DrawArrow(Canvas canvas, double x, double y, int direction, bool suspicious = false)
+        private PathFigure DrawArrow(double x, double y, int direction, bool suspicious = false)
         {
             double x1, x3, y1, y3;
             switch(direction)
