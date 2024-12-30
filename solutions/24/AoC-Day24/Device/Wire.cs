@@ -24,9 +24,16 @@ namespace AoC_Day24.Device
             initialValue = value;
         }
 
-        public void Reset()
+        public void ResetValue()
         {
             value = initialValue;
+        }
+
+        public void HardReset()
+        {
+            value = initialValue;
+            suspicious = false;
+            influenced = false;
         }
     }
 }

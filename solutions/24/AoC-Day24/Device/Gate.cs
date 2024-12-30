@@ -47,6 +47,12 @@ namespace AoC_Day24.Device
             return true;
         }
 
+        public void Reset()
+        {
+            ready = false;
+            suspicious = false;
+        }
+
         public override string ToString()
         {
             var opSymbol = op switch

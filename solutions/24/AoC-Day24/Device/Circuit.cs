@@ -52,6 +52,12 @@ namespace AoC_Day24.Device
             foreach (var wire in wires.Values)
                 wire.Set();
 
+            SortAndPositionWires();
+        }
+
+        public void SortAndPositionWires()
+        {
+
             // select begin and end wires of circuit
             var beginWires = new List<Wire>();
             var endWires = new List<Wire>();
@@ -181,7 +187,7 @@ namespace AoC_Day24.Device
             }
 
             foreach (var wire in wires.Values)
-                wire.Reset();
+                wire.ResetValue();
 
             foreach (var gate in gates)
                 gate.ready = false;
@@ -234,6 +240,31 @@ namespace AoC_Day24.Device
                         allReady = false;
             }
             while (!allReady);
+        }
+
+        public void RepairCrossedWires()
+        {
+            foreach (var wire1 in wires.Values)
+            {
+                if (wire1.suspicious)
+                {
+                    foreach (var wire2 in wires.Values)
+                    {
+                        if (wire1 != wire2 && wire1.group == wire2.group)
+                        {
+                            foreach (var gate in gates)
+                            {
+                                if (gate.output == wire1)
+                                    gate.output = wire2;
+                                else if (gate.output == wire2)
+                                    gate.output = wire1;
+                            }
+                            wire1.suspicious = false;
+                            wire2.suspicious = false;
+                        }
+                    }
+                }
+            }
         }
 
         private long ProduceNumberFor(string wireType)

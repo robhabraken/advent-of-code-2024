@@ -99,7 +99,10 @@ namespace AoC_Day24
                 if (wire.suspicious)
                     answer += $"{wire.name},";
 
-            DrawAnswer($"Puzzle answer: {answer[..^1]}");
+            if (answer.Length > 0)
+                answer = answer[..^1];
+
+            DrawAnswer($"Puzzle answer: {answer}");
 
             storyboard = new Storyboard();
 
@@ -204,7 +207,7 @@ namespace AoC_Day24
         internal async void Simulate(object sender, RoutedEventArgs e)
         {
             foreach (var wire in circuit.wires.Values)
-                wire.Reset();
+                wire.ResetValue();
 
             foreach (var wire in circuit.wires.Values)
                 if (wire.name.StartsWith('x'))
@@ -213,9 +216,6 @@ namespace AoC_Day24
 
         internal async void Repair(object sender, RoutedEventArgs e)
         {
-            // not yet implemented
-            // yet to flip nodes in same group (in Circuit class with gates and all)
-
             storyboard.Stop();
 
             foreach (var connection in connections)
@@ -223,11 +223,15 @@ namespace AoC_Day24
 
             canvas.Children.Clear();
 
+            circuit.RepairCrossedWires();
+
             foreach (var wire in circuit.wires.Values)
-                wire.Reset();
+                wire.HardReset();
 
             foreach (var gate in circuit.gates)
-                gate.ready = false;
+                gate.Reset();
+
+            circuit.SortAndPositionWires();
 
             DrawCircuit();
         }
