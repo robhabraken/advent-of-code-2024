@@ -20,6 +20,7 @@ using System.Xml.Linq;
 using System.Security.AccessControl;
 using System.Windows.Media.Animation;
 using System.Net.WebSockets;
+using System.Reflection.Emit;
 
 namespace AoC_Day24
 {
@@ -55,6 +56,7 @@ namespace AoC_Day24
             darkGreenBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#009900");
             goldBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#ffff66");
 
+            StyleButton(buttonAnimate);
             StyleButton(buttonSimulate);
             StyleButton(buttonRepair);
 
@@ -108,12 +110,6 @@ namespace AoC_Day24
             foreach (var connection in connections)
                 AnimateConnection(connection);
 
-            var lastPath = connections.Values.Last();
-            lastPath.Loaded += delegate (object sender, RoutedEventArgs e)
-            {
-                storyboard.Begin(this);
-            };
-
             foreach (var gate in circuit.gates)
                 DrawGate(gate);
 
@@ -145,7 +141,7 @@ namespace AoC_Day24
                 Foreground = wire.influenced ? Brushes.Red : goldBrush,
                 TextAlignment = TextAlignment.Center,
                 VerticalContentAlignment = VerticalAlignment.Center,
-
+                Visibility = Visibility.Collapsed
             };
             bits.Add(connection.Key, bit);
             canvas.Children.Add(bit);
@@ -201,6 +197,14 @@ namespace AoC_Day24
 
             if (wire != null && wire.value.HasValue)
                 bits[connectionKey].Text = wire.value.Value ? "1" : "0";
+        }
+
+        internal async void Animate(object sender, RoutedEventArgs e)
+        {
+            foreach (var bit in bits.Values)
+                bit.Visibility = Visibility.Visible;
+
+            storyboard.Begin(this);
         }
 
         internal async void Simulate(object sender, RoutedEventArgs e)

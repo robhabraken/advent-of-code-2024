@@ -24,6 +24,7 @@
         <Grid>
             <DockPanel Name="dockPanel" Height="30" VerticalAlignment="Top" LastChildFill="False" HorizontalAlignment="Left" Margin="0,10,10,0" Panel.ZIndex="10000">
                 <Label Name="answerLabel" Foreground="Silver" Margin="10,0,10,0"/>
+                <Button Name="buttonAnimate" Click="Animate" Template="{DynamicResource AoCButton}" Margin="10,0,0,0" Width="100">[Animate]</Button>
                 <Button Name="buttonSimulate" Click="Simulate" Template="{DynamicResource AoCButton}" Margin="10,0,0,0" Width="100">[Simulate]</Button>
                 <Button Name="buttonRepair" Click="Repair" Template="{DynamicResource AoCButton}" Margin="10,0,0,0" Width="100">[Repair]</Button>
             </DockPanel>
