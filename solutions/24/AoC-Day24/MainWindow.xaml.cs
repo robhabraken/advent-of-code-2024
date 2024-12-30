@@ -58,7 +58,7 @@ namespace AoC_Day24
             goldBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#ffff66");
 
             StyleButton(buttonSimulate);
-            StyleButton(buttonRepare);
+            StyleButton(buttonRepair);
 
             connections = new Dictionary<string, Path>();
             bits = new Dictionary<string, TextBox>();
@@ -205,6 +205,11 @@ namespace AoC_Day24
             foreach (var wire in circuit.wires.Values)
                 if (wire.name.StartsWith('x'))
                     await Process(wire);
+        }
+
+        internal async void Repair(object sender, RoutedEventArgs e)
+        {
+            // not yet implemented
         }
 
         internal async Task Process(Wire wire)
