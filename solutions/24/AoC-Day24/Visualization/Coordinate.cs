@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AoC_Day24.Visualization
+﻿namespace AoC_Day24.Visualization
 {
     public class Coordinate(int x, int y, int offset)
     {

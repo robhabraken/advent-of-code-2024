@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 
 namespace AoC_Day24.Visualization
 {
     public class Element
     {
-        public Coordinate position;
-        public UIElement uiElement;
+        public Coordinate position = new(0, 0, 0);
+        public UIElement? uiElement;
     }
 }

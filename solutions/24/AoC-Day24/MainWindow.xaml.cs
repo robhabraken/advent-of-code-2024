@@ -195,7 +195,7 @@ namespace AoC_Day24
                 bits[connectionKey].Text = wire.value.Value ? "1" : "0";
         }
 
-        internal void Animate(object sender, RoutedEventArgs e)
+        private void Animate(object sender, RoutedEventArgs e)
         {
             foreach (var bit in bits.Values)
                 bit.Visibility = Visibility.Visible;
@@ -203,7 +203,7 @@ namespace AoC_Day24
             storyboard.Begin(this);
         }
 
-        internal async void Simulate(object sender, RoutedEventArgs e)
+        private async void Simulate(object sender, RoutedEventArgs e)
         {
             foreach (var wire in circuit.wires.Values)
                 wire.ResetValue();
@@ -213,7 +213,7 @@ namespace AoC_Day24
                     await Process(wire);
         }
 
-        internal void Repair(object sender, RoutedEventArgs e)
+        private void Repair(object sender, RoutedEventArgs e)
         {
             storyboard.Stop();
 
@@ -227,7 +227,7 @@ namespace AoC_Day24
             DrawCircuit();
         }
 
-        internal async Task Process(Wire wire)
+        private async Task Process(Wire wire)
         {
             foreach (var gate in circuit.gates)
             {
