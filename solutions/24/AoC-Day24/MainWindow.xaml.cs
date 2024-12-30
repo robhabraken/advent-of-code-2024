@@ -63,7 +63,9 @@ namespace AoC_Day24
             connections = new Dictionary<string, Path>();
             bits = new Dictionary<string, TextBox>();
 
-            Width = spacing + (cellWidth + spacing) * 12;
+            MinWidth = spacing + (cellWidth + spacing) * 12;
+            MaxWidth = MinWidth;
+            Width = MinWidth;
             Height = Width;
 
             canvas.Width = spacing + (cellWidth + spacing) * 12;
