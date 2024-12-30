@@ -275,7 +275,7 @@ namespace AoC_Day24.Device
             SortAndPositionWires();
         }
 
-        private long ProduceNumberFor(string wireType)
+        public long ProduceNumberFor(string wireType)
         {
             var result = string.Empty;
             foreach (var wireName in wires.Keys)

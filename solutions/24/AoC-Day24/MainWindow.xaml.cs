@@ -21,6 +21,7 @@ using System.Security.AccessControl;
 using System.Windows.Media.Animation;
 using System.Net.WebSockets;
 using System.Reflection.Emit;
+using Label = System.Windows.Controls.Label;
 
 namespace AoC_Day24
 {
@@ -29,9 +30,7 @@ namespace AoC_Day24
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly static int cellWidth = 60;
-        private readonly static int cellHeight = 40;
-        private readonly static int spacing = 10;
+
         private readonly FontFamily consolasFamily;
         private readonly SolidColorBrush backgroundBrush;
         private readonly SolidColorBrush elementBackgroundBrush;
@@ -39,9 +38,14 @@ namespace AoC_Day24
         private readonly SolidColorBrush darkGreenBrush;
         private readonly SolidColorBrush goldBrush;
 
+        private readonly static int cellWidth = 60;
+        private readonly static int cellHeight = 40;
+        private readonly static int spacing = 10;
+
+        public Circuit circuit;
+
         public Dictionary<string, Path> connections;
         public Dictionary<string, TextBox> bits;
-        public Circuit circuit;
 
         public Storyboard storyboard;
 
@@ -50,12 +54,13 @@ namespace AoC_Day24
             InitializeComponent();
 
             consolasFamily = new FontFamily("Consolas");
-            backgroundBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#0f0f23");
-            elementBackgroundBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#10101a");
-            greenBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#00cc00");
-            darkGreenBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#009900");
-            goldBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#ffff66");
+            backgroundBrush = BrushFromHex("#0f0f23");
+            elementBackgroundBrush = BrushFromHex("#10101a");
+            greenBrush = BrushFromHex("#00cc00");
+            darkGreenBrush = BrushFromHex("#009900");
+            goldBrush = BrushFromHex("#ffff66");
 
+            StyleLabel(answerLabel);
             StyleButton(buttonAnimate);
             StyleButton(buttonSimulate);
             StyleButton(buttonRepair);
@@ -71,7 +76,6 @@ namespace AoC_Day24
 
             circuit = new Circuit();
             circuit.Import();
-
             DrawCircuit();
 
             var answer = string.Empty;
@@ -79,9 +83,13 @@ namespace AoC_Day24
                 if (wire.suspicious)
                     answer += $"{wire.name},";
 
-            answerLabel.FontFamily = consolasFamily;
-            answerLabel.FontSize = cellHeight * 0.4;
             answerLabel.Content = $"Puzzle answer: {answer[..^1]}";
+        }
+
+        private static SolidColorBrush BrushFromHex(string hex)
+        {
+            var brush = new BrushConverter().ConvertFrom(hex);
+            return brush != null ? (SolidColorBrush)brush : Brushes.White;
         }
 
         private void StyleButton(Button button)
@@ -91,6 +99,12 @@ namespace AoC_Day24
             button.FontSize = cellHeight * 0.4;
             button.Foreground = darkGreenBrush;
             button.BorderThickness = new Thickness(0);
+        }
+
+        private void StyleLabel(Label label)
+        {
+            label.FontFamily = consolasFamily;
+            label.FontSize = cellHeight * 0.4;
         }
 
         private void DrawCircuit()
@@ -106,7 +120,6 @@ namespace AoC_Day24
             }
 
             storyboard = new Storyboard();
-
             foreach (var connection in connections)
                 AnimateConnection(connection);
 
@@ -126,7 +139,7 @@ namespace AoC_Day24
                 connection.Key.StartsWith("XOR"))
                 wireName = connection.Key[^3..];
 
-            Wire wire = new(string.Empty, null);
+            Wire? wire = null;
             foreach (var wireOjbect in circuit.wires.Values)
                 if (wireOjbect.name.Equals(wireName))
                     wire = wireOjbect;
@@ -138,7 +151,7 @@ namespace AoC_Day24
                 FontFamily = consolasFamily,
                 FontSize = cellHeight * 0.4,
                 FontWeight = FontWeights.Light,
-                Foreground = wire.influenced ? Brushes.Red : goldBrush,
+                Foreground = wire != null && wire.influenced ? Brushes.Red : goldBrush,
                 TextAlignment = TextAlignment.Center,
                 VerticalContentAlignment = VerticalAlignment.Center,
                 Visibility = Visibility.Collapsed
@@ -155,15 +168,15 @@ namespace AoC_Day24
 
             var geometry = (PathGeometry)connection.Value.Data;
             var start = geometry.Figures[0].StartPoint;
-            var segment = geometry.Figures[0].Segments.Last();
+            var segment = geometry.Figures[0].Segments.Last(); // only use line itself, not the arrow
 
             Point end;
-            if (segment is LineSegment)
-                end = ((LineSegment)segment).Point;
+            if (segment is LineSegment line)
+                end = line.Point;
             else
                 end = ((BezierSegment)segment).Point3;
 
-            var length = Math.Sqrt(Math.Pow(end.X - start.X, 2) + Math.Pow(end.Y - start.Y, 2));
+            var pathLength = Math.Sqrt(Math.Pow(end.X - start.X, 2) + Math.Pow(end.Y - start.Y, 2));
 
             var animationPath = new PathGeometry();
             animationPath.Figures.Add(geometry.Figures[0]);
@@ -171,7 +184,7 @@ namespace AoC_Day24
             var animation = new MatrixAnimationUsingPath()
             {
                 PathGeometry = animationPath,
-                Duration = new Duration(TimeSpan.FromSeconds(length / cellWidth)),
+                Duration = new Duration(TimeSpan.FromSeconds(pathLength / cellWidth)),
                 RepeatBehavior = RepeatBehavior.Forever
             };
 
@@ -190,7 +203,7 @@ namespace AoC_Day24
                 connectionKey.StartsWith("XOR"))
                 wireName = connectionKey[^3..];
 
-            Wire wire = new(string.Empty, null);
+            Wire? wire = null;
             foreach (var wireOjbect in circuit.wires.Values)
                 if (wireOjbect.name.Equals(wireName))
                     wire = wireOjbect;
@@ -199,7 +212,7 @@ namespace AoC_Day24
                 bits[connectionKey].Text = wire.value.Value ? "1" : "0";
         }
 
-        internal async void Animate(object sender, RoutedEventArgs e)
+        internal void Animate(object sender, RoutedEventArgs e)
         {
             foreach (var bit in bits.Values)
                 bit.Visibility = Visibility.Visible;
@@ -217,7 +230,7 @@ namespace AoC_Day24
                     await Process(wire);
         }
 
-        internal async void Repair(object sender, RoutedEventArgs e)
+        internal void Repair(object sender, RoutedEventArgs e)
         {
             storyboard.Stop();
 
@@ -235,7 +248,8 @@ namespace AoC_Day24
         {
             foreach (var gate in circuit.gates)
             {
-                if (!gate.ready && (gate.inputs[0] == wire || gate.inputs[1] == wire) && gate.inputs[0].value.HasValue && gate.inputs[1].value.HasValue)
+                if (!gate.ready && (gate.inputs[0] == wire || gate.inputs[1] == wire)
+                    && gate.inputs[0].value.HasValue && gate.inputs[1].value.HasValue)
                 {
                     gate.Process();
 
@@ -245,7 +259,7 @@ namespace AoC_Day24
 
                     await Task.Delay(500);
 
-                    HighlightEndWires(gate.output);
+                    HighlightEndWire(gate.output);
 
                     MarkIfInfluenced(gate.inputs[0]);
                     MarkIfInfluenced(gate.inputs[1]);
@@ -253,6 +267,15 @@ namespace AoC_Day24
 
                     await Process(gate.output);
                 }
+            }
+        }
+
+        private static void HighlightEndWire(Wire wire)
+        {
+            if (wire.name.StartsWith('z') && !wire.suspicious)
+            {
+                ((Rectangle)wire.uiElement).Stroke = Brushes.White;
+                ((Rectangle)wire.uiElement).StrokeThickness = 1.5;
             }
         }
 
@@ -270,34 +293,20 @@ namespace AoC_Day24
             }
         }
 
-        private void HighlightEndWires(Wire wire)
-        {
-            if (wire.name.StartsWith('z') && !wire.suspicious)
-            {
-                ((Rectangle)wire.uiElement).Stroke = Brushes.White;
-                ((Rectangle)wire.uiElement).StrokeThickness = 1.5;
-            }
-        }
-
         private void DrawWire(Wire wire)
-        {
-            wire.uiElement = DrawWire(wire.name, wire.position.x, wire.position.y, wire.position.offset, wire.suspicious);
-        }
-
-        private UIElement DrawWire(string name, int xPos, int yPos, int offset, bool suspicious)
         {
             var rectangle = new Rectangle
             {
                 Fill = elementBackgroundBrush,
-                Stroke = suspicious ? Brushes.Red : Brushes.Silver,
-                StrokeThickness = suspicious ? 1.5 : 1,
+                Stroke = wire.suspicious ? Brushes.Red : Brushes.Silver,
+                StrokeThickness = wire.suspicious ? 1.5 : 1,
                 RadiusX = cellHeight / 10,
                 RadiusY = cellHeight / 10,
                 Width = cellWidth,
                 Height = cellHeight
             };
-            Canvas.SetLeft(rectangle, CalculateLeft(xPos));
-            Canvas.SetTop(rectangle, CalculateTop(yPos, offset));
+            Canvas.SetLeft(rectangle, CalculateLeft(wire.position.x));
+            Canvas.SetTop(rectangle, CalculateTop(wire.position.y, wire.position.offset));
             canvas.Children.Add(rectangle);
 
             var label = new TextBox
@@ -307,18 +316,18 @@ namespace AoC_Day24
                 FontFamily = consolasFamily,
                 FontSize = cellHeight * 0.4,
                 FontWeight = FontWeights.Light,
-                Foreground = suspicious ? Brushes.Red : Brushes.Silver,
-                Text = name,
+                Foreground = wire.suspicious ? Brushes.Red : Brushes.Silver,
+                Text = wire.name,
                 Width = cellWidth,
                 Height = cellHeight,
                 TextAlignment = TextAlignment.Center,
                 VerticalContentAlignment = VerticalAlignment.Center
             };
-            Canvas.SetLeft(label, CalculateLeft(xPos));
-            Canvas.SetTop(label, CalculateTop(yPos, offset));
+            Canvas.SetLeft(label, CalculateLeft(wire.position.x));
+            Canvas.SetTop(label, CalculateTop(wire.position.y, wire.position.offset));
             canvas.Children.Add(label);
 
-            return rectangle;
+            wire.uiElement = rectangle;
         }
 
         private void DrawGate(Gate gate)
@@ -330,11 +339,6 @@ namespace AoC_Day24
                 _ => "!="
             };
 
-            gate.uiElement = DrawGate(opSymbol, gate.position.x, gate.position.y, gate.position.offset);
-        }
-
-        private UIElement DrawGate(string name, int xPos, int yPos, int offset)
-        {
             var circle = new Ellipse
             {
                 Fill = elementBackgroundBrush,
@@ -342,8 +346,8 @@ namespace AoC_Day24
                 Width = cellHeight,
                 Height = cellHeight
             };
-            Canvas.SetLeft(circle, CalculateLeft(xPos, true));
-            Canvas.SetTop(circle, CalculateTop(yPos, offset));
+            Canvas.SetLeft(circle, CalculateLeft(gate.position.x, true));
+            Canvas.SetTop(circle, CalculateTop(gate.position.y, gate.position.offset));
             canvas.Children.Add(circle);
 
             var label = new TextBox
@@ -354,98 +358,92 @@ namespace AoC_Day24
                 FontSize = cellHeight * 0.4,
                 FontWeight = FontWeights.Light,
                 Foreground = Brushes.Silver,
-                Text = name,
+                Text = opSymbol,
                 Width = cellWidth,
                 Height = cellHeight,
                 TextAlignment = TextAlignment.Center,
                 VerticalContentAlignment = VerticalAlignment.Center
             };
-            Canvas.SetLeft(label, CalculateLeft(xPos));
-            Canvas.SetTop(label, CalculateTop(yPos, offset));
+            Canvas.SetLeft(label, CalculateLeft(gate.position.x));
+            Canvas.SetTop(label, CalculateTop(gate.position.y, gate.position.offset));
             canvas.Children.Add(label);
 
-            return circle;
+            gate.uiElement = circle;
         }
 
         private void DrawConnection(Element from, Element to, string name, bool suspicious = false)
         {
-            var path = DrawConnection(from.position.x, from.position.y, from.position.offset, from is Gate, to.position.x, to.position.y, to.position.offset, to is Gate, suspicious);
-            connections.Add(name, path);
-        }
+            var x1 = CalculateLeft(from.position.x) + cellWidth / 2;
+            var y1 = CalculateTop(from.position.y, from.position.offset) + cellHeight / 2;
+            var x2 = CalculateLeft(to.position.x) + cellWidth / 2;
+            var y2 = CalculateTop(to.position.y, to.position.offset) + cellHeight / 2;
 
-        private Path DrawConnection(int fromX, int fromY, int fromOffset, bool fromRound, int toX, int toY, int toOffset, bool toRound, bool suspicious = false)
-        {
-            var x1 = CalculateLeft(fromX) + cellWidth / 2;
-            var y1 = CalculateTop(fromY, fromOffset) + cellHeight / 2;
-            var x2 = CalculateLeft(toX) + cellWidth / 2;
-            var y2 = CalculateTop(toY, toOffset) + cellHeight / 2;
-
-            var figure = new PathFigure();
+            var lineFigure = new PathFigure();
             PathFigure arrowFigure;
             if (x1 < x2 && y1 < y2)
             {
-                if (fromOffset == toOffset)
+                if (from.position.offset == to.position.offset)
                 {
                     y1 += cellHeight / 2;
-                    x2 -= toRound ? cellHeight / 2 : cellWidth / 2;
+                    x2 -= to is Gate ? cellHeight / 2 : cellWidth / 2;
 
-                    figure.StartPoint = new Point(x1, y1);
-                    figure.Segments.Add(
+                    lineFigure.StartPoint = new Point(x1, y1);
+                    lineFigure.Segments.Add(
                         new BezierSegment(
                             new Point(x1, y1 + cellHeight),
                             new Point(x2 - cellWidth, y2),
                             new Point(x2, y2),
                             true));
 
-                    arrowFigure = DrawArrow(x2, y2, 1, suspicious);
+                    arrowFigure = CreateArrowFigure(x2, y2, 1);
                 }
                 else
                 {
-                    x1 += fromRound ? cellHeight / 2 : cellWidth / 2;
+                    x1 += from is Gate ? cellHeight / 2 : cellWidth / 2;
                     y2 -= cellHeight / 2;
 
-                    figure.StartPoint = new Point(x1, y1);
-                    figure.Segments.Add(
+                    lineFigure.StartPoint = new Point(x1, y1);
+                    lineFigure.Segments.Add(
                         new BezierSegment(
                             new Point(x1 + cellWidth, y1),
                             new Point(x2, y2 - cellHeight),
                             new Point(x2, y2),
                             true));
 
-                    arrowFigure = DrawArrow(x2, y2, 2, suspicious);
+                    arrowFigure = CreateArrowFigure(x2, y2, 2);
                 }
             }
             else if (x1 < x2 && y1 > y2)
             {
-                if (toY == 0)
+                if (to.position.y == 0)
                 {
                     y1 -= cellHeight / 2;
-                    x2 -= toRound ? cellHeight / 2 : cellWidth / 2;
+                    x2 -= to is Gate ? cellHeight / 2 : cellWidth / 2;
 
-                    figure.StartPoint = new Point(x1, y1);
-                    figure.Segments.Add(
+                    lineFigure.StartPoint = new Point(x1, y1);
+                    lineFigure.Segments.Add(
                         new BezierSegment(
                             new Point(x1, y1 - cellHeight / 2),
                             new Point(x2 - cellWidth / 2, y2),
                             new Point(x2, y2),
                             true));
 
-                    arrowFigure = DrawArrow(x2, y2, 1, suspicious);
+                    arrowFigure = CreateArrowFigure(x2, y2, 1);
                 }
                 else
                 {
-                    x1 += fromRound ? cellHeight / 2 : cellWidth / 2;
+                    x1 += from is Gate ? cellHeight / 2 : cellWidth / 2;
                     y2 += cellHeight / 2;
 
-                    figure.StartPoint = new Point(x1, y1);
-                    figure.Segments.Add(
+                    lineFigure.StartPoint = new Point(x1, y1);
+                    lineFigure.Segments.Add(
                         new BezierSegment(
                             new Point(x1 + cellWidth / 2, y1),
                             new Point(x2, y2 + cellHeight / 2),
                             new Point(x2, y2),
                             true));
 
-                    arrowFigure = DrawArrow(x2, y2, 0, suspicious);
+                    arrowFigure = CreateArrowFigure(x2, y2, 0);
                 }
             }
             else if (x1 > x2 && y1 < y2)
@@ -453,15 +451,15 @@ namespace AoC_Day24
                 y1 += cellHeight / 2;
                 y2 -= cellHeight / 2;
 
-                figure.StartPoint = new Point(x1, y1);
-                figure.Segments.Add(
+                lineFigure.StartPoint = new Point(x1, y1);
+                lineFigure.Segments.Add(
                     new BezierSegment(
                         new Point(x1 + spacing, y1 + (y2 - y1) * 0.75),
                         new Point(x2 - spacing, y2 - (y2 - y1) * 0.75),
                         new Point(x2, y2),
                         true));
 
-                arrowFigure = DrawArrow(x2, y2, 2, suspicious);
+                arrowFigure = CreateArrowFigure(x2, y2, 2);
             }
             else
             {
@@ -469,14 +467,14 @@ namespace AoC_Day24
                 if (x1 < x2)
                 {
                     direction = 1;
-                    x1 += fromRound ? cellHeight / 2 : cellWidth / 2;
-                    x2 -= toRound ? cellHeight / 2 : cellWidth / 2;
+                    x1 += from is Gate ? cellHeight / 2 : cellWidth / 2;
+                    x2 -= to is Gate ? cellHeight / 2 : cellWidth / 2;
                 }
                 else if (x1 > x2)
                 {
                     direction = 3;
-                    x1 -= fromRound ? cellHeight / 2 : cellWidth / 2;
-                    x2 += toRound ? cellHeight / 2 : cellWidth / 2;
+                    x1 -= from is Gate ? cellHeight / 2 : cellWidth / 2;
+                    x2 += to is Gate ? cellHeight / 2 : cellWidth / 2;
                 }
                 else if (y1 < y2)
                 {
@@ -491,34 +489,32 @@ namespace AoC_Day24
                     y2 += cellHeight / 2;
                 }
 
-                figure.StartPoint = new Point(x1, y1);
-                figure.Segments.Add(
+                lineFigure.StartPoint = new Point(x1, y1);
+                lineFigure.Segments.Add(
                     new LineSegment(
                         new Point(x2, y2),
                         true));
 
-                arrowFigure = DrawArrow(x2, y2, direction, suspicious);
+                arrowFigure = CreateArrowFigure(x2, y2, direction);
             }
 
             var geometry = new PathGeometry();
-            geometry.Figures.Add(figure);
+            geometry.Figures.Add(lineFigure);
             geometry.Figures.Add(arrowFigure);
             geometry.Freeze();
 
             var path = new Path
             {
                 Data = geometry,
-                Name = "",
                 Stroke = suspicious ? Brushes.Red : greenBrush,
                 StrokeThickness = suspicious ? 1.5 : 1
             };
 
+            connections.Add(name, path);
             canvas.Children.Add(path);
-
-            return path;
         }
 
-        private PathFigure DrawArrow(double x, double y, int direction, bool suspicious = false)
+        private static PathFigure CreateArrowFigure(double x, double y, int direction)
         {
             double x1, x3, y1, y3;
             switch(direction)
@@ -549,36 +545,22 @@ namespace AoC_Day24
                     break;
             }
 
-            var figure = new PathFigure
-            {
-                StartPoint = new Point(x1, y1)
-            };
-
-            figure.Segments.Add(
-                new LineSegment(
-                    new Point(x, y),
-                    true));
-            figure.Segments.Add(
-                new LineSegment(
-                    new Point(x3, y3),
-                    true));
+            var figure = new PathFigure { StartPoint = new Point(x1, y1) };
+            figure.Segments.Add(new LineSegment(new Point(x, y), true));
+            figure.Segments.Add(new LineSegment(new Point(x3, y3), true));
 
             return figure;
         }
 
         private static double CalculateLeft(int xPos, bool circle = false)
         {
-            var indent = 0d;
-            if (circle)
-                indent = (cellWidth - cellHeight) / 2;
-
+            var indent = circle ? (cellWidth - cellHeight) / 2 : 0d;
             return spacing + ++xPos * (cellWidth + spacing) + indent;
         }
 
         private static double CalculateTop(int yPos, int offset)
         {
             var expandOffset = offset * (cellHeight + spacing) * 4;
-
             return spacing + expandOffset + yPos * (cellHeight + spacing);
         }
     }
