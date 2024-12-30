@@ -71,6 +71,15 @@ namespace AoC_Day24
             circuit.Import();
 
             DrawCircuit();
+
+            var answer = string.Empty;
+            foreach (var wire in circuit.wires.Values)
+                if (wire.suspicious)
+                    answer += $"{wire.name},";
+
+            answerLabel.FontFamily = consolasFamily;
+            answerLabel.FontSize = cellHeight * 0.4;
+            answerLabel.Content = $"Puzzle answer: {answer[..^1]}";
         }
 
         private void StyleButton(Button button)
@@ -93,16 +102,6 @@ namespace AoC_Day24
                 DrawConnection(gate.inputs[1], gate, $"{gate.inputs[1].name}{gate.op}");
                 DrawConnection(gate, gate.output, $"{gate.op}{gate.output.name}", gate.suspicious);
             }
-
-            var answer = string.Empty;
-            foreach (var wire in circuit.wires.Values)
-                if (wire.suspicious)
-                    answer += $"{wire.name},";
-
-            if (answer.Length > 0)
-                answer = answer[..^1];
-
-            DrawAnswer($"Puzzle answer: {answer}");
 
             storyboard = new Storyboard();
 
@@ -274,26 +273,6 @@ namespace AoC_Day24
                 ((Rectangle)wire.uiElement).Stroke = Brushes.White;
                 ((Rectangle)wire.uiElement).StrokeThickness = 1.5;
             }
-        }
-
-        private void DrawAnswer(string answer)
-        {
-            var label = new TextBox
-            {
-                Background = Brushes.Transparent,
-                BorderThickness = new Thickness(0),
-                FontFamily = consolasFamily,
-                FontSize = cellHeight * 0.4,
-                FontWeight = FontWeights.Light,
-                Foreground = Brushes.Silver,
-                Text = answer,
-                Height = cellHeight,
-                TextAlignment = TextAlignment.Left,
-                VerticalContentAlignment = VerticalAlignment.Center
-            };
-            Canvas.SetLeft(label, spacing);
-            Canvas.SetTop(label, spacing);
-            canvas.Children.Add(label);
         }
 
         private void DrawWire(Wire wire)
