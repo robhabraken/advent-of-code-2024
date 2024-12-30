@@ -17,6 +17,8 @@ namespace AoC_Day24.Device
         public bool suspicious;
         public int group;
 
+        public bool influenced;
+
         public void Set()
         {
             initialValue = value;

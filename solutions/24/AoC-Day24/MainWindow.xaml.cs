@@ -104,7 +104,7 @@ namespace AoC_Day24
                 DrawGate(canvas, gate);
 
             foreach (var wire in circuit.wires.Values)
-                DrawWire(canvas, wire, wire.suspicious);
+                DrawWire(canvas, wire);
         }
 
         private void StyleButton(Button button)
@@ -137,7 +137,7 @@ namespace AoC_Day24
                 FontFamily = consolasFamily,
                 FontSize = cellHeight * 0.4,
                 FontWeight = FontWeights.Light,
-                Foreground = wire.suspicious ? Brushes.Red : goldBrush,
+                Foreground = wire.influenced ? Brushes.Orchid : goldBrush,
                 TextAlignment = TextAlignment.Center,
                 VerticalContentAlignment = VerticalAlignment.Center,
 
@@ -226,8 +226,29 @@ namespace AoC_Day24
 
                     await Task.Delay(500);
 
+                    MarkIfInfluenced(gate.inputs[0]);
+                    MarkIfInfluenced(gate.inputs[1]);
+                    MarkIfInfluenced(gate.output);
+
                     await Process(gate.output);
                 }
+            }
+        }
+
+        private void MarkIfInfluenced(Wire wire, bool input = false)
+        {
+            if (wire.influenced)
+            {
+                if (!wire.suspicious)
+                {
+                    ((Rectangle)wire.uiElement).Stroke = Brushes.Orchid;
+                    ((Rectangle)wire.uiElement).StrokeThickness = 1.5;
+                }
+
+                foreach (var connection in connections)
+                    if ((connection.Key.Contains(wire.name) && !wire.suspicious) ||
+                        (connection.Key.StartsWith(wire.name) && wire.suspicious))
+                        ((Path)connection.Value).Stroke = Brushes.Orchid;
             }
         }
 
@@ -251,12 +272,12 @@ namespace AoC_Day24
             canvas.Children.Add(label);
         }
 
-        private void DrawWire(Canvas canvas, Wire wire, bool suspicious = false)
+        private void DrawWire(Canvas canvas, Wire wire)
         {
-            wire.uiElement = DrawWire(canvas, wire.name, wire.position.x, wire.position.y, wire.position.offset, suspicious);
+            wire.uiElement = DrawWire(canvas, wire.name, wire.position.x, wire.position.y, wire.position.offset, wire.suspicious);
         }
 
-        private UIElement DrawWire(Canvas canvas, string name, int xPos, int yPos, int offset, bool suspicious = false)
+        private UIElement DrawWire(Canvas canvas, string name, int xPos, int yPos, int offset, bool suspicious)
         {
             var rectangle = new Rectangle
             {

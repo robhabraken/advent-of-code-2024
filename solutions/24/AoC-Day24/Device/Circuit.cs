@@ -154,6 +154,67 @@ namespace AoC_Day24.Device
                     }
                 }
             }
+
+            MarkInfluenceOfCrossedWires();
+        }
+
+        private void MarkInfluenceOfCrossedWires()
+        {
+            SimulateGates();
+
+            foreach (var wire in wires.Values)
+            {
+                if (wire.suspicious)
+                {
+                    foreach (var wire2 in wires.Values)
+                    {
+                        if (wire != wire2 && wire2.suspicious && wire.group == wire2.group)
+                        {
+                            if (wire.value.Value != wire2.value.Value)
+                            {
+                                WhatIf(wire, wire2.value.Value);
+                                WhatIf(wire2, wire.value.Value);
+                            }
+                        }
+                    }
+                }
+            }
+
+            foreach (var wire in wires.Values)
+                wire.Reset();
+
+            foreach (var gate in gates)
+                gate.ready = false;
+        }
+
+        private void WhatIf(Wire wire, bool fictional)
+        {
+            wire.influenced = true;
+            foreach (var gate in gates)
+            {
+                if (gate.inputs[0] == wire)
+                {
+                    if (gate.op.Equals("AND") && gate.inputs[1].value.Value)
+                        WhatIf(gate.output, fictional && gate.inputs[1].value.Value);
+
+                    else if (gate.op.Equals("OR") && !gate.inputs[1].value.Value)
+                        WhatIf(gate.output, fictional || gate.inputs[1].value.Value);
+
+                    else if (gate.op.Equals("XOR"))
+                        WhatIf(gate.output, fictional != gate.inputs[1].value.Value);
+                }
+                else if (gate.inputs[1] == wire)
+                {
+                    if (gate.op.Equals("AND") && gate.inputs[0].value.Value)
+                        WhatIf(gate.output, fictional && gate.inputs[0].value.Value);
+
+                    else if (gate.op.Equals("OR") && !gate.inputs[0].value.Value)
+                        WhatIf(gate.output, fictional || gate.inputs[0].value.Value);
+
+                    else if (gate.op.Equals("XOR"))
+                        WhatIf(gate.output, fictional != gate.inputs[0].value.Value);
+                }
+            }
         }
 
         private void AddWire(string wireName)
