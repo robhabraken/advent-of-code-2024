@@ -137,7 +137,7 @@ namespace AoC_Day24
                 FontFamily = consolasFamily,
                 FontSize = cellHeight * 0.4,
                 FontWeight = FontWeights.Light,
-                Foreground = wire.influenced ? Brushes.Orchid : goldBrush,
+                Foreground = wire.influenced ? Brushes.Red : goldBrush,
                 TextAlignment = TextAlignment.Center,
                 VerticalContentAlignment = VerticalAlignment.Center,
 
@@ -213,6 +213,9 @@ namespace AoC_Day24
         internal async void Repair(object sender, RoutedEventArgs e)
         {
             // not yet implemented
+            // reset wires, reset gates (ready to false), flip nodes in same group (in Circuit class with gates and all)
+            // then updateConnections again for all values, so they disappear, and add setting bit text to "" when !HasValue
+            // only thing left is how do I actually change the drawings... dunno yet
         }
 
         internal async Task Process(Wire wire)
@@ -229,6 +232,8 @@ namespace AoC_Day24
 
                     await Task.Delay(500);
 
+                    HighlightEndWires(gate.output);
+
                     MarkIfInfluenced(gate.inputs[0]);
                     MarkIfInfluenced(gate.inputs[1]);
                     MarkIfInfluenced(gate.output);
@@ -243,15 +248,21 @@ namespace AoC_Day24
             if (wire.influenced)
             {
                 if (!wire.suspicious)
-                {
                     ((Rectangle)wire.uiElement).Stroke = Brushes.Orchid;
-                    ((Rectangle)wire.uiElement).StrokeThickness = 1.5;
-                }
 
                 foreach (var connection in connections)
                     if ((connection.Key.Contains(wire.name) && !wire.suspicious) ||
                         (connection.Key.StartsWith(wire.name) && wire.suspicious))
                         ((Path)connection.Value).Stroke = Brushes.Orchid;
+            }
+        }
+
+        private void HighlightEndWires(Wire wire)
+        {
+            if (wire.name.StartsWith('z') && !wire.suspicious)
+            {
+                ((Rectangle)wire.uiElement).Stroke = Brushes.White;
+                ((Rectangle)wire.uiElement).StrokeThickness = 1.5;
             }
         }
 
