@@ -166,9 +166,12 @@ namespace AoC_Day24
 
             var length = Math.Sqrt(Math.Pow(end.X - start.X, 2) + Math.Pow(end.Y - start.Y, 2));
 
+            var animationPath = new PathGeometry();
+            animationPath.Figures.Add(geometry.Figures[0]);
+
             var animation = new MatrixAnimationUsingPath()
             {
-                PathGeometry = geometry,
+                PathGeometry = animationPath,
                 Duration = new Duration(TimeSpan.FromSeconds(length / cellWidth)),
                 RepeatBehavior = RepeatBehavior.Forever
             };
@@ -374,6 +377,7 @@ namespace AoC_Day24
             var y2 = CalculateTop(toY, toOffset) + cellHeight / 2;
 
             var figure = new PathFigure();
+            PathFigure arrowFigure;
             if (x1 < x2 && y1 < y2)
             {
                 if (fromOffset == toOffset)
@@ -389,7 +393,7 @@ namespace AoC_Day24
                             new Point(x2, y2),
                             true));
 
-                    DrawArrow(canvas, x2, y2, 1, suspicious);
+                    arrowFigure = DrawArrow(canvas, x2, y2, 1, suspicious);
                 }
                 else
                 {
@@ -404,7 +408,7 @@ namespace AoC_Day24
                             new Point(x2, y2),
                             true));
 
-                    DrawArrow(canvas, x2, y2, 2, suspicious);
+                    arrowFigure = DrawArrow(canvas, x2, y2, 2, suspicious);
                 }
             }
             else if (x1 < x2 && y1 > y2)
@@ -422,7 +426,7 @@ namespace AoC_Day24
                             new Point(x2, y2),
                             true));
 
-                    DrawArrow(canvas, x2, y2, 1, suspicious);
+                    arrowFigure = DrawArrow(canvas, x2, y2, 1, suspicious);
                 }
                 else
                 {
@@ -437,7 +441,7 @@ namespace AoC_Day24
                             new Point(x2, y2),
                             true));
 
-                    DrawArrow(canvas, x2, y2, 0, suspicious);
+                    arrowFigure = DrawArrow(canvas, x2, y2, 0, suspicious);
                 }
             }
             else if (x1 > x2 && y1 < y2)
@@ -453,7 +457,7 @@ namespace AoC_Day24
                         new Point(x2, y2),
                         true));
 
-                DrawArrow(canvas, x2, y2, 2, suspicious);
+                arrowFigure = DrawArrow(canvas, x2, y2, 2, suspicious);
             }
             else
             {
@@ -489,11 +493,12 @@ namespace AoC_Day24
                         new Point(x2, y2),
                         true));
 
-                DrawArrow(canvas, x2, y2, direction, suspicious);
+                arrowFigure = DrawArrow(canvas, x2, y2, direction, suspicious);
             }
 
             var geometry = new PathGeometry();
             geometry.Figures.Add(figure);
+            geometry.Figures.Add(arrowFigure);
             geometry.Freeze();
 
             var path = new Path
@@ -509,7 +514,7 @@ namespace AoC_Day24
             return path;
         }
 
-        private void DrawArrow(Canvas canvas, double x, double y, int direction, bool suspicious = false)
+        private PathFigure DrawArrow(Canvas canvas, double x, double y, int direction, bool suspicious = false)
         {
             double x1, x3, y1, y3;
             switch(direction)
@@ -554,17 +559,7 @@ namespace AoC_Day24
                     new Point(x3, y3),
                     true));
 
-            var geometry = new PathGeometry();
-            geometry.Figures.Add(figure);
-
-            var path = new Path
-            {
-                Data = geometry,
-                Stroke = suspicious ? Brushes.Red : greenBrush,
-                StrokeThickness = suspicious ? 1.5 : 1
-            };
-
-            canvas.Children.Add(path);
+            return figure;
         }
 
         private static double CalculateLeft(int xPos, bool circle = false)
