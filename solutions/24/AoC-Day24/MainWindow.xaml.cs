@@ -76,8 +76,8 @@ namespace AoC_Day24
 
             answerLabel.Content = $"Puzzle answer: {answer[..^1]}";
 
-            textboxX.Text = $"{circuit.ProduceNumberFor("x")}";
-            textboxY.Text = $"{circuit.ProduceNumberFor("y")}";
+            textboxX.Text = $"{circuit.ProduceNumberFor('x')}";
+            textboxY.Text = $"{circuit.ProduceNumberFor('y')}";
         }
 
         private static SolidColorBrush BrushFromHex(string hex)
@@ -229,6 +229,7 @@ namespace AoC_Day24
         {
             buttonSimulate.IsEnabled = false;
             buttonRepair.IsEnabled = false;
+            buttonAdd.IsEnabled = false;
 
             if (bits.Values.First().Visibility == Visibility.Collapsed)
                 Animate(sender, e);
@@ -244,21 +245,15 @@ namespace AoC_Day24
 
             if (!repaired)
                 buttonRepair.IsEnabled = true;
+            buttonAdd.IsEnabled = true;
         }
 
         private void Repair(object sender, RoutedEventArgs e)
         {
             buttonRepair.IsEnabled = false;
 
-            storyboard.Stop();
-
-            foreach (var connection in connections)
-                UnregisterName(connection.Key);
-
-            canvas.Children.Clear();
-
+            Restart();
             circuit.RepairCrossedWires();
-
             DrawCircuit();
 
             repaired = true;
@@ -269,11 +264,30 @@ namespace AoC_Day24
 
         private void Add(object sender, RoutedEventArgs e)
         {
-            //var xValue = long.Parse(textboxX.Text);
-            //var yValue = long.Parse(textboxY.Text);
-            //var expectedValueZ = xValue + yValue;
+            var xValue = long.Parse(textboxX.Text);
+            var yValue = long.Parse(textboxY.Text);
 
-            //textboxZ.Text = $"{xValue + yValue}";
+            circuit.SetWireValue('x', xValue);
+            circuit.SetWireValue('y', yValue);
+
+            foreach (var wire in circuit.wires.Values)
+                wire.HardReset();
+
+            circuit.SortAndPositionWires();
+
+            Restart();
+            DrawCircuit();
+            Simulate(sender, e);
+        }
+
+        private void Restart()
+        {
+            storyboard.Stop();
+
+            foreach (var connection in connections)
+                UnregisterName(connection.Key);
+
+            canvas.Children.Clear();
         }
 
         private async Task Process(Wire wire, bool slowedDown)
@@ -331,7 +345,7 @@ namespace AoC_Day24
             var xValue = long.Parse(textboxX.Text);
             var yValue = long.Parse(textboxY.Text);
             var expectedValueZ = xValue + yValue;
-            var output = circuit.ProduceNumberFor("z");
+            var output = circuit.ProduceNumberFor('z');
 
             if (output == null)
                 return;

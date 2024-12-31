@@ -271,7 +271,7 @@ namespace AoC_Day24.Device
             SortAndPositionWires();
         }
 
-        public long? ProduceNumberFor(string wireType)
+        public long? ProduceNumberFor(char wireType)
         {
             var result = string.Empty;
             foreach (var wire in wires.Values)
@@ -279,6 +279,18 @@ namespace AoC_Day24.Device
                     result = $"{(wire.value.Value ? 1 : 0)}{result}";
 
             return !result.Equals(string.Empty) ? Convert.ToInt64(result, 2) : null;
+        }
+
+        public void SetWireValue(char wireType, long number)
+        {
+            var binaryValue = Convert.ToString(number, 2).PadLeft(45, '0').Reverse().ToArray();
+
+            var wiresOfType = wires.Values.Select(w => w).Where(w => w.name.StartsWith(wireType)).ToList();
+            for (var i = 0; i < wiresOfType.Count; i++)
+            {
+                wiresOfType[i].value = binaryValue[i].Equals('1');
+                wiresOfType[i].Set();
+            }
         }
     }
 }
