@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AoC_Day24"
         mc:Ignorable="d"
-        Title="AoC 2024 Day 24: Crossed Wires" Height="450" Width="800">
+        Title="AoC 2024 Day 24: Crossed Wires" Height="720" Width="1280">
     <Window.Resources>
         <ControlTemplate x:Key="AoCButton" TargetType="{x:Type ButtonBase}">
             <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="true">

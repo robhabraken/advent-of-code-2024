@@ -58,10 +58,6 @@ namespace AoC_Day24
 
             Background = backgroundBrush;
             MinWidth = spacing + (cellWidth + spacing) * 12;
-            MaxWidth = MinWidth;
-            Width = MinWidth;
-            Height = Width;
-
             canvas.Width = spacing + (cellWidth + spacing) * 12;
             canvas.Height = spacing + 45.5 * (cellHeight + spacing) * 4;
 
