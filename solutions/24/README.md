@@ -48,4 +48,4 @@ When I did finish the visualization, and was able to find the crossed over wires
 - repair the circuit;
 - allow you to test different input values for the `x` and `y` wires.
 
-I won't go and explain the code in detail in this README file (as I normally do for my more elaborate AoC solutions), so for that I would like to refer to the actual code, but I did record a video that demonstrates my solution and explains the different features, which you can find on my YouTube channel.
+I won't go and explain the code in detail in this README file (as I normally do for my more elaborate AoC solutions), so for that I would like to refer to the actual code, but I did record a video that demonstrates my solution and explains the different features, which you can find on [YouTube](https://www.youtube.com/watch?v=opgJz6QDyZc).
