@@ -271,14 +271,14 @@ namespace AoC_Day24.Device
             SortAndPositionWires();
         }
 
-        public long ProduceNumberFor(string wireType)
+        public long? ProduceNumberFor(string wireType)
         {
             var result = string.Empty;
             foreach (var wire in wires.Values)
                 if (wire.name.StartsWith(wireType) && wire.value.HasValue)
                     result = $"{(wire.value.Value ? 1 : 0)}{result}";
 
-            return Convert.ToInt64(result, 2);
+            return !result.Equals(string.Empty) ? Convert.ToInt64(result, 2) : null;
         }
     }
 }

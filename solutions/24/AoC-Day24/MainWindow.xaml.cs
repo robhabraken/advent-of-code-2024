@@ -32,6 +32,8 @@ namespace AoC_Day24
 
         public Storyboard storyboard;
 
+        public bool repaired = false;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -216,7 +218,6 @@ namespace AoC_Day24
         private void Animate(object sender, RoutedEventArgs e)
         {
             buttonAnimate.IsEnabled = false;
-            buttonSimulate.IsEnabled = true;
 
             foreach (var bit in bits.Values)
                 bit.Visibility = Visibility.Visible;
@@ -227,15 +228,22 @@ namespace AoC_Day24
         private async void Simulate(object sender, RoutedEventArgs e)
         {
             buttonSimulate.IsEnabled = false;
+            buttonRepair.IsEnabled = false;
+
+            if (bits.Values.First().Visibility == Visibility.Collapsed)
+                Animate(sender, e);
 
             foreach (var wire in circuit.wires.Values)
                 wire.ResetValue();
 
             foreach (var wire in circuit.wires.Values)
                 if (wire.name.StartsWith('x'))
-                    await Process(wire);
+                    await Process(wire, !repaired);
 
             SetOutput();
+
+            if (!repaired)
+                buttonRepair.IsEnabled = true;
         }
 
         private void Repair(object sender, RoutedEventArgs e)
@@ -253,7 +261,10 @@ namespace AoC_Day24
 
             DrawCircuit();
 
+            repaired = true;
             buttonAnimate.IsEnabled = true;
+            buttonSimulate.IsEnabled = true;
+            textboxZ.Text = string.Empty;
         }
 
         private void Add(object sender, RoutedEventArgs e)
@@ -265,7 +276,7 @@ namespace AoC_Day24
             //textboxZ.Text = $"{xValue + yValue}";
         }
 
-        private async Task Process(Wire wire)
+        private async Task Process(Wire wire, bool slowedDown)
         {
             foreach (var gate in circuit.gates)
             {
@@ -278,7 +289,8 @@ namespace AoC_Day24
                     UpdateConnectionValue($"{gate.inputs[1].name}{gate.op}");
                     UpdateConnectionValue($"{gate.op}{gate.output.name}");
 
-                    await Task.Delay(500);
+                    if (slowedDown)
+                        await Task.Delay(500);
 
                     HighlightEndWire(gate.output);
 
@@ -286,7 +298,7 @@ namespace AoC_Day24
                     MarkIfInfluenced(gate.inputs[1]);
                     MarkIfInfluenced(gate.output);
 
-                    await Process(gate.output);
+                    await Process(gate.output, slowedDown);
                 }
             }
         }
@@ -320,6 +332,9 @@ namespace AoC_Day24
             var yValue = long.Parse(textboxY.Text);
             var expectedValueZ = xValue + yValue;
             var output = circuit.ProduceNumberFor("z");
+
+            if (output == null)
+                return;
 
             textboxZ.Text = $"{output}";
             textboxZ.Foreground = output == expectedValueZ ? Brushes.Silver : Brushes.Red;
