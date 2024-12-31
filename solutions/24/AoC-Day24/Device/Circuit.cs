@@ -1,11 +1,5 @@
 ﻿using AoC_Day24.Visualization;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Shapes;
 
 namespace AoC_Day24.Device
 {
@@ -55,9 +49,14 @@ namespace AoC_Day24.Device
             SortAndPositionWires();
         }
 
+        private void AddWire(string wireName)
+        {
+            if (!wires.ContainsKey(wireName))
+                wires.Add(wireName, new Wire(wireName, null));
+        }
+
         public void SortAndPositionWires()
         {
-
             // select begin and end wires of circuit
             var beginWires = new List<Wire>();
             var endWires = new List<Wire>();
@@ -166,26 +165,29 @@ namespace AoC_Day24.Device
 
         private void MarkInfluenceOfCrossedWires()
         {
+            // first simulate the circuit to determine the values of all wires
             SimulateGates();
 
-            foreach (var wire in wires.Values)
+            // for all suspicious sets of wires, check the effect of uncrossing the wires
+            foreach (var wire1 in wires.Values)
             {
-                if (wire.suspicious)
+                if (wire1.suspicious)
                 {
                     foreach (var wire2 in wires.Values)
                     {
-                        if (wire != wire2 && wire2.suspicious && wire.group == wire2.group)
+                        if (wire1 != wire2 && wire2.suspicious && wire1.group == wire2.group)
                         {
-                            if (wire.value.Value != wire2.value.Value)
+                            if (wire1.value.Value != wire2.value.Value)
                             {
-                                WhatIf(wire, wire2.value.Value);
-                                WhatIf(wire2, wire.value.Value);
+                                WhatIf(wire1, wire2.value.Value);
+                                WhatIf(wire2, wire1.value.Value);
                             }
                         }
                     }
                 }
             }
 
+            // reset back to to initial state after marking influenced wires
             foreach (var wire in wires.Values)
                 wire.ResetValue();
 
@@ -198,35 +200,29 @@ namespace AoC_Day24.Device
             wire.influenced = true;
             foreach (var gate in gates)
             {
+                var otherWire = -1;
                 if (gate.inputs[0] == wire)
-                {
-                    if (gate.op.Equals("AND") && gate.inputs[1].value.Value)
-                        WhatIf(gate.output, fictional && gate.inputs[1].value.Value);
-
-                    else if (gate.op.Equals("OR") && !gate.inputs[1].value.Value)
-                        WhatIf(gate.output, fictional || gate.inputs[1].value.Value);
-
-                    else if (gate.op.Equals("XOR"))
-                        WhatIf(gate.output, fictional != gate.inputs[1].value.Value);
-                }
+                    otherWire = 1;
                 else if (gate.inputs[1] == wire)
+                    otherWire = 0;
+
+                if (otherWire > -1)
                 {
-                    if (gate.op.Equals("AND") && gate.inputs[0].value.Value)
-                        WhatIf(gate.output, fictional && gate.inputs[0].value.Value);
+                    // an AND gate only is affected when the other input of that gate is also true
+                    // otherwise it cannot produce a 'true' output anyways
+                    if (gate.op.Equals("AND") && gate.inputs[otherWire].value.Value)
+                        WhatIf(gate.output, fictional && gate.inputs[otherWire].value.Value);
 
-                    else if (gate.op.Equals("OR") && !gate.inputs[0].value.Value)
-                        WhatIf(gate.output, fictional || gate.inputs[0].value.Value);
+                    // an OR gate is only affected when the other input of that gate is not true
+                    // otherwise the output is 'true' anyways
+                    else if (gate.op.Equals("OR") && !gate.inputs[otherWire].value.Value)
+                        WhatIf(gate.output, fictional || gate.inputs[otherWire].value.Value);
 
+                    // a XOR gate is always affected by a chance of one of the input values
                     else if (gate.op.Equals("XOR"))
-                        WhatIf(gate.output, fictional != gate.inputs[0].value.Value);
+                        WhatIf(gate.output, fictional != gate.inputs[otherWire].value.Value);
                 }
             }
-        }
-
-        private void AddWire(string wireName)
-        {
-            if (!wires.ContainsKey(wireName))
-                wires.Add(wireName, new Wire(wireName, null));
         }
 
         public void SimulateGates()
@@ -278,14 +274,12 @@ namespace AoC_Day24.Device
         public long ProduceNumberFor(string wireType)
         {
             var result = string.Empty;
-            foreach (var wireName in wires.Keys)
-                if (wireName.StartsWith(wireType))
-                    result = $"{(wires[wireName].value.Value ? 1 : 0)}{result}";
+            foreach (var wire in wires.Values)
+                if (wire.name.StartsWith(wireType) && wire.value.HasValue)
+                    result = $"{(wire.value.Value ? 1 : 0)}{result}";
 
             return Convert.ToInt64(result, 2);
         }
-
-        private string LongToBinary(long number) => Convert.ToString(number, 2);
     }
 }
 

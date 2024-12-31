@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AoC_Day24.Visualization;
+﻿using AoC_Day24.Visualization;
 
 namespace AoC_Day24.Device
 {

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AoC_Day24.Visualization;
+﻿using AoC_Day24.Visualization;
 
 namespace AoC_Day24.Device
 {
@@ -51,18 +46,6 @@ namespace AoC_Day24.Device
         {
             ready = false;
             suspicious = false;
-        }
-
-        public override string ToString()
-        {
-            var opSymbol = op switch
-            {
-                "AND" => "&&",
-                "OR" => "||",
-                _ => "!="
-            };
-
-            return $"{inputs[0].name} ({(!inputs[0].value.HasValue ? "null" : inputs[0].value.Value ? 1 : 0)}) {opSymbol} {inputs[1].name} ({(!inputs[1].value.HasValue ? "null" : inputs[1].value.Value ? 1 : 0)}) -> {output.name}";
         }
     }
 }
