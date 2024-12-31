@@ -19,16 +19,40 @@
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
+        <ControlTemplate x:Key="AoCTextBox" TargetType="{x:Type TextBoxBase}">
+            <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True">
+                <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsKeyboardFocused" Value="true">
+                    <Setter Property="BorderBrush" TargetName="border" Value="White"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
     </Window.Resources>    
     <ScrollViewer>
-        <Grid>
-            <DockPanel Name="dockPanel" Height="30" VerticalAlignment="Top" LastChildFill="False" HorizontalAlignment="Left" Margin="0,10,10,0" Panel.ZIndex="10000">
+        <Grid ScrollViewer.CanContentScroll="True">
+            <Grid.RowDefinitions>
+                <RowDefinition MaxHeight="50" />
+                <RowDefinition MaxHeight="50" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <DockPanel Name="dockPanel" LastChildFill="False" HorizontalAlignment="Left" Margin="0,10,10,0" VerticalAlignment="Top">
                 <Label Name="answerLabel" Foreground="Silver" Margin="10,0,10,0"/>
-                <Button Name="buttonAnimate" Click="Animate" Template="{DynamicResource AoCButton}" Margin="10,0,0,0" Width="100">[Animate]</Button>
-                <Button Name="buttonSimulate" Click="Simulate" Template="{DynamicResource AoCButton}" Margin="10,0,0,0" Width="100" IsEnabled="False">[Simulate]</Button>
-                <Button Name="buttonRepair" Click="Repair" Template="{DynamicResource AoCButton}" Margin="10,0,0,0" Width="100">[Repair]</Button>
+                <Button Name="buttonAnimate" Click="Animate" Template="{DynamicResource AoCButton}" Margin="10,0,0,0" Padding="10,1,10,1">[Animate]</Button>
+                <Button Name="buttonSimulate" Click="Simulate" Template="{DynamicResource AoCButton}" Margin="10,0,0,0" Padding="10,1,10,1" IsEnabled="False">[Simulate]</Button>
+                <Button Name="buttonRepair" Click="Repair" Template="{DynamicResource AoCButton}" Margin="10,0,0,0" Padding="10,1,10,1">[Repair]</Button>
             </DockPanel>
-            <Canvas Name="canvas"></Canvas>
+            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,10,10,0" VerticalAlignment="Top">
+                <Label Name="testLabel" Foreground="Silver" Margin="10,0,10,0">Test device:</Label>
+                <TextBox Name="textboxX" Template="{DynamicResource AoCTextBox}" Width="150" Margin="10,0,10,0" HorizontalContentAlignment="Right" VerticalAlignment="Center"/>
+                <TextBox Name="textboxY" Template="{DynamicResource AoCTextBox}" Width="150" Margin="10,0,10,0" HorizontalContentAlignment="Right" VerticalAlignment="Center"/>
+                <Button Name="buttonAdd" Click="Add" Template="{DynamicResource AoCButton}" Margin="10,0,10,0" Width="100">[Add ->]</Button>
+                <TextBox Name="textboxZ" Template="{DynamicResource AoCTextBox}" Width="150" Margin="10,0,10,0" HorizontalContentAlignment="Right" VerticalAlignment="Center" IsEnabled="False"/>
+            </StackPanel>
+            <StackPanel Grid.Row="2">
+                <Canvas Name="canvas"></Canvas>
+            </StackPanel>
         </Grid>
     </ScrollViewer>
 </Window>

@@ -48,6 +48,13 @@ namespace AoC_Day24
             StyleButton(buttonSimulate);
             StyleButton(buttonRepair);
 
+            StyleLabel(testLabel);
+            StyleTextBox(textboxX);
+            StyleTextBox(textboxY);
+            StyleButton(buttonAdd);
+            StyleTextBox(textboxZ);
+
+            Background = backgroundBrush;
             MinWidth = spacing + (cellWidth + spacing) * 12;
             MaxWidth = MinWidth;
             Width = MinWidth;
@@ -55,7 +62,6 @@ namespace AoC_Day24
 
             canvas.Width = spacing + (cellWidth + spacing) * 12;
             canvas.Height = spacing + 45.5 * (cellHeight + spacing) * 4;
-            canvas.Background = backgroundBrush;
 
             circuit = new Circuit();
             circuit.Import();
@@ -67,6 +73,9 @@ namespace AoC_Day24
                     answer += $"{wire.name},";
 
             answerLabel.Content = $"Puzzle answer: {answer[..^1]}";
+
+            textboxX.Text = $"{circuit.ProduceNumberFor("x")}";
+            textboxY.Text = $"{circuit.ProduceNumberFor("y")}";
         }
 
         private static SolidColorBrush BrushFromHex(string hex)
@@ -88,6 +97,15 @@ namespace AoC_Day24
         {
             label.FontFamily = consolasFamily;
             label.FontSize = cellHeight * 0.4;
+        }
+
+        private void StyleTextBox(TextBox textBox)
+        {
+            textBox.Background = elementBackgroundBrush;
+            textBox.FontFamily = consolasFamily;
+            textBox.FontSize = cellHeight * 0.4;
+            textBox.Foreground = Brushes.Silver;
+            textBox.BorderBrush = Brushes.DimGray;
         }
 
         private void DrawCircuit()
@@ -216,6 +234,8 @@ namespace AoC_Day24
             foreach (var wire in circuit.wires.Values)
                 if (wire.name.StartsWith('x'))
                     await Process(wire);
+
+            SetOutput();
         }
 
         private void Repair(object sender, RoutedEventArgs e)
@@ -234,6 +254,15 @@ namespace AoC_Day24
             DrawCircuit();
 
             buttonAnimate.IsEnabled = true;
+        }
+
+        private void Add(object sender, RoutedEventArgs e)
+        {
+            //var xValue = long.Parse(textboxX.Text);
+            //var yValue = long.Parse(textboxY.Text);
+            //var expectedValueZ = xValue + yValue;
+
+            //textboxZ.Text = $"{xValue + yValue}";
         }
 
         private async Task Process(Wire wire)
@@ -283,6 +312,17 @@ namespace AoC_Day24
                         (connection.Key.StartsWith(wire.name) && wire.suspicious))
                         ((Path)connection.Value).Stroke = Brushes.Orchid;
             }
+        }
+
+        private void SetOutput()
+        {
+            var xValue = long.Parse(textboxX.Text);
+            var yValue = long.Parse(textboxY.Text);
+            var expectedValueZ = xValue + yValue;
+            var output = circuit.ProduceNumberFor("z");
+
+            textboxZ.Text = $"{output}";
+            textboxZ.Foreground = output == expectedValueZ ? Brushes.Silver : Brushes.Red;
         }
 
         private void DrawWire(Wire wire)
