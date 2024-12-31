@@ -197,6 +197,9 @@ namespace AoC_Day24
 
         private void Animate(object sender, RoutedEventArgs e)
         {
+            buttonAnimate.IsEnabled = false;
+            buttonSimulate.IsEnabled = true;
+
             foreach (var bit in bits.Values)
                 bit.Visibility = Visibility.Visible;
 
@@ -205,6 +208,8 @@ namespace AoC_Day24
 
         private async void Simulate(object sender, RoutedEventArgs e)
         {
+            buttonSimulate.IsEnabled = false;
+
             foreach (var wire in circuit.wires.Values)
                 wire.ResetValue();
 
@@ -215,6 +220,8 @@ namespace AoC_Day24
 
         private void Repair(object sender, RoutedEventArgs e)
         {
+            buttonRepair.IsEnabled = false;
+
             storyboard.Stop();
 
             foreach (var connection in connections)
@@ -225,6 +232,8 @@ namespace AoC_Day24
             circuit.RepairCrossedWires();
 
             DrawCircuit();
+
+            buttonAnimate.IsEnabled = true;
         }
 
         private async Task Process(Wire wire)
