@@ -208,7 +208,7 @@ namespace AoC_Day24.Device
 
                 if (otherWire > -1)
                 {
-                    // an AND gate only is affected when the other input of that gate is also true
+                    // an AND gate is only affected when the other input of that gate is true
                     // otherwise it cannot produce a 'true' output anyways
                     if (gate.op.Equals("AND") && gate.inputs[otherWire].value.Value)
                         WhatIf(gate.output, fictional && gate.inputs[otherWire].value.Value);
