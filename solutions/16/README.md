@@ -25,3 +25,44 @@ What I did was the following:
 - Lastly, I've created a `HashSet<Tuple<int, int>>` to store all unique locations where we can place our seat (the answer to this part of the puzzle) and start looping over the original shortest path. For each node I check if it is not the start, not the end, and if it doesn't have only two connecting nodes: in this case it is part of a corridor and blocking this wouldn't change anything to the outcome, since blocking crossings only would be sufficient to reroute the algorithm. This brings down the possible search locations from 400 nodes (including start and end nodes) to 92 actual nodes to test and run my A* on. For each of these crossings I call `initSearch()` while blocking that exact location. If the cost of the path that is found is equal to the minimum cost, it is an alternative, and I add all locations of this new path to my list.
 
 It is the only solution yet that doesn't run in under a second, but given the challenge this puzzle was for me, and the initial failed brute-force attempts, a runtime of 82 seconds is acceptable for now. Maybe after AoC I will look up solutions of others and see how this could be done faster!
+
+### Speeding up the search
+Update: as promised, I would get back to this solution to see if I can get if faster. My goal is to be able to solve all puzles subsecond, and I'm almost there! I first just analyzed my own code, and found a huge improvement. Then, I started measuring the runtime of each individual function and each part of the algorithm, to find the weak spots in terms of performance. This way, I was able to improve the following things, in the following order:
+- As described above, for part 2, I moved the initialization of the graph into a method and made it configurable so I could block a single node on the shortest path. This actaully was quite lazy and far from the best solution, as I just mostly reused my part 1 code and also built up the entire graph over 90 times. Reviewing my solution with fresh eyes, I saw that it was a far better idea to just skip the node to block in the search itself. So I removed the addition of blocking a node in the `initSearch()` function and renamed it to `setupGraph()`, because I now only need to do that once. But since I'm not creating new objects for each new search, I need to reset values like `minCostToStart` and `visited` between evey search, so I also added a `resetGraph()` function that replaced the initalization of the graph between every new search. Then, I added an extra parameter to the `search()` function, a nullable `Node` object named `blockedNode`, so I can let the Dijkstra algorithm skip a certain node. From a functional perspective, the concept behind the solution is still exactly the same, but it cut down the execution time from 82 seconds to 2.7 seconds for part 2!
+- I then also changed the storage of seats from a `HashSet<Tuple<int, int>>` to a much simpler `HashSet<int>` collection, storing the unique location of a seat as a one-dimensional array index: `node.y * lines.Length + node.x`. This saves me creating new tuples for every seat I've found (multiple) times, and is just a little bit faster.
+- Then, I decided to remove the A* optimalization to the Dijkstra algorithm, and remove the calculation of the absolute distance and the component in the priority queue that sorts on that value. While this normally should speed up the Dijkstra search, it turned out to actually be just a little bit slower for this map. This saved me some more time and I was now down to roughly 2.38 seconds for part 2.
+- I now realized that that is pretty fast, as it does multiple searches and part 1 alone already took 840 ms. And that's strange, because if the weight of the algorithm is in the search, searching exactly 92 times instead of just once should be just 3 times slower, but a lot slower! That's why I also initially didn't think the 82 seconds runtime of part 2 were strange, or easy to improve. But now I got that down to under 3 seconds, I realized the weight in part 1 wasn't in the search itself, so I switched my attention to part 1. After some measurements, it turned out my graph building algorithm was super inefficient. I store my nodes in a `List<Node>` and loop over all nodes, for al nodes, and for each pair of nodes I check if they are neighbours. But the majority of the other nodes aren't neighbours, and the graph is just an array, a simple map. And neighbours only can occur right next to another (this graph doesn't have distances). So it would be far more efficient (and logical) to store the nodes in a two-dimensional `Node[,]` and only check for neighbours in the adjacent cells of each node. So I changed this part of the `setupGraph()` function and funny enough, as it's the case with most performance optimizations (up to a certain point) the code came out smaller and less complex.
+
+I went from:
+```
+foreach (var node in nodes)
+{
+    foreach (var otherNode in nodes)
+        if (node != otherNode &&
+            ((Math.Abs(otherNode.x - node.x) <= 1 && otherNode.y == node.y) ||
+                (Math.Abs(otherNode.y - node.y) <= 1) && otherNode.x == node.x))
+        {
+            var e = new Edge(otherNode, 1);
+
+            for (var i = 0; i < 4; i++)
+                if (otherNode.y - node.y == deltaMap[i, 0] && otherNode.x - node.x == deltaMap[i, 1])
+                    e.direction = i;
+
+            node.connections.Add(e);
+        }
+    node.totalDistance = Math.Sqrt(Math.Pow(node.x - end.x, 2) + Math.Pow(node.y - end.y, 2));
+}
+```
+To: 
+```
+for (var y = 1; y < lines.Length - 1; y++)
+    for (var x = 1; x < lines[0].Length - 1; x++)
+        if (nodesArray[y, x] != null)
+            for (var i = 0; i < 4; i++)
+                if (nodesArray[y + deltaMap[i, 0], x + deltaMap[i, 1]] != null)
+                    nodesArray[y, x].connections.Add(new Edge(nodesArray[y + deltaMap[i, 0], x + deltaMap[i, 1]], 1, i));
+```
+This turned out to be an amazing performance improvement, my part 1 solution went down from 840 ms to 19.1 ms! So the majority of the runtime went into building the graph in a super inefficient way (which I also repeated lots of times in my initial part 2 solution).
+- Back to part 2, applying the same improvement of setting up the graph, my runtime now is only 1.24 seconds!
+
+I am very happy with these improvements, and it goes to show that it can be very valuable to review your own code after a little whlie. But although I'm almost there, I didn't reach my goal yet. So, to be continued...
