@@ -12,10 +12,10 @@ var minCost = search();
 var shortestPath = new List<Node> { end };
 buildPath(shortestPath, end);
 
-var seats = new HashSet<Tuple<int, int>>();
+var seats = new HashSet<int>();
 foreach (var node in shortestPath)
 {
-    seats.Add(new Tuple<int, int>(node.x, node.y));
+    seats.Add(node.y * lines.Length + node.x);
     if (!node.start && !node.end && node.connections.Count != 2)
     {
         resetGraph();
@@ -26,7 +26,7 @@ foreach (var node in shortestPath)
             buildPath(path, end);
 
             foreach (var newNode in path)
-                seats.Add(new Tuple<int, int>(newNode.x, newNode.y));
+                seats.Add(newNode.y * lines.Length + newNode.x);
         }
     }
 }
