@@ -6,7 +6,8 @@ var nodes = new List<Node>();
 var start = new Node(0, 0, true, false);
 var end = new Node(0, 0, false, true);
 
-var minCost = initSearch(-1, -1);
+setupGraph();
+var minCost = search();
 
 var shortestPath = new List<Node> { end };
 buildPath(shortestPath, end);
@@ -17,7 +18,8 @@ foreach (var node in shortestPath)
     seats.Add(new Tuple<int, int>(node.x, node.y));
     if (!node.start && !node.end && node.connections.Count != 2)
     {
-        var cost = initSearch(node.x, node.y);
+        resetGraph();
+        var cost = search(node);
         if (cost == minCost)
         {
             var path = new List<Node>();
@@ -31,13 +33,13 @@ foreach (var node in shortestPath)
 
 Console.WriteLine(seats.Count);
 
-int initSearch(int blockX, int blockY)
+void setupGraph()
 {
     nodes = [];
 
     for (var y = 0; y < lines.Length; y++)
         for (var x = 0; x < lines[0].Length; x++)
-            if (!lines[y][x].Equals('#') && !(y == blockY && x == blockX))
+            if (!lines[y][x].Equals('#'))
             {
                 var node = new Node(x, y, lines[y][x].Equals('S'), lines[y][x].Equals('E'));
                 nodes.Add(node);
@@ -65,13 +67,16 @@ int initSearch(int blockX, int blockY)
             }
         node.totalDistance = Math.Sqrt(Math.Pow(node.x - end.x, 2) + Math.Pow(node.y - end.y, 2));
     }
-
-    search();
-
-    return end.visited && end.minCostToStart != null ? end.minCostToStart.Value : int.MaxValue;
 }
 
-void search()
+void resetGraph()
+{
+    foreach (var node in nodes)
+        node.Reset();
+}
+
+
+int search(Node? blockedNode = null)
 {
     start.minCostToStart = 0;
     var priorityQueue = new List<Tuple<Node, int>> { new(start, 1) };
@@ -84,6 +89,9 @@ void search()
         {
             var connectedNode = c.ConnectedNode;
             if (connectedNode.visited)
+                continue;
+
+            if (blockedNode != null && connectedNode == blockedNode)
                 continue;
 
             var cost = nodeWithDirection.Item1.minCostToStart + c.Cost;
@@ -103,9 +111,11 @@ void search()
             nodeWithDirection.Item1.visited = true;
         }
         if (nodeWithDirection.Item1.end)
-            return;
+            break;
     }
     while (priorityQueue.Count > 0);
+
+    return end.visited && end.minCostToStart != null ? end.minCostToStart.Value : int.MaxValue;
 }
 
 void buildPath(List<Node> nodes, Node node)
@@ -129,7 +139,14 @@ internal class Node(int x, int y, bool start, bool end)
     public int? minCostToStart;
     public double totalDistance;
     public bool visited;
-    public Node nearestToStart;
+    public Node? nearestToStart;
+
+    public void Reset()
+    {
+        minCostToStart = null;
+        visited = false;
+        nearestToStart = null;
+    }
 }
 
 class Edge(Node connectedNode, int cost)
