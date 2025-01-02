@@ -2,7 +2,7 @@ var lines = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-i
 
 var deltaMap = new int[4, 2] { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 } };
 
-var nodes = new List<Node>();
+var nodesArray = new Node[lines.Length, lines[0].Length];
 var start = new Node(0, 0, true, false);
 var end = new Node(0, 0, false, true);
 
@@ -35,14 +35,12 @@ Console.WriteLine(seats.Count);
 
 void setupGraph()
 {
-    nodes = [];
-
     for (var y = 0; y < lines.Length; y++)
         for (var x = 0; x < lines[0].Length; x++)
             if (!lines[y][x].Equals('#'))
             {
                 var node = new Node(x, y, lines[y][x].Equals('S'), lines[y][x].Equals('E'));
-                nodes.Add(node);
+                nodesArray[y, x] = node;
 
                 if (node.start)
                     start = node;
@@ -50,26 +48,18 @@ void setupGraph()
                     end = node;
             }
 
-    foreach (var node in nodes)
-        foreach (var otherNode in nodes)
-            if (node != otherNode &&
-                ((Math.Abs(otherNode.x - node.x) <= 1 && otherNode.y == node.y) ||
-                 (Math.Abs(otherNode.y - node.y) <= 1) && otherNode.x == node.x))
-            {
-                var e = new Edge(otherNode, 1);
-
+    for (var y = 1; y < lines.Length - 1; y++)
+        for (var x = 1; x < lines[0].Length - 1; x++)
+            if (nodesArray[y, x] != null)
                 for (var i = 0; i < 4; i++)
-                    if (otherNode.y - node.y == deltaMap[i, 0] && otherNode.x - node.x == deltaMap[i, 1])
-                        e.direction = i;
-
-                node.connections.Add(e);
-            }
+                    if (nodesArray[y + deltaMap[i, 0], x + deltaMap[i, 1]] != null)
+                        nodesArray[y, x].connections.Add(new Edge(nodesArray[y + deltaMap[i, 0], x + deltaMap[i, 1]], 1, i));
 }
 
 void resetGraph()
 {
-    foreach (var node in nodes)
-        node.Reset();
+    foreach (var node in nodesArray)
+        node?.Reset();
 }
 
 int search(Node? blockedNode = null)
@@ -144,9 +134,9 @@ internal class Node(int x, int y, bool start, bool end)
     }
 }
 
-class Edge(Node connectedNode, int cost)
+class Edge(Node connectedNode, int cost, int direction)
 {
     public int Cost = cost;
     public Node ConnectedNode = connectedNode;
-    public int direction;
+    public int direction = direction;
 }
