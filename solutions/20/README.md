@@ -47,3 +47,28 @@ We don't need any path finding or difficult calculations! The shortest distance 
 Meaning we now need to go over our grid twice, for every section of the track (tile that isn't a wall (`-1`)) we go over all other sections of the track. If the distance between those two tiles (completely through walls and track sections no matter what) is 20 or less, and if the difference in original steps between both tiles minus the distance travelled is equal to or greater than 100, then we can increment our answer by one because we have found a valid shortcut.
 
 There's one more thing: this algorithm finds the same shortcut twice, once in each direction. I could've checked to only test one way (going up the path), but I chose to just divide my answer by two, as that was a little leess code and also seemed to be marginally quicker.
+
+### Speeding up the race
+Initially, I've written a solution that looped over the entire map and then for every tile that isn't a wall, it looped over the entire map again, looking for all other sections of the racetrack. This solution, which I've used to submit my answer, was quite fast (1.9 seconds), but not subsecond. So after finishing all AoC puzzles of the 2024 edition, I came back to this one to see if I could speed it up. And then it occured to me that a lot of tiles are actually walls, and that I was looping over way too many positions in my array. So I added a new collection named `singletrack`, which is a `List<Point>` collection, to actually only store the tiles of the racetrack itself, in the order you would also travel across the entire track.
+
+So instead of keeping track of an array that visually represents the entire map including its walls (like the puzzle input itself), and storing the step count to each tile of the racetrack in that same array, I now store a list of steps with their respective x,y-coordinate on the map. And thus the index of each coordinate in the list actually is the step count to that point. This way, I only have to loop over actual track tiles, going from a 141x141 grid of which I was only looping over the inner tiles without the border, so that would be 139x139, to a single list of 9,357 individual steps. That means I go from `19,321 * 19,321 = 373,301,041` iterations to only `9357 x 9357 = 87,553,449` checks.
+
+But, while initially it didn't make much of a difference to check for each pair of tiles if it was going up the track (as they were all over the place when you scan the grid from top to bottom, left to right), now it suddenly became very easy to only check the tiles going forward on the racetrack, meaning I could also skip the division by 2 at the end and I only have to check `43,772,046` pairs now: from each tile of the track, I check all the tiles that are left on the track after my current position. So that's only 12% of the checks compared to my initial solution! And also, the code itself improved a lot as well. I went from:
+```
+var answer = 0;
+for (var y = 1; y < lines.Length - 1; y++)
+    for (var x = 1; x < lines[0].Length - 1; x++)                           // loop over the grid for all starting coords
+        if (racetrack[y, x] != -1)                                          // if it's on the track, continue
+            for (var dY = 1; dY < lines.Length - 1; dY++)
+                for (var dX = 1; dX < lines[0].Length - 1; dX++)            // loop over the grid again, for the end coords
+                    if (racetrack[dY, dX] != -1 && !(y == dY && x == dX))   // if that's on the track, and not the same as the start, continue
+                        cheat(x, y, dX, dY);                                // try to cheat from each start to end point on the track
+```
+To:
+```
+var answer = 0;
+for (var from = 0; from < singletrack.Count; from++)
+    for (var to = from + 1; to < singletrack.Count; to++)
+        cheat(from, to);
+```
+My new solution runs in 607 ms, which is over 3 times faster, saves 2 LoC in total, and is much easier to read I think.

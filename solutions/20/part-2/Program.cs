@@ -3,7 +3,9 @@ var lines = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-i
 var deltaMap = new int[4, 2] { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 } };
 
 var racetrack = new int[lines.Length, lines[0].Length];
-var start = new Point(0, 0);
+var singletrack = new List<Point>();
+
+var pos = new Point(0, 0);
 var end = new Point(0, 0);
 
 for (var y = 0; y < lines.Length; y++)
@@ -11,12 +13,12 @@ for (var y = 0; y < lines.Length; y++)
         if (lines[y][x].Equals('#'))
             racetrack[y, x] = -1;
         else if (lines[y][x].Equals('S'))
-            start = new Point(x, y);
+            pos = new Point(x, y);
         else if (lines[y][x].Equals('E'))
             end = new Point(x, y);
 
-var pos = new Point(start.x, start.y);
 int previousX = -1, previousY = -1;
+singletrack.Add(new Point(pos.x, pos.y));
 while (!(pos.x == end.x && pos.y == end.y))
 {
     int dY, dX;
@@ -27,7 +29,7 @@ while (!(pos.x == end.x && pos.y == end.y))
 
         if (racetrack[dY, dX] != -1 && !(dX == previousX && dY == previousY))
         {
-            racetrack[dY, dX] = racetrack[pos.y, pos.x] + 1;
+            singletrack.Add(new Point(dX, dY));
 
             previousX = pos.x;
             previousY = pos.y;
@@ -41,20 +43,16 @@ while (!(pos.x == end.x && pos.y == end.y))
 }
 
 var answer = 0;
-for (var y = 1; y < lines.Length - 1; y++)
-    for (var x = 1; x < lines[0].Length - 1; x++)                           // loop over the grid for all starting coords
-        if (racetrack[y, x] != -1)                                          // if it's on the track, continue
-            for (var dY = 1; dY < lines.Length - 1; dY++)
-                for (var dX = 1; dX < lines[0].Length - 1; dX++)            // loop over the grid again, for the end coords
-                    if (racetrack[dY, dX] != -1 && !(y == dY && x == dX))   // if that's on the track, and not the same as the start, continue
-                        cheat(x, y, dX, dY);                                // try to cheat from each start to end point on the track
+for (var from = 0; from < singletrack.Count; from++)
+    for (var to = from + 1; to < singletrack.Count; to++)
+        cheat(from, to);
 
-Console.WriteLine(answer / 2);
+Console.WriteLine(answer);
 
-void cheat(int aX, int aY, int bX, int bY)
+void cheat(int a, int b)
 {
-    var picoseconds = distance(aX, bX) + distance(aY, bY);
-    if (picoseconds <= 20 && saved(racetrack[aY, aX], racetrack[bY, bX], picoseconds) >= 100)
+    var picoseconds = distance(singletrack[a].x, singletrack[b].x) + distance(singletrack[a].y, singletrack[b].y);
+    if (picoseconds <= 20 && saved(a, b, picoseconds) >= 100)
         answer++;
 }
 
