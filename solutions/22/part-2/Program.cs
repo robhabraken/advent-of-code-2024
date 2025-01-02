@@ -1,10 +1,10 @@
 var secrets = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-io\\22\\input.txt").Select(long.Parse).ToArray();
 
-var bananas = new Dictionary<string, int>();
+var bananas = new Dictionary<int, int>();
 for (var i = 0; i < secrets.Length; i++)
 {
     var changes = new int[2000];
-    var occurrences = new List<string>();
+    var occurrences = new List<int>();
     for (var j = 0; j < 2000; j++)
     {
         var newSecret = pseudo(secrets[i]);
@@ -13,7 +13,7 @@ for (var i = 0; i < secrets.Length; i++)
 
         if (j >= 3)
         {
-            var sequence = $"{changes[j - 3]},{changes[j - 2]},{changes[j - 1]},{changes[j]}";
+            var sequence = changes[j - 3] * 1000000 + changes[j - 2] * 10000 + changes[j - 1] * 100 + changes[j];
             if (!occurrences.Contains(sequence))
             {
                 if (bananas.ContainsKey(sequence))

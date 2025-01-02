@@ -18,3 +18,16 @@ I first built a few small tests to see if I could reproduce the given example, s
 - Lastly, I've added a dictionary named `bananas` of the type `Dictionary<string, int>` that holds each unique sequence as a string notation as its key, and the corresponding amount of bananas that would get you as the value. For each sequence that occurs for the first time *over all secrets* I add the amount of bananas (or price) to that dictionary (of the current secret), and for every occurence after that over all other secrets I increase that value with the price for the respective secret.
 
 So instead of actually searching for a common best sequence, I simply store the amount of bananas for each unqiue sequence over all secrets. Now all I have to do is get the maximum value out of the dictionary and I have my answer!
+
+### Speeding up the market
+After submitting my answer, I came up with a huge performance improvement: instead of using the string representation of the sequence as the key for that sequence (like `"-2,1,-1,3"`), I switched to an integer value, as string concatenation and string comparison is very slow. A trick I used more often last year was to store multiple integer values in one single value by multiplying the individual values by their own multitude of 10 each (or in other words bitshifting them to more significant bits). I initially didn't think this was possible as we also have negative numbers - the range of differences between the prices goes from `-9` tot `9`. But since we don't need to retrieve (or decode) the numbers from our key, that actually doesn't matter - it will produce a unique integer value nonetheless and that's all we need! The only thing we need to do to make this work is use factors of 100 instead of 10, to ensure enough separation between the different values.
+
+So instead of:
+```
+var sequence = $"{changes[j - 3]},{changes[j - 2]},{changes[j - 1]},{changes[j]}"
+```
+I now produce a unique key for a sequence like this:
+```
+var sequence = changes[j - 3] * 1000000 + changes[j - 2] * 10000 + changes[j - 1] * 100 + changes[j];
+```
+And of course I needed to change my `occurrences` collection to a `List<int>`, and the `bananas` collection to a `Dictionary<int, int>`. This small change drops the runtime of part 2 from 13 seconds to 441 ms!
