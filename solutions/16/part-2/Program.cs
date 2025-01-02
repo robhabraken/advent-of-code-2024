@@ -72,7 +72,6 @@ void resetGraph()
         node.Reset();
 }
 
-
 int search(Node? blockedNode = null)
 {
     start.minCostToStart = 0;
