@@ -51,7 +51,6 @@ void setupGraph()
             }
 
     foreach (var node in nodes)
-    {
         foreach (var otherNode in nodes)
             if (node != otherNode &&
                 ((Math.Abs(otherNode.x - node.x) <= 1 && otherNode.y == node.y) ||
@@ -65,8 +64,6 @@ void setupGraph()
 
                 node.connections.Add(e);
             }
-        node.totalDistance = Math.Sqrt(Math.Pow(node.x - end.x, 2) + Math.Pow(node.y - end.y, 2));
-    }
 }
 
 void resetGraph()
@@ -82,7 +79,7 @@ int search(Node? blockedNode = null)
     var priorityQueue = new List<Tuple<Node, int>> { new(start, 1) };
     do
     {
-        priorityQueue = [.. priorityQueue.OrderBy(x => x.Item1.minCostToStart + x.Item1.totalDistance)];
+        priorityQueue = [.. priorityQueue.OrderBy(x => x.Item1.minCostToStart)];
         var nodeWithDirection = priorityQueue.First();
         priorityQueue.Remove(nodeWithDirection);
         foreach (var c in nodeWithDirection.Item1.connections.OrderBy(x => x.Cost))
@@ -137,7 +134,6 @@ internal class Node(int x, int y, bool start, bool end)
     public bool end = end;
 
     public int? minCostToStart;
-    public double totalDistance;
     public bool visited;
     public Node? nearestToStart;
 
