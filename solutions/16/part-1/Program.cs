@@ -24,7 +24,7 @@ for (var y = 1; y < lines.Length - 1; y++)
         if (nodesArray[y, x] != null)
             for (var i = 0; i < 4; i++)
                 if (nodesArray[y + deltaMap[i, 0], x + deltaMap[i, 1]] != null)
-                    nodesArray[y, x].connections.Add(new Edge(nodesArray[y + deltaMap[i, 0], x + deltaMap[i, 1]], 1, i));
+                    nodesArray[y, x].connections.Add(new Edge(nodesArray[y + deltaMap[i, 0], x + deltaMap[i, 1]], i));
 
 search();
 
@@ -39,22 +39,21 @@ void search()
         priorityQueue = [.. priorityQueue.OrderBy(x => x.Item1.minCostToStart)];
         var nodeWithDirection = priorityQueue.First();
         priorityQueue.Remove(nodeWithDirection);
-        foreach (var c in nodeWithDirection.Item1.connections.OrderBy(x => x.Cost))
+        foreach (var c in nodeWithDirection.Item1.connections)
         {
-            var connectedNode = c.ConnectedNode;
-            if (connectedNode.visited)
+            if (c.ConnectedNode.visited)
                 continue;
 
-            var cost = nodeWithDirection.Item1.minCostToStart + c.Cost;
+            var cost = nodeWithDirection.Item1.minCostToStart + 1;
             if (c.direction != nodeWithDirection.Item2)
                 cost += 1000;
 
-            if (connectedNode.minCostToStart == null || cost < connectedNode.minCostToStart)
+            if (c.ConnectedNode.minCostToStart == null || cost < c.ConnectedNode.minCostToStart)
             {
-                connectedNode.minCostToStart = cost;
-                connectedNode.nearestToStart = nodeWithDirection.Item1;
+                c.ConnectedNode.minCostToStart = cost;
+                c.ConnectedNode.nearestToStart = nodeWithDirection.Item1;
 
-                var newTuple = new Tuple<Node, int>(connectedNode, c.direction);
+                var newTuple = new Tuple<Node, int>(c.ConnectedNode, c.direction);
                 if (!priorityQueue.Contains(newTuple))
                     priorityQueue.Add(newTuple);
             }
@@ -81,9 +80,8 @@ internal class Node(int x, int y, bool start, bool end)
     public Node nearestToStart;
 }
 
-class Edge(Node connectedNode, int cost, int direction)
+class Edge(Node connectedNode, int direction)
 {
-    public int Cost = cost;
     public Node ConnectedNode = connectedNode;
     public int direction = direction;
 }
