@@ -6,7 +6,7 @@ var nodesArray = new Node[lines.Length, lines[0].Length];
 var start = new Node(0, 0, true, false);
 var end = new Node(0, 0, false, true);
 
-setupGraph();
+initNodes();
 var minCost = search();
 
 var shortestPath = new List<Node> { end };
@@ -16,9 +16,9 @@ var seats = new HashSet<int>();
 foreach (var node in shortestPath)
 {
     seats.Add(node.y * lines.Length + node.x);
-    if (!node.start && !node.end && node.connections.Count != 2)
+    if (!node.start && !node.end && countConnections(node) != 2)
     {
-        resetGraph();
+        resetNodes();
         var cost = search(node);
         if (cost == minCost)
         {
@@ -33,7 +33,7 @@ foreach (var node in shortestPath)
 
 Console.WriteLine(seats.Count);
 
-void setupGraph()
+void initNodes()
 {
     for (var y = 0; y < lines.Length; y++)
         for (var x = 0; x < lines[0].Length; x++)
@@ -47,16 +47,9 @@ void setupGraph()
                 else if (node.end)
                     end = node;
             }
-
-    for (var y = 1; y < lines.Length - 1; y++)
-        for (var x = 1; x < lines[0].Length - 1; x++)
-            if (nodesArray[y, x] != null)
-                for (var i = 0; i < 4; i++)
-                    if (nodesArray[y + deltaMap[i, 0], x + deltaMap[i, 1]] != null)
-                        nodesArray[y, x].connections.Add(new Edge(nodesArray[y + deltaMap[i, 0], x + deltaMap[i, 1]], i));
 }
 
-void resetGraph()
+void resetNodes()
 {
     foreach (var node in nodesArray)
         node?.Reset();
@@ -71,24 +64,26 @@ int search(Node? blockedNode = null)
         priorityQueue = [.. priorityQueue.OrderBy(x => x.Item1.minCostToStart)];
         var nodeWithDirection = priorityQueue.First();
         priorityQueue.Remove(nodeWithDirection);
-        foreach (var c in nodeWithDirection.Item1.connections)
+        for (var dir = 0; dir < 4; dir++)
         {
-            if (c.ConnectedNode.visited)
+            var neighbor = nodesArray[nodeWithDirection.Item1.y + deltaMap[dir, 0], nodeWithDirection.Item1.x + deltaMap[dir, 1]];
+
+            if (neighbor == null || neighbor.visited)
                 continue;
 
-            if (blockedNode != null && c.ConnectedNode == blockedNode)
+            if (blockedNode != null && neighbor == blockedNode)
                 continue;
 
             var cost = nodeWithDirection.Item1.minCostToStart + 1;
-            if (c.direction != nodeWithDirection.Item2)
+            if (dir != nodeWithDirection.Item2)
                 cost += 1000;
 
-            if (c.ConnectedNode.minCostToStart == null || cost < c.ConnectedNode.minCostToStart)
+            if (neighbor.minCostToStart == null || cost < neighbor.minCostToStart)
             {
-                c.ConnectedNode.minCostToStart = cost;
-                c.ConnectedNode.nearestToStart = nodeWithDirection.Item1;
+                neighbor.minCostToStart = cost;
+                neighbor.nearestToStart = nodeWithDirection.Item1;
 
-                var newTuple = new Tuple<Node, int>(c.ConnectedNode, c.direction);
+                var newTuple = new Tuple<Node, int>(neighbor, dir);
                 if (!priorityQueue.Contains(newTuple))
                     priorityQueue.Add(newTuple);
             }
@@ -112,11 +107,20 @@ void buildPath(List<Node> nodes, Node node)
     buildPath(nodes, node.nearestToStart);
 }
 
+int countConnections(Node node)
+{
+    var count = 0;
+    for (var i = 0; i < 4; i++)
+        if (nodesArray[node.y + deltaMap[i, 0], node.x + deltaMap[i, 1]] != null)
+            count++;
+
+    return count;
+}
+
 internal class Node(int x, int y, bool start, bool end)
 {
     public int x = x;
     public int y = y;
-    public List<Edge> connections = [];
 
     public bool start = start;
     public bool end = end;
@@ -131,10 +135,4 @@ internal class Node(int x, int y, bool start, bool end)
         visited = false;
         nearestToStart = null;
     }
-}
-
-class Edge(Node connectedNode, int direction)
-{
-    public Node ConnectedNode = connectedNode;
-    public int direction = direction;
 }
