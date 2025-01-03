@@ -2,7 +2,7 @@ var lines = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-i
 
 var deltaMap = new int[4, 2] { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 } };
 
-var nodesArray = new Node[lines.Length, lines[0].Length];
+var nodes = new Node[lines.Length, lines[0].Length];
 var start = new Node(0, 0, true, false);
 var end = new Node(0, 0, false, true);
 
@@ -11,20 +11,13 @@ for (var y = 0; y < lines.Length; y++)
         if (!lines[y][x].Equals('#'))
         {
             var node = new Node(x, y, lines[y][x].Equals('S'), lines[y][x].Equals('E'));
-            nodesArray[y, x] = node;
+            nodes[y, x] = node;
 
             if (node.start)
                 start = node;
             else if (node.end)
                 end = node;
         }
-
-for (var y = 1; y < lines.Length - 1; y++)
-    for (var x = 1; x < lines[0].Length - 1; x++)
-        if (nodesArray[y, x] != null)
-            for (var i = 0; i < 4; i++)
-                if (nodesArray[y + deltaMap[i, 0], x + deltaMap[i, 1]] != null)
-                    nodesArray[y, x].connections.Add(new Edge(nodesArray[y + deltaMap[i, 0], x + deltaMap[i, 1]], i));
 
 search();
 
@@ -39,21 +32,23 @@ void search()
         priorityQueue = [.. priorityQueue.OrderBy(x => x.Item1.minCostToStart)];
         var nodeWithDirection = priorityQueue.First();
         priorityQueue.Remove(nodeWithDirection);
-        foreach (var c in nodeWithDirection.Item1.connections)
+        for (var dir = 0; dir < 4; dir++)
         {
-            if (c.ConnectedNode.visited)
+            var neighbor = nodes[nodeWithDirection.Item1.y + deltaMap[dir, 0], nodeWithDirection.Item1.x + deltaMap[dir, 1]];
+
+            if (neighbor == null || neighbor.visited)
                 continue;
 
             var cost = nodeWithDirection.Item1.minCostToStart + 1;
-            if (c.direction != nodeWithDirection.Item2)
+            if (dir != nodeWithDirection.Item2)
                 cost += 1000;
 
-            if (c.ConnectedNode.minCostToStart == null || cost < c.ConnectedNode.minCostToStart)
+            if (neighbor.minCostToStart == null || cost < neighbor.minCostToStart)
             {
-                c.ConnectedNode.minCostToStart = cost;
-                c.ConnectedNode.nearestToStart = nodeWithDirection.Item1;
+                neighbor.minCostToStart = cost;
+                neighbor.nearestToStart = nodeWithDirection.Item1;
 
-                var newTuple = new Tuple<Node, int>(c.ConnectedNode, c.direction);
+                var newTuple = new Tuple<Node, int>(neighbor, dir);
                 if (!priorityQueue.Contains(newTuple))
                     priorityQueue.Add(newTuple);
             }
@@ -70,7 +65,6 @@ internal class Node(int x, int y, bool start, bool end)
 {
     public int x = x;
     public int y = y;
-    public List<Edge> connections = [];
 
     public bool start = start;
     public bool end = end;
@@ -78,10 +72,4 @@ internal class Node(int x, int y, bool start, bool end)
     public int? minCostToStart;
     public bool visited;
     public Node nearestToStart;
-}
-
-class Edge(Node connectedNode, int direction)
-{
-    public Node ConnectedNode = connectedNode;
-    public int direction = direction;
 }
