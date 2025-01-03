@@ -2,60 +2,40 @@ var lines = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-i
 
 var deltaMap = new int[4, 2] { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 } };
 
-var nodesArray = new Node[lines.Length, lines[0].Length];
+var nodes = new Node[lines.Length, lines[0].Length];
 var start = new Node(0, 0, true, false);
 var end = new Node(0, 0, false, true);
 
-initNodes();
-var minCost = search();
+for (var y = 0; y < lines.Length; y++)
+    for (var x = 0; x < lines[0].Length; x++)
+        if (!lines[y][x].Equals('#'))
+        {
+            var node = new Node(x, y, lines[y][x].Equals('S'), lines[y][x].Equals('E'));
+            nodes[y, x] = node;
+
+            if (node.start)
+                start = node;
+            else if (node.end)
+                end = node;
+        }
+
+search();
 
 var shortestPath = new List<Node> { end };
 buildPath(shortestPath, end);
 
 var seats = new HashSet<int>();
-foreach (var node in shortestPath)
+for (var i = 0; i < shortestPath.Count; i++)
 {
+    var node = shortestPath[i];
     seats.Add(node.y * lines.Length + node.x);
     if (!node.start && !node.end && countConnections(node) != 2)
-    {
-        resetNodes();
-        var cost = search(node);
-        if (cost == minCost)
-        {
-            var path = new List<Node>();
-            buildPath(path, end);
-
-            foreach (var newNode in path)
-                seats.Add(newNode.y * lines.Length + newNode.x);
-        }
-    }
+        findShortcut(node, i);
 }
 
 Console.WriteLine(seats.Count);
 
-void initNodes()
-{
-    for (var y = 0; y < lines.Length; y++)
-        for (var x = 0; x < lines[0].Length; x++)
-            if (!lines[y][x].Equals('#'))
-            {
-                var node = new Node(x, y, lines[y][x].Equals('S'), lines[y][x].Equals('E'));
-                nodesArray[y, x] = node;
-
-                if (node.start)
-                    start = node;
-                else if (node.end)
-                    end = node;
-            }
-}
-
-void resetNodes()
-{
-    foreach (var node in nodesArray)
-        node?.Reset();
-}
-
-int search(Node? blockedNode = null)
+void search()
 {
     start.minCostToStart = 0;
     var priorityQueue = new List<Tuple<Node, int>> { new(start, 1) };
@@ -66,12 +46,9 @@ int search(Node? blockedNode = null)
         priorityQueue.Remove(nodeWithDirection);
         for (var dir = 0; dir < 4; dir++)
         {
-            var neighbor = nodesArray[nodeWithDirection.Item1.y + deltaMap[dir, 0], nodeWithDirection.Item1.x + deltaMap[dir, 1]];
+            var neighbor = nodes[nodeWithDirection.Item1.y + deltaMap[dir, 0], nodeWithDirection.Item1.x + deltaMap[dir, 1]];
 
             if (neighbor == null || neighbor.visited)
-                continue;
-
-            if (blockedNode != null && neighbor == blockedNode)
                 continue;
 
             var cost = nodeWithDirection.Item1.minCostToStart + 1;
@@ -94,8 +71,6 @@ int search(Node? blockedNode = null)
             break;
     }
     while (priorityQueue.Count > 0);
-
-    return end.visited && end.minCostToStart != null ? end.minCostToStart.Value : int.MaxValue;
 }
 
 void buildPath(List<Node> nodes, Node node)
@@ -111,11 +86,65 @@ int countConnections(Node node)
 {
     var count = 0;
     for (var i = 0; i < 4; i++)
-        if (nodesArray[node.y + deltaMap[i, 0], node.x + deltaMap[i, 1]] != null)
+        if (nodes[node.y + deltaMap[i, 0], node.x + deltaMap[i, 1]] != null)
             count++;
 
     return count;
 }
+
+void findShortcut(Node node, int startIndex)
+{
+    for (var dir = 0; dir < 4; dir++)
+    {
+        var neighbor = nodes[node.y + deltaMap[dir, 0], node.x + deltaMap[dir, 1]];
+        if (neighbor != null && !shortestPath.Contains(neighbor))
+        {
+            var opposite = nodes[node.y - deltaMap[dir, 0], node.x - deltaMap[dir, 1]];
+            walk([neighbor], neighbor, startIndex, dir, !onPath(opposite), false);
+        }
+    }
+}
+
+void walk(List<Node> path, Node node, int startIndex, int dir, bool dirChange, bool cornered)
+{
+    while (true)
+    {
+        node = nodes[node.y + deltaMap[dir, 0], node.x + deltaMap[dir, 1]];
+        
+        if (node == null)
+            return;
+                
+        path.Add(node);
+
+        if (shortestPath.Contains(node))
+        {
+            var arrivedAt = shortestPath.IndexOf(node);
+            if (arrivedAt > startIndex && path.Count == arrivedAt - startIndex)
+            {
+                var next = nodes[node.y + deltaMap[dir, 0], node.x + deltaMap[dir, 1]];
+                if (dirChange != !onPath(next))
+                    foreach (var shortcut in path)
+                        seats.Add(shortcut.y * lines.Length + shortcut.x);
+            }
+            return;
+        }
+
+        if (!cornered)
+        {
+            for (var dir2 = 0; dir2 < 4; dir2++)
+            {
+                if (dir % 2 != dir2 % 2)
+                {
+                    var arroundTheCorner = nodes[node.y + deltaMap[dir2, 0], node.x + deltaMap[dir2, 1]];
+                    if (arroundTheCorner != null)
+                        walk(new List<Node>(path) { arroundTheCorner }, arroundTheCorner, startIndex, dir2, dirChange, true);
+                }
+            }
+        }
+    }
+}
+
+bool onPath(Node node) => node != null && shortestPath.Contains(node);
 
 internal class Node(int x, int y, bool start, bool end)
 {
@@ -128,11 +157,4 @@ internal class Node(int x, int y, bool start, bool end)
     public int? minCostToStart;
     public bool visited;
     public Node? nearestToStart;
-
-    public void Reset()
-    {
-        minCostToStart = null;
-        visited = false;
-        nearestToStart = null;
-    }
 }
