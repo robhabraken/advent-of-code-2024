@@ -1,6 +1,6 @@
 var lines = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-io\\21\\input.txt");
 
-var nboRobots = 5;
+var nboRobots = 25;
 
 var numpad = new NumericKeypad();
 var robots = new List<DirectionalKeypad>();
