@@ -68,7 +68,7 @@ This turned out to be an amazing performance improvement, my part 1 solution wen
 - And that last step made me realize that I could maybe drop the `Edge` object entirely, also removing the initial linking of the connected nodes, and removing the `List<Edge>` attribute named `connections` from the `Node` class. This saves me storing duplicate references to nodes, and also the initial loop of setting up the connections. I renamed those functions to `initNodes()` and `resetNodes()` as I actually do not set up a graph anymore, and changed my Dijkstra algorithm one more time: instead of looping over the connections in the eponymous collection, I now iterate over the integer values of the different directions (0 to 3) and just retrieve a neighbor from the `nodesArray` if present. It's a little less pretty I think, but it wokrs equally well. Except the fact that I checked the number of connections to determine which tiles of the path are on a crossing, which isn't possible anymore, so I introduced a new function `countConnections()`. With these changes, my runtime dropped from 1022 to 988 ms, reaching my subsecond goal!
 
 ### Part 2 revisited
-And then, after speeding up my part 2 solution from 82 seconds to 988 ms purely by performance optimizations, I decided to start over with a new concept. This new concept should be way quicker, and is based on the characteristic of the found shortcuts being only 'other ways around a square block`:
+And then, after speeding up my part 2 solution from 82 seconds to 988 ms purely by performance optimizations, I decided to start over with a new concept. This new concept should be way quicker, and is based on the characteristic of the found shortcuts being only 'other ways around a square block':
 
 ```
 .###.#.#.
