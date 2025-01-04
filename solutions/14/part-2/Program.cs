@@ -14,6 +14,7 @@ foreach (var line in lines)
 
 var seconds = 0;
 var deviationCalibration = 0D;
+var markers = new List<int>();
 while (true)
 {
     var average = new int[2];
@@ -40,15 +41,39 @@ while (true)
 
     if (deviationCalibration == 0)
         deviationCalibration = deviation[0] + deviation[1];
-    else if (deviationCalibration / (deviation[0] + deviation[1]) > 1.5D)
-        break;
+    else
+    {
+        var distribution = Math.Round(deviationCalibration / (deviation[0] + deviation[1]), 1);
+        if (distribution > 1.1)
+            markers.Add(seconds);
+
+        if (markers.Count == 4)
+            break;
+    }
 
     seconds++;
 }
 
+if (markers[2] - markers[0] == dimensions.Item1)
+    seconds = leastCommonMultiple(dimensions.Item1, markers[0], dimensions.Item2, markers[1]);
+else
+    seconds = leastCommonMultiple(dimensions.Item1, markers[1], dimensions.Item2, markers[0]);
+
 Console.WriteLine(seconds);
 
-internal class Robot(Tuple<int, int> position, Tuple<int, int> velocity)
+static int leastCommonMultiple(int a, int offsetA, int b, int offsetB)
+{
+    var lcm = offsetA + a;
+    while (true)
+    {
+        if ((lcm - offsetA) % a == 0 && (lcm - offsetB) % b == 0)
+            return lcm;
+
+        lcm += a;
+    }
+}
+
+class Robot(Tuple<int, int> position, Tuple<int, int> velocity)
 {
     public Tuple<int, int> position = position;
     public Tuple<int, int> velocity = velocity;
@@ -57,7 +82,6 @@ internal class Robot(Tuple<int, int> position, Tuple<int, int> velocity)
     {
         var pX = position.Item1 + velocity.Item1;
         var pY = position.Item2 + velocity.Item2;
-
 
         if (pX < 0)
             pX += dimensions.Item1;
