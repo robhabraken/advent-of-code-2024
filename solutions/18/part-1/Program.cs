@@ -1,6 +1,8 @@
 var lines = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-io\\18\\input.txt");
 
-var nodes = new List<Node>();
+var deltaMap = new int[4, 2] { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 } };
+
+var nodes = new Node[73, 73];
 var start = new Node(0, 0, true, false);
 var end = new Node(0, 0, false, true);
 
@@ -15,24 +17,14 @@ for (var y = 0; y < memorySpace.GetLength(0); y++)
     for (var x = 0; x < memorySpace.GetLength(1); x++)
         if (!memorySpace[y, x])
         {
-            var node = new Node(x, y, y == 0 && x == 0, y == memorySpace.GetLength(0) - 1 && x == memorySpace.GetLength(1) - 1);
-            nodes.Add(node);
+            var node = new Node(x + 1, y + 1, y == 0 && x == 0, y == memorySpace.GetLength(0) - 1 && x == memorySpace.GetLength(1) - 1);
+            nodes[y + 1, x + 1] = node;
 
             if (node.start)
                 start = node;
             else if (node.end)
                 end = node;
         }
-
-foreach (var node in nodes)
-{
-    foreach (var otherNode in nodes)
-        if (node != otherNode &&
-            ((Math.Abs(otherNode.x - node.x) <= 1 && otherNode.y == node.y) ||
-             (Math.Abs(otherNode.y - node.y) <= 1) && otherNode.x == node.x))
-            node.connections.Add(otherNode);
-    node.totalDistance = Math.Sqrt(Math.Pow(node.x - end.x, 2) + Math.Pow(node.y - end.y, 2));
-}
 
 search();
 
@@ -47,22 +39,24 @@ void search()
     var priorityQueue = new List<Node> { start };
     do
     {
-        priorityQueue = [.. priorityQueue.OrderBy(x => x.minCostToStart + x.totalDistance)];
+        priorityQueue = [.. priorityQueue.OrderBy(x => x.minCostToStart)];
         var node = priorityQueue.First();
         priorityQueue.Remove(node);
-        foreach (var conn in node.connections)
+        for (var dir = 0; dir < 4; dir++)
         {
-            if (conn.visited)
+            var neighbor = nodes[node.y + deltaMap[dir, 0], node.x + deltaMap[dir, 1]];
+
+            if (neighbor == null || neighbor.visited)
                 continue;
 
             var cost = node.minCostToStart + 1;
-            if (conn.minCostToStart == null || cost < conn.minCostToStart)
+            if (neighbor.minCostToStart == null || cost < neighbor.minCostToStart)
             {
-                conn.minCostToStart = cost;
-                conn.nearestToStart = node;
+                neighbor.minCostToStart = cost;
+                neighbor.nearestToStart = node;
 
-                if (!priorityQueue.Contains(conn))
-                    priorityQueue.Add(conn);
+                if (!priorityQueue.Contains(neighbor))
+                    priorityQueue.Add(neighbor);
             }
 
             node.visited = true;
@@ -86,13 +80,11 @@ internal class Node(int x, int y, bool start, bool end)
 {
     public int x = x;
     public int y = y;
-    public List<Node> connections = [];
 
     public bool start = start;
     public bool end = end;
 
     public int? minCostToStart;
-    public double totalDistance;
     public bool visited;
     public Node nearestToStart;
 }
