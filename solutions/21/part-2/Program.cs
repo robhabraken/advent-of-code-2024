@@ -7,6 +7,8 @@ var robots = new List<DirectionalKeypad>();
 for (var i = 0; i < nboRobots; i++)
     robots.Add(new DirectionalKeypad());
 
+var cache = new long[5, 5, nboRobots];
+
 var answer = 0L;
 foreach (var line in lines)
     answer += typeCode(line);
@@ -28,12 +30,33 @@ long typeCode(string code)
 
 void pressButtons(char button, int robotIndex, ref long length)
 {
+    var current = robots[robotIndex].y * 3 + robots[robotIndex].x - 1;
+    var target = button switch
+    {
+        '^' => 0,
+        'A' => 1,
+        '<' => 2,
+        'v' => 3,
+        _ => 4
+    };
+
+    if (cache[current, target, robotIndex] > 0)
+    {
+        length += cache[current, target, robotIndex];
+        robots[robotIndex].MoveTo(button);
+        return;
+    }
+
+    var lengthBefore = length;
+
     var sequence = robots[robotIndex].MoveTo(button);
     if (robotIndex == nboRobots - 1)
         length += sequence.Length;
     else
         foreach (var move in sequence)
             pressButtons(move, robotIndex + 1, ref length);
+
+    cache[current, target, robotIndex] = length - lengthBefore;
 }
 
 class DirectionalKeypad : Keypad
@@ -179,5 +202,5 @@ class Keypad
             return string.Empty.PadLeft(Distance(y, dY), '^');
     }
 
-    protected int Distance(int a, int b) => a > b ? a - b : b - a;
+    protected static int Distance(int a, int b) => a > b ? a - b : b - a;
 }
