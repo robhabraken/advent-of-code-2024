@@ -1,4 +1,4 @@
-string[] lines = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-io\\07\\input.txt");
+var lines = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-io\\07\\input.txt");
 
 var ops = new char[] { '+', '|', '*' };
 
@@ -10,7 +10,7 @@ foreach (var line in lines)
     var numbers = equation[1].Trim().Split(' ').Select(long.Parse).ToArray();
 
     var possiblyTrue = false;
-    Evaluate(testValue, numbers[0], numbers, 1, ref possiblyTrue);
+    evaluate(testValue, numbers[0], numbers, 1, ref possiblyTrue);
 
     if (possiblyTrue)
         answer += testValue;
@@ -18,7 +18,7 @@ foreach (var line in lines)
 
 Console.WriteLine(answer);
 
-void Evaluate(long testValue, long current, long[] numbers, int index, ref bool possiblyTrue)
+void evaluate(long testValue, long current, long[] numbers, int index, ref bool possiblyTrue)
 {
     if (!possiblyTrue)
         foreach (var op in ops)
@@ -33,6 +33,6 @@ void Evaluate(long testValue, long current, long[] numbers, int index, ref bool 
                 possiblyTrue = true;
 
             if (index < numbers.Length - 1 && result <= testValue)
-                Evaluate(testValue, result, numbers, index + 1, ref possiblyTrue);
+                evaluate(testValue, result, numbers, index + 1, ref possiblyTrue);
         }
 }
