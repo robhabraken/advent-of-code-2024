@@ -1,4 +1,4 @@
-string[] lines = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-io\\06\\input.txt");
+var lines = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-io\\06\\input.txt");
 
 (int, int) location = (0, 0);
 var referenceMap = new bool[lines.Length, lines[0].Length];
@@ -9,18 +9,18 @@ for (int y = 0; y < lines.Length; y++)
     if (lines[y].Contains('^'))
         location = (y, lines[y].IndexOf('^'));
 
-Walk(ref referenceMap, (location.Item1, location.Item2), -1, -1);
+walk(ref referenceMap, (location.Item1, location.Item2), -1, -1);
 
 var testMap = new bool[lines.Length, lines[0].Length];
 for (int y = 0; y < lines.Length; y++)
     for (int x = 0; x < lines[0].Length; x++)
         if (referenceMap[y, x])
-            if (Walk(ref testMap, (location.Item1, location.Item2), y, x))
+            if (walk(ref testMap, (location.Item1, location.Item2), y, x))
                 answer++;
 
 Console.WriteLine(answer);
 
-bool Walk(ref bool[,] map, (int, int) location, int obstacleY, int obstacleX)
+bool walk(ref bool[,] map, (int, int) location, int obstacleY, int obstacleX)
 {
     var visitedDirections = new bool[lines.Length, lines[0].Length, 4];
     var direction = 0;
