@@ -71,4 +71,4 @@ for (var from = 0; from < singletrack.Count; from++)
     for (var to = from + 1; to < singletrack.Count; to++)
         cheat(from, to);
 ```
-My new solution runs in 607 ms, which is over 3 times faster, saves 2 LoC in total, and is much easier to read I think.
+My new solution runs in 565 ms, which is over 3 times faster, saves 2 LoC in total, and is much easier to read I think.
