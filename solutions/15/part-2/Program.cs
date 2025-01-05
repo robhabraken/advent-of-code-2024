@@ -3,20 +3,14 @@ var lines = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-i
 var directions = "^>v<";
 var deltaMap = new int[4, 2] { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 } };
 
+var warehouse = new List<string>();
 var moves = new List<string>();
 var robot = new Obstacle(0, 0, ObstacleType.Robot);
-var obstacles = new List<Obstacle>();
 
 for (var y = 0; y < lines.Length; y++)
 {
     if (lines[y].StartsWith('#'))
-    {
-        for (var x = 0; x < lines[y].Length; x++)
-            if (lines[y][x].Equals('#'))
-                obstacles.Add(new Obstacle(x * 2, y, ObstacleType.Wall));
-            else if (lines[y][x].Equals('O'))
-                obstacles.Add(new Obstacle(x * 2, y, ObstacleType.Box));
-    }
+        warehouse.Add(lines[y]);
     else if (!string.IsNullOrEmpty(lines[y]))
         moves.Add(lines[y]);
 
@@ -24,32 +18,36 @@ for (var y = 0; y < lines.Length; y++)
         robot = new Obstacle(lines[y].IndexOf('@') * 2, y, ObstacleType.Robot);
 }
 
+var obstacles = new Obstacle?[warehouse.Count, warehouse[0].Length * 2];
+for (var y = 0; y < warehouse.Count; y++)
+    for (var x = 0; x < warehouse[0].Length; x++)
+        if (warehouse[y][x].Equals('#'))
+            obstacles[y, x * 2] = new Obstacle(x * 2, y, ObstacleType.Wall);
+        else if (warehouse[y][x].Equals('O'))
+            obstacles[y, x * 2] = new Obstacle(x * 2, y, ObstacleType.Box);
+
 foreach (var line in moves)
     foreach (var move in line)
-        attemptMove(obstacles, directions.IndexOf(move));
+        attemptMove(directions.IndexOf(move));
 
 var answer = 0;
-foreach (var obstacle in obstacles)
-    if (obstacle.type == ObstacleType.Box)
-        answer += 100 * obstacle.y + obstacle.x;
+for (var y = 0; y < obstacles.GetLength(0); y++)
+    for (var x = 0; x < obstacles.GetLength(1); x++)
+        if (obstacles[y, x] != null && obstacles[y, x]?.type == ObstacleType.Box)
+            answer += 100 * y + x;
 
 Console.WriteLine(answer);
 
-void attemptMove(List<Obstacle> obstacles, int direction)
+void attemptMove(int direction)
 {
     var dY = robot.y + deltaMap[direction, 0];
     var dX = robot.x + deltaMap[direction, 1];
 
     Obstacle? obstruction = null;
-    foreach (var obstacle in obstacles)
-        if (obstacle.y == dY)
-            if ((direction % 2 == 0 && obstacle.x == dX || obstacle.x + 1 == dX) ||
-                (direction == 1 && obstacle.x == dX) ||
-                (direction == 3 && obstacle.x + 1 == dX))
-            {
-                obstruction = obstacle;
-                break;
-            }
+    if (direction != 3 && obstacles[dY, dX] != null)
+        obstruction = obstacles[dY, dX];
+    else if (direction != 1 && obstacles[dY, dX - 1] != null)
+        obstruction = obstacles[dY, dX - 1];
 
     if (obstruction != null && obstruction.type == ObstacleType.Wall)
         return;
@@ -71,25 +69,40 @@ internal class Obstacle(int x, int y, ObstacleType type)
 
     public ObstacleType type = type;
 
-    public bool TryMove(List<Obstacle> obstacles, int[,] deltaMap, int direction, bool doMove)
+    public bool TryMove(Obstacle?[,] obstacles, int[,] deltaMap, int direction, bool doMove)
     {
         var dX = x + deltaMap[direction, 1];
         var dY = y + deltaMap[direction, 0];
 
         var boxes = new List<Obstacle>();
-        foreach (var obstacle in obstacles)
-            if (obstacle.y == dY)
-                if (direction % 2 == 0 && (obstacle.x == dX || obstacle.x == dX - 1 || obstacle.x == dX + 1) ||
-                    direction % 2 == 1 && ((direction == 1 && obstacle.x == dX + 1) || (direction == 3 && obstacle.x == dX - 1)))
-                    if (obstacle.type == ObstacleType.Wall)
-                        return false;
-                    else
-                        boxes.Add(obstacle);
+        if (direction % 2 == 0 && obstacles[dY, dX] != null)
+        {
+            if (obstacles[dY, dX]?.type == ObstacleType.Wall)
+                return false;
+            else
+                boxes.Add(obstacles[dY, dX]);
+        }
+
+        if (direction != 1 && obstacles[dY, dX - 1] != null)
+        {
+            if (obstacles[dY, dX - 1]?.type == ObstacleType.Wall)
+                return false;
+            else
+                boxes.Add(obstacles[dY, dX - 1]);
+        }
+
+        if (direction != 3 && obstacles[dY, dX + 1] != null)
+        {
+            if (obstacles[dY, dX + 1]?.type == ObstacleType.Wall)
+                return false;
+            else
+                boxes.Add(obstacles[dY, dX + 1]);
+        }
 
         if (boxes.Count == 0)
         {
             if (doMove)
-                Move(deltaMap, direction);
+                Move(obstacles, deltaMap, direction);
             return true;
         }
         else
@@ -99,19 +112,23 @@ internal class Obstacle(int x, int y, ObstacleType type)
                 possible = possible && box.TryMove(obstacles, deltaMap, direction, false);
 
             if (possible && doMove)
-            { 
+            {
                 foreach (var box in boxes)
                     box.TryMove(obstacles, deltaMap, direction, true);
-                Move(deltaMap, direction);
+                Move(obstacles, deltaMap, direction);
             }
             return possible;
         }
     }
 
-    private void Move(int[,] deltaMap, int direction)
+    private void Move(Obstacle?[,] obstacles, int[,] deltaMap, int direction)
     {
+        obstacles[y, x] = null;
+
         x += deltaMap[direction, 1];
         y += deltaMap[direction, 0];
+
+        obstacles[y, x] = this;
     }
 }
 
