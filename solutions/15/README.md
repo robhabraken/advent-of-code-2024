@@ -29,7 +29,7 @@ This is actually all that's needed, shifting over characters in a single line in
 
 ## Part 2
 
-I optimized for speed with the first part, but no gigantic proportions for the second part, so that wasn't really necessary. But since we're not moving in a straight line anymore (or not solely), and because each consecutive box can push more than one box at a time, we *do* not recursion this time. So I deleted most of my code (the `char[,]` map and the contents of the `attemptMove()` function) and started over.
+I optimized for speed with the first part, but no gigantic proportions for the second part, so that wasn't really necessary. But since we're not moving in a straight line anymore (or not solely), and because each consecutive box can push more than one box at a time, we *do* need recursion this time. So I deleted most of my code (the `char[,]` map and the contents of the `attemptMove()` function) and started over.
 
 I did a few things differently this time:
 - I didn't use an actual grid or map to work with, but a list of objects instead. I've created an `Obstacle` class with members for the x,y-coordinates, a public `TryMove()` function and a private `Move()` function. Why? Because a box should be able to move itself, but only could request other boxes to move over *if possible*. I'll get to how that works later. I also added an enumeration named `ObstacleType` so I can reuse this object for the `Robot` and any `Wall` elements too next to the main `Box` type. Of course I don't call the move functions for Walls, but I least I now can store all elements in a single `List<Obstacle>` collection and test whether they are a `Wall` or a `Box`.
