@@ -1,78 +1,74 @@
 var diskmap = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-io\\09\\input.txt")[0];
 
-var fileblocks = new List<int>();
-var firstEmptyBlock = 0;
+var length = 0;
+for (var i = 0; i < diskmap.Length; i++)
+    length += diskmap[i] - '0';
 
-for (int i = 0, id = 0; i < diskmap.Length; i++)
+var blocks = new int[length + 1];
+blocks[^1] = -1;
+
+var needle = 0;
+for (var i = 0; i < diskmap.Length; i++)
+    for (var j = 0; j < diskmap[i] - '0'; j++)
+        if (i % 2 == 0)
+            blocks[needle++] = i / 2;
+        else
+            blocks[needle++] = -1;
+
+var currentFile = diskmap.Length / 2;
+var searchFrom = 0;
+for (var i = blocks.Length - 1; i >= 0; i--)
 {
-    var digit = int.Parse($"{diskmap[i]}");
-    if (i % 2 == 1)
+    if (i > 0 && blocks[i] == currentFile && blocks[i - 1] != currentFile)
     {
-        for (var j = 0; j < digit; j++)
-            fileblocks.Add(-1);
-    }
-    else
-    {
-        for (var j = 0; j < digit; j++)
-            fileblocks.Add(id);
-        id++;
-    }
-}
+        var fileLength = 1;
+        for (; fileLength < 9; fileLength++)
+            if (blocks[i + fileLength] != currentFile)
+                break;
 
-for (int i = fileblocks.Count - 1, id = int.MaxValue; i >= 0; i--)
-{
-    if (fileblocks[i] >= 0 && fileblocks[i] < id)
-    {
-        var filestart = i;
-        for (var j = i; j >= 0 && fileblocks[j] == fileblocks[i]; j--)
-            filestart = j;
-
-        var length = i - filestart + 1;
-
-        id = fileblocks[i];
-
-        var freespace = freeSpaceIndex(length, filestart);
-        if (freespace >= 0)
+        var firstEmptyIndex = -1;
+        for (var j = searchFrom; j < blocks.Length - fileLength && j < i; j++)
         {
-            for (var j = 0; j < length; j++)
+            if (blocks[j] == -1)
             {
-                fileblocks[freespace + j] = fileblocks[i];
-                fileblocks[filestart + j] = -1;
+                if (firstEmptyIndex == -1)
+                    firstEmptyIndex = j;
+
+                var fits = true;
+                for (var k = 1; k < fileLength; k++)
+                {
+                    if (blocks[j + k] > -1)
+                    {
+                        fits = false;
+                        break;
+                    }
+                }
+
+                if (fits)
+                {
+                    for (var k = 0; k < fileLength; k++)
+                    {
+                        blocks[j + k] = currentFile;
+                        blocks[i + k] = -1;
+                    }
+                    break;
+                }
             }
         }
 
-        i = filestart;
+        if (firstEmptyIndex > -1)
+            searchFrom = firstEmptyIndex;
+
+        if (searchFrom == i || currentFile == 0)
+            break;
+
+        currentFile--;
     }
 }
 
 long checksum = 0;
-for (var i = 0; i < fileblocks.Count; i++)
-    if (fileblocks[i] >= 0)
-        checksum += fileblocks[i] * i;
+for (var i = 0; i < blocks.Length; i++)
+    if (blocks[i] > -1)
+        checksum += blocks[i] * i;
 
 Console.WriteLine(checksum);
-
-int freeSpaceIndex(int length, int maxIndex)
-{
-    var firstEmptyBlockFound = false;
-    for (var i = firstEmptyBlock; i < maxIndex; i++)
-    {
-        if (fileblocks[i] == -1)
-        {
-            if (!firstEmptyBlockFound)
-            {
-                firstEmptyBlockFound = true;
-                firstEmptyBlock = i;
-            }
-
-            var fileFits = true;
-            for (var j = 0; j < length; j++)
-                if (fileblocks[i + j] >= 0)
-                    fileFits = false;
-
-            if (fileFits)
-                return i;
-        }
-    }
-    return -1;
-}

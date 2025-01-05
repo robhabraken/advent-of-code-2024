@@ -2,7 +2,7 @@
 
 var intmap = new int[diskmap.Length];
 for (var i = 0; i < diskmap.Length; i++)
-    intmap[i] = int.Parse($"{diskmap[i]}");
+    intmap[i] = diskmap[i] - '0';
 
 var rightBoundary = diskmap.Length - 1;
 
