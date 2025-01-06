@@ -23,9 +23,10 @@ long sortTowels(string design)
 
             while (design[lastIndex..].Contains(pattern))
             {
-                indexes.Add(design.IndexOf(pattern, lastIndex));
-                towels[design.IndexOf(pattern, lastIndex)].Add(pattern);
-                lastIndex = design.IndexOf(pattern, lastIndex) + 1;
+                var index = design.IndexOf(pattern, lastIndex);
+                indexes.Add(index);
+                towels[index].Add(pattern);
+                lastIndex = index + 1;
             }
         }
     }

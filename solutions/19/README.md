@@ -43,3 +43,19 @@ for (var i = towels.Length - 1; i >= 0; i--)
             possibilities[i]++;
 ```
 Where `i` is the position or index in the intended design pattern. And `towels[]` holds a list of possible towels for each of those positions.
+
+### A little faster
+Retrospecitively, changed a few lines of code, as I spotted that I was calling the same `indexOf()` function multiple times, which is more expensive that assigning the outcome to a local variable. So I now changed these lines:
+```
+indexes.Add(design.IndexOf(pattern, lastIndex));
+towels[design.IndexOf(pattern, lastIndex)].Add(pattern);
+lastIndex = design.IndexOf(pattern, lastIndex) + 1;
+```
+into:
+```
+var index = design.IndexOf(pattern, lastIndex);
+indexes.Add(index);
+towels[index].Add(pattern);
+lastIndex = index + 1;
+```
+Which lowers the runtime from 24.8 to 17.7 ms. So it has quite some impact.
