@@ -1,6 +1,6 @@
 var secrets = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-io\\22\\input.txt").Select(parseLong).ToArray();
-
 var bananas = new Dictionary<int, int>();
+
 for (var i = 0; i < secrets.Length; i++)
 {
     var changes = new int[2000];
@@ -13,7 +13,7 @@ for (var i = 0; i < secrets.Length; i++)
 
         if (j >= 3)
         {
-            var sequence = changes[j - 3] * 1000000 + changes[j - 2] * 10000 + changes[j - 1] * 100 + changes[j];
+            var sequence = changes[j - 3] * 5832 + changes[j - 2] * 324 + changes[j - 1] * 18 + changes[j];
             if (!occurrences.Contains(sequence))
             {
                 if (bananas.ContainsKey(sequence))
@@ -40,13 +40,13 @@ int price(long secret) => (int)secret % 10;
 
 long pseudo(long secret)
 {
-    secret = mix(secret, secret * 64);
+    secret = mix(secret, secret << 6);
     secret = prune(secret);
 
-    secret = mix(secret, secret / 32);
+    secret = mix(secret, secret >> 5);
     secret = prune(secret);
 
-    secret = mix(secret, secret * 2048);
+    secret = mix(secret, secret << 11);
     secret = prune(secret);
 
     return secret;
@@ -54,4 +54,4 @@ long pseudo(long secret)
 
 long mix(long secret, long value) => secret ^ value;
 
-long prune(long secret) => secret % 16777216;
+long prune(long secret) => secret & 0xFFFFFF;

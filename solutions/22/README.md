@@ -44,3 +44,22 @@ long parseLong(string s)
 }
 ```
 Surprisingly, this shaves off another 40 ms, bringing the runtime down to 400 ms.
+
+### Even faster trading!
+Still, I needed a bit more speed to achieve my subsecond goal over all part 2 solutions of 2024 collectively. So I continued experimenting with this solution, as it was the slowest of all, so potentially the also the most to be gained.
+
+My major improvement as described above, generating an integer value as a key of each unique sequence, still could be a little faster. As I was multiplying all values by factors of 10, but my range of changes is only 18 long (-9 to 9), so I decided to try changing this to factors of 18, so the integer value to work with would be way lower:
+```
+var sequence = changes[j - 3] * 5832 + changes[j - 2] * 324 + changes[j - 1] * 18 + changes[j];
+```
+I expected this to make a little bit of a difference, but surprisingly, it saved me 20 ms on average!
+
+Now I had a taste for it, so I didn't stop there. I thought of changing the divisions and multiplications to bitshifting operations. Since the given operations are working with powers of 2, it's quite easy to do so:
+- multiplying by 64 (= 2^6) can be achieved by shifting 6 bits to the left: `<< 6`.
+- dividing by 32 (= 2^5) can be achieved by shifting 5 bits to the right: `>> 5`.
+- and then multiplying by 2048 (= 2^11) can be achieved by shifting 11 bits to the left again: `<< 11`.
+
+This gained another few ms, but not all that much. But then, changing the modulo operation to a bitwise operation did improve the runtim much more. We have to take the module of `16777216`, which might *seem* to be an odd number, but it really isn't. At first I really didn't pay attention and just used the common modulo approach, as it was the easiest thing to do and also fast enough for me. But, `16777216` is actually the equivalent of `2^24` and thus also a power of 2. A modulo operation is the remainder of a division by a certain number, and using this specific number (`16777216`) actually isolates the lower `24` for bits of given `value`. The bitwise equivalent of this is `value & (2^n - 1)`, because isolating bits can also be achieved by a bitwise `AND` operator: you can supply the bits that you want to keep, since each bit has to be true on both sides of the opreator. And since in `2^n` the `n` for us is `24`, making `2^24 = 16777216`, and `2^n - 1` thus is `16777216 - 1 = 16777215`, which is the number we can use for the bitwise operation. And that latter number can be then also simplified to the hexadecimal number `0xFFFFFF` (of which the binary representation is `111111111111111111111111` (the 24 bits we'd like to keep)). Long story short, instead of `secret % 16777216` we can also do `secret & 0xFFFFFF`, which is *way* faster!
+
+So, adding up these new changes, a lower factor for the integer key generation and using bitwise operators only, I got my solution down from 400 ms to 362 ms! That's 10% off again, and was the last improvement I needed to achieve my subsecond goal over all solutions!
+
