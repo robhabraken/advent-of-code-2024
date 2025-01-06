@@ -31,3 +31,16 @@ I now produce a unique key for a sequence like this:
 var sequence = changes[j - 3] * 1000000 + changes[j - 2] * 10000 + changes[j - 1] * 100 + changes[j];
 ```
 And of course I needed to change my `occurrences` collection to a `List<int>`, and the `bananas` collection to a `Dictionary<int, int>`. This small change drops the runtime of part 2 from 13 seconds to 441 ms!
+
+### A little bit faster
+When optimizing day 9 I learned about a new way to parse a string into an integer or long value, so I decided to try this too for day 22. I have added my own `parseLong()` function and replace the original `long.Parse` with that:
+```
+long parseLong(string s)
+{
+    var result = 0L;
+    for (var i = 0; i < s.Length; i++)
+        result = result * 10 + (s[i] - '0');
+    return result;
+}
+```
+Surprisingly, this shaves off another 40 ms, bringing the runtime down to 400 ms.

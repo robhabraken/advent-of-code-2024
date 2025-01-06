@@ -1,4 +1,4 @@
-var secrets = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-io\\22\\input.txt").Select(long.Parse).ToArray();
+var secrets = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-io\\22\\input.txt").Select(parseLong).ToArray();
 
 var bananas = new Dictionary<int, int>();
 for (var i = 0; i < secrets.Length; i++)
@@ -27,6 +27,14 @@ for (var i = 0; i < secrets.Length; i++)
 }
 
 Console.WriteLine(bananas.Values.Max());
+
+long parseLong(string s)
+{
+    var result = 0L;
+    for (var i = 0; i < s.Length; i++)
+        result = result * 10 + (s[i] - '0');
+    return result;
+}
 
 int price(long secret) => (int)secret % 10;
 
