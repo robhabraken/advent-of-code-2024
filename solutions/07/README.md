@@ -30,7 +30,7 @@ The trick to a good performance is to cut any recursive branches when you've fou
 A fun little challenge today! And a good lesson to see what recursion can do for such problem types opposed to sequential lists and loops.
 
 ### Speeding up the repair
-Like day 22 and day 9, I decided to introduce my own `parseLong()` function here to see if it did speed up things, but it turned out only to do so marginally. But then I spotted the implementation of the `|` operator, which I simply achieved by string concatenating the numbers together and parsing them back to a long. Both the parsing and the string operation are quite heavy. So I came up with the idea to do it purely mathematically. I looked up how you can determine the number of digits within a number, which turns out to be `log10(n) + 1`. If I were to take the power of that number to 10, I would have the number of decimal places to shift the left number with to fit next to the number on the right. So I changed this line of code:
+Like day 22 and day 9, I decided to introduce my own `parseLong()` function here to see if it did speed up things, but it didn't improve things (or even performed a little worse for some reason). So I did stick with `long.Parse()`. But then I spotted the implementation of the `|` operator, which I simply implemented by string concatenating the numbers together and parsing them back to a `long`. Both the parsing and the string operation are quite heavy. So I came up with the idea to do it purely mathematically. I looked up how you can determine the number of digits within a number, which turns out to be `log10(n) + 1`. If I were to take the power of that number to 10, I would have the number of decimal places to shift the left number with to fit next to the number on the right. So I changed this line of code:
 ```
 result = long.Parse($"{current}{numbers[index]}");
 ```
@@ -38,4 +38,15 @@ into:
 ```
 result = (long)Math.Pow(10, (int)Math.Log10(numbers[index]) + 1) * current + numbers[index];
 ```
-Which is a little more cryptical, but a lot faster. That, together with my own parser for the input, my solution now runs in 119 ms. I still think it can be faster, because I'm just trying out all combinations and their might be a smarter way, but for now I at least save almost half of my original faster runtime.
+Which is a little more cryptical, but a lot faster. My solution now runs in 119 ms.
+
+Then, I decided to have a shot at reversing the algorithm, as I've heard that that would be faster, since you can bail out early for divisions if the current result isn't divisible by the previous number. The implementation though is completely my own, I didn't consult any external source. I used all of the same code from my original submission, only changing the order (back to front), and with that the check if I reached the first number, and of course also the operators. Changing adding to subtracting and multiplication to division is easy, but the splitting instead of concatenating takes a little more effort. Also, I now need to first validate if the current result contains the previous number. I tested a few things, and the 'contains' check is fastest with a straing comparison, while the actually splitting is fastest mathematically:
+```
+if ($"{current}".EndsWith($"{numbers[index]}"))
+    result = (current - numbers[index]) / (long)Math.Pow(10, (int)Math.Log10(numbers[index]) + 1);
+else
+    result = -1;
+```
+And while I was at it, I decided to try one more thing: why would I create a `char[]` with operators, doing a char comparison to each operator for each operation? Although it fits the puzzle description well and helps readability, there's no real reason to do so. Hence, I dropped the `op` collection and the for loop over that collection, and now simple iterate from `0` tot `2`, changing the operator per each index.
+
+With these three changes combined (the mathimatical `||` implementation, reversing the algorithm, and dropping the char array) my solution now runs in 4.58 ms!
