@@ -28,6 +28,7 @@ My solutions to the Advent of Code puzzles for the 2024 edition, written in C#.
 | [Day 23: LAN Party](./solutions/23/) | 23.1 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | 23.2 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | <sub>40 LoC / 12.6 ms</sub> | <sub>74 LoC / 11.2 ms</sub> |
 | [Day 24: Crossed Wires](./solutions/24/) | 24.1 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | 24.2 <img src="https://www.robhabraken.nl/img/yellow.png" title="Scrolled through visualizations on Reddit for inspiration"> | <sub>98 LoC / 1.38 ms</sub> | <sub>66 LoC / 1.42 ms</sub> |
 | [Day 25: Code Chronicle](./solutions/25/) | 25.1 <img src="https://www.robhabraken.nl/img/green.png" title="Solved completely by myself without any help or external input"> | 25.2 <img src="https://www.robhabraken.nl/img/green.png" title="This one's for free!"> | <sub>32 LoC / 2.05 ms</sub> | <sub>N/A</sub> |
+| Total runtime |  |  |  | <sub>**999.33503 ms**</sub> |
 
 ### Performance metrics
 
