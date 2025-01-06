@@ -16,6 +16,9 @@ Now I iterate over the 100 presses (or actually 101, because not pressing one of
 
 Lastly, I iterate over the outcome lists in a nested loop, so I test every number of pushes on the `B` button with every number of pushes on the `A` button. When both coordinates add up to the coordinate of the prize, I add the cost to the answer. I could've stepped out of the loop once I found an answer, but it already was this quick that I didn't bother, and continued with part two.
 
+## Update
+After finishing part 2, finding the proper solution to this puzzle, I updated my part 1 solution to get the same performance, and moved my initial solution to the file `Original.cs` (excluded from the build, for reference only).
+
 ## Part 2
 
 As expected, looping to find the answer isn't going to work for part two, as the prize coordinates are way too high and the possible combinations almost infinite. Also, since not every claw machine has a possible solution, there's no way to bail out once you've tried 'all' possible combinations. Math is our only resort. We need to actually calculate the values, which will be very quick and effective. It took me quite a while though to come up with the right equations. I tried finding a ratio between the button pushes first, but I then realized this isn't a linear formula (the ratio between the number of presses on both buttons), so that's not possible. Then I also messed up the formula simplification a few times so I was working on what I thought was the right solution, but couldn't get the outcome I expected. After a few attemps, I started over from scratch, which made me see the right equation, and from there, it actually was quite an easy puzzle to solve.
