@@ -28,3 +28,14 @@ Also, the recursive function is quite simple:
 The trick to a good performance is to cut any recursive branches when you've found a solution, and to abort further evaluation if the current branch (and only the current one), is already past the desired test result, and thus impossible.
 
 A fun little challenge today! And a good lesson to see what recursion can do for such problem types opposed to sequential lists and loops.
+
+### Speeding up the repair
+Like day 22 and day 9, I decided to introduce my own `parseLong()` function here to see if it did speed up things, but it turned out only to do so marginally. But then I spotted the implementation of the `|` operator, which I simply achieved by string concatenating the numbers together and parsing them back to a long. Both the parsing and the string operation are quite heavy. So I came up with the idea to do it purely mathematically. I looked up how you can determine the number of digits within a number, which turns out to be `log10(n) + 1`. If I were to take the power of that number to 10, I would have the number of decimal places to shift the left number with to fit next to the number on the right. So I changed this line of code:
+```
+result = long.Parse($"{current}{numbers[index]}");
+```
+into:
+```
+result = (long)Math.Pow(10, (int)Math.Log10(numbers[index]) + 1) * current + numbers[index];
+```
+Which is a little more cryptical, but a lot faster. That, together with my own parser for the input, my solution now runs in 119 ms. I still think it can be faster, because I'm just trying out all combinations and their might be a smarter way, but for now I at least save almost half of my original faster runtime.
