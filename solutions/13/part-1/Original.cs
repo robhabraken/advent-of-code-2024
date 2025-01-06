@@ -24,7 +24,6 @@ for (var i = 0; i < lines.Length; i += 4)
             if (outcomesA[j].Item1 + outcomesB[k].Item1 == prize[0] &&
                 outcomesA[j].Item2 + outcomesB[k].Item2 == prize[1])
                 answer += j * 3 + k;
-
 }
 
 Console.WriteLine(answer);
