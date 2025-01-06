@@ -72,3 +72,21 @@ for (var from = 0; from < singletrack.Count; from++)
         cheat(from, to);
 ```
 My new solution runs in 565 ms, which is over 3 times faster, saves 2 LoC in total, and is much easier to read I think.
+
+### Reverting my change for even more speed!
+So, I *thought* I hugely improved my algorithm by removing the full loop over the map and replacing it with a list that stores the singletrack with its positions. But when I was looking to improve my solution even further (after all, it was the slowest of all puzzle solutions still), I suddenly thought: if the manhattan distance can only be 20, why would I check _all_ tiles on the track each time? The map is very large, and I am checking way too many tiles each iteration, even with the new approach, as I am constantly looping over the entire track.. and on top of that, a dynamic `List<Point>` collection should actually be slower than a fixed `int[,]` collection.
+
+I then got the idea to completely revert my former improvement, and change the scope of the inside loop, going from minus to plus twenty on both axis from my current position! And then, I also added a check to see if I was going up the track only (which now still made more of an improvement than it did with the first way slower approach). So I changed my main loop once again into:
+```
+var answer = 0;
+for (var y = 1; y < lines.Length - 1; y++)
+    for (var x = 1; x < lines[0].Length - 1; x++)
+        if (racetrack[y, x] != -1)
+            for (var dY = y > 20 ? y - 21 : 1; dY < y + 21 && dY < lines.Length - 1; dY++)
+                for (var dX = x > 20 ? x - 21 : 1; dX < x + 21 && dX < lines[0].Length - 1; dX++)
+                    if (racetrack[dY, dX] != -1 && !(y == dY && x == dX) && racetrack[dY, dX] > racetrack[y, x])
+                        cheat(x, y, dX, dY);
+```
+So this is basically the same as the original loop, but even more complex. As a starting point for `dY` and check if my `y` position is above `20` (to catch out of boundary scenarios) and then start with 1, just as before. But if it is greater than `20`, I use `y - 21` as my starting point for the loop to check for the distance (or in other words, 20 steps back up from where I am right now). In code, the `dY` assignment changed from `var dY = 1` to `var dY = y > 20 ? y - 21 : 1`. And my upper boundary got an extra check to not go further than 20 steps from where I am right now: `dY < y + 21`. I check this *before* the line length on purpose, as it occurs way more often that I hit the max 20 steps than the outer bounds, and the latter check might be slightly more expensive. I then do the same on the x-axis. And lastly, I've added `&& racetrack[dY, dX] > racetrack[y, x]` to check if I'm going up the track. And only then, I will check this is a possible shortcut to cheat with. This brought my search back way way further. My original array approach over the entire map did `373,301,041` checks, my updated list approach only `43,772,046`, and this revised array approach with a much more limited scope only `3,362,433`. That's only 7.7% of my updated version, and less than 1% of my original check size.
+
+My new solution now runs in 165 ms!

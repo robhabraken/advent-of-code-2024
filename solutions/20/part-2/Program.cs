@@ -3,9 +3,7 @@ var lines = File.ReadAllLines("..\\..\\..\\..\\..\\..\\..\\advent-of-code-2024-i
 var deltaMap = new int[4, 2] { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 } };
 
 var racetrack = new int[lines.Length, lines[0].Length];
-var singletrack = new List<Point>();
-
-var pos = new Point(0, 0);
+var start = new Point(0, 0);
 var end = new Point(0, 0);
 
 for (var y = 0; y < lines.Length; y++)
@@ -13,12 +11,12 @@ for (var y = 0; y < lines.Length; y++)
         if (lines[y][x].Equals('#'))
             racetrack[y, x] = -1;
         else if (lines[y][x].Equals('S'))
-            pos = new Point(x, y);
+            start = new Point(x, y);
         else if (lines[y][x].Equals('E'))
             end = new Point(x, y);
 
+var pos = new Point(start.x, start.y);
 int previousX = -1, previousY = -1;
-singletrack.Add(new Point(pos.x, pos.y));
 while (!(pos.x == end.x && pos.y == end.y))
 {
     int dY, dX;
@@ -29,7 +27,7 @@ while (!(pos.x == end.x && pos.y == end.y))
 
         if (racetrack[dY, dX] != -1 && !(dX == previousX && dY == previousY))
         {
-            singletrack.Add(new Point(dX, dY));
+            racetrack[dY, dX] = racetrack[pos.y, pos.x] + 1;
 
             previousX = pos.x;
             previousY = pos.y;
@@ -43,16 +41,20 @@ while (!(pos.x == end.x && pos.y == end.y))
 }
 
 var answer = 0;
-for (var from = 0; from < singletrack.Count; from++)
-    for (var to = from + 1; to < singletrack.Count; to++)
-        cheat(from, to);
+for (var y = 1; y < lines.Length - 1; y++)
+    for (var x = 1; x < lines[0].Length - 1; x++)
+        if (racetrack[y, x] != -1)
+            for (var dY = y > 20 ? y - 21 : 1; dY < y + 21 && dY < lines.Length - 1; dY++)
+                for (var dX = x > 20 ? x - 21 : 1; dX < x + 21 && dX < lines[0].Length - 1; dX++)
+                    if (racetrack[dY, dX] != -1 && !(y == dY && x == dX) && racetrack[dY, dX] > racetrack[y, x])
+                        cheat(x, y, dX, dY);
 
 Console.WriteLine(answer);
 
-void cheat(int a, int b)
+void cheat(int aX, int aY, int bX, int bY)
 {
-    var picoseconds = distance(singletrack[a].x, singletrack[b].x) + distance(singletrack[a].y, singletrack[b].y);
-    if (picoseconds <= 20 && saved(a, b, picoseconds) >= 100)
+    var picoseconds = distance(aX, bX) + distance(aY, bY);
+    if (picoseconds <= 20 && saved(racetrack[aY, aX], racetrack[bY, bX], picoseconds) >= 100)
         answer++;
 }
 
