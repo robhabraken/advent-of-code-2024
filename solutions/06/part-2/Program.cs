@@ -21,7 +21,8 @@ walk(ref referenceMap, (location.Item1, location.Item2));
 for (int y = 0; y < lines.Length; y++)
     for (int x = 0; x < lines[0].Length; x++)
         if (referenceMap[y, x])
-            if (detectLoop((location.Item1, location.Item2), y, x))
+            if (!(y == location.Item1 && x == location.Item2) &&
+                detectLoop((location.Item1, location.Item2), y, x))
                 answer++;
 
 Console.WriteLine(answer);
